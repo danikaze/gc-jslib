@@ -68,9 +68,10 @@
          * If 1 parameter is specified, a value between [0..max) will be returned (0 is included, max is not)
          * If 2 parameters are specified, a value between [min..max) will be returned (min is included, max is not)
          *
-         * @param {Integer} min -
-         * @param {Integer} max -
-         * @return {Integer} random number
+         * @param {Integer}  min minimum value - included (only with 2 parameters)
+         * @param {Integer}  max maximum value - not included (with 1 or 2 parameters)
+         * @return {Integer}     random number
+         *
          * @public
          */
         this.nextInt = function() {
@@ -101,9 +102,10 @@
          * If 1 parameter is specified, a value between [0..max) will be returned (0 is included, max is not)
          * If 2 parameters are specified, a value between [min..max) will be returned (min is included, max is not)
          *
-         * @param {Float} min -
-         * @param {Float} max -
-         * @return {Float} random number
+         * @param {Float}  min minimum value - included (only with 2 parameters)
+         * @param {Float}  max maximum value - not included (with 1 or 2 parameters)
+         * @return {Float}     random number
+         *
          * @public
          */
         this.nextFloat = function(min, max) {
@@ -133,6 +135,7 @@
          * Reset the state of the generator to the first number of the seed
          *
          * @return {this} Self object to allow chaining
+         *
          * @public
          */
         this.reset = function() {
@@ -144,6 +147,7 @@
          * Get the initial seed of the generator
          *
          * @return {Integer} Seed of the generator
+         *
          * @public
          */
         this.getSeed = function() {
@@ -154,6 +158,7 @@
          * Set the seed (initial state) of the generator, and resets it
          *
          * @return {this} Self object to allow chaining
+         *
          * @public
          */
         this.setSeed = function(seed) {
@@ -166,6 +171,7 @@
          * With {@link setState} allow storing and recovering the state of the generator
          *
          * @return {Integer} state of the generator
+         *
          * @public
          */
         this.getState = function() {
@@ -176,6 +182,7 @@
          * Set the state of the generator to N generations
          *
          * @return {this} Self object to allow chaining
+         *
          * @public
          */
         this.setState = function(state) {

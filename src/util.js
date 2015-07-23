@@ -8,30 +8,30 @@
     /**
      * Enum: Alignment values
      *
-     * @property {Number} Bottom
-     * @property {Number} BottomLeft
-     * @property {Number} BottomRight
-     * @property {Number} Center
-     * @property {Number} Left
-     * @property {Number} Right
-     * @property {Number} Top
-     * @property {Number} TopLeft
-     * @property {Number} TopRight
+     * @property {Number} BOTTOM
+     * @property {Number} BOTTOM_LEFT
+     * @property {Number} BOTTOM_RIGHT
+     * @property {Number} CENTER
+     * @property {Number} LEFT
+     * @property {Number} RIGHT
+     * @property {Number} TOP
+     * @property {Number} TOP_LEFT
+     * @property {Number} TOP_RIGHT
      *
      * @enum {Number}
      * @readOnly
      * @memberOf gc
      */
     var Align = Object.freeze({
-        Bottom      : 0,
-        BottomLeft  : 1,
-        BottomRight : 2,
-        Center      : 3,
-        Left        : 4,
-        Right       : 5,
-        Top         : 6,
-        TopLeft     : 7,
-        TopRight    : 8
+        BOTTOM       : 0,
+        BOTTOM_LEFT  : 1,
+        BOTTOM_RIGHT : 2,
+        CENTER       : 3,
+        LEFT         : 4,
+        RIGHT        : 5,
+        TOP          : 6,
+        TOP_LEFT     : 7,
+        TOP_RIGHT    : 8
     });
 
     /**
@@ -97,10 +97,22 @@
     };
 
     /**
+     * Check if an object is a Function
+     *
+     * @param  {Object}  obj Object to check
+     * @return {Boolean}     true if {@link obj} is a Function
+     *
+     * @public
+     */
+    Util.isFunction = function isFunction(obj) {
+        return typeof obj === "function";
+    };
+
+    /**
      * Check if an object is a number
      *
-     * @param {Object} obj Object to check
-     * @return {Boolean} true if is a number, false otherwise
+     * @param {Object}   obj Object to check
+     * @return {Boolean}     true if is a number, false otherwise
      *
      * @public
      */
@@ -111,8 +123,8 @@
     /**
      * Check if an object is a String
      *
-     * @param {Object} obj Object to check
-     * @return {Boolean} true if is a String, false otherwise
+     * @param {Object}   obj Object to check
+     * @return {Boolean}     true if is a String, false otherwise
      * @public
      */
     Util.isString = function isString(obj) {
@@ -122,8 +134,8 @@
     /**
      * Check if an object is an Array
      *
-     * @param {Object} obj Object to check
-     * @return {Boolean} true if is an Array, false otherwise
+     * @param {Object}   obj Object to check
+     * @return {Boolean}     true if is an Array, false otherwise
      *
      * @function
      * @public
@@ -134,8 +146,8 @@
     /**
      * Check if an object is a plain Object
      *
-     * @param {Object} obj Object to check
-     * @return {Boolean} true if is an Object, false otherwise
+     * @param {Object}   obj Object to check
+     * @return {Boolean}     true if is an Object, false otherwise
      *
      * @public
      */
@@ -157,14 +169,14 @@
         }
 
         return Object.keys(obj).length === 0;
-    }
+    };
 
     /**
      * Iterator function to seamlessly iterate over both arrays and objects.
      * Arrays are iterated by numeric index. Objects are iterated via their named properties.
      *
      * @param {Object|Array} obj Object or Array to iterate
-     * @param {Function} f callback to execute for each item as f(item, i). If this function returns true, it breaks the loop
+     * @param {Function}     f   callback to execute for each item as f(item, i). If this function returns true, it breaks the loop
      *
      * @public
      */
@@ -198,7 +210,7 @@
      * Arrays just return its length property. Counting Objects is based on the number of keys they have.
      *
      * @param {Object|Array} obj Object or Array to count
-     * @return {Integer} number of elements/properties
+     * @return {Integer}         number of elements/properties
      *
      * @public
      */
@@ -220,9 +232,9 @@
      * If the first parameter is the boolean true, the copy will be deep (recursive)
      *
      * @param {deep} [deep=false] if the first parameter is the boolean true instead of an object, the copy will be deep (recursive)
-     * @param {...Object} in list of objects to copy. Those at the right will overwrite the properties of the elements to their left
+     * @param {...Object}         in list of objects to copy. Those at the right will overwrite the properties of the elements to their left
+     * @return {Object}           Extended object
      *
-     * @return {Object} Extended object
      * @public
      */
     Util.extend = function extend() {
@@ -261,87 +273,16 @@
     };
 
     /**
-     * Load one or more images and return their Image element
-     * If a callback {@link update} function is provided, it will be executed each time a Image is loaded,
-     * with one argument: the progress being a float between (0..1]
-     *
-     * @param {Object} sources Object of the images to ask as { key: source }
-     * @param {Function} update callback to get track of the updates and finalization of the loading
-     *
-     * @return {Object} loaded images as { key: Image }
-     * @public
-     */
-    Util.loadImages = function loadImages(sources, update) {
-        function loadImage(i, img) {
-            images[i] = new Image();
-            images[i].src = img.src;
-
-            images[i].onload = function() {
-                loadedImages++;
-
-                if(update) {
-                    if(useSize) {
-                        loadedSize += img.size;
-                        update(loadedSize/totalSize, i, loadedSize === totalSize ? images : undefined);
-
-                    } else {
-                        update(loadedImages/nImages, i, loadedImages === nImages ? images : undefined);
-                    }
-                }
-            };
-        }
-
-        var i,
-            nImages = 0,
-            images = {},
-            useSize = true,
-            loadedImages = 0,
-            totalSize = 0,
-            loadedSize = 0,
-            img;
-
-        if(typeof(sources) !== "object" || sources instanceof Array) {
-            throw gc.exception.WrongSignatureException("sources is not an Object");
-        }
-
-        // first, we check if the size is defined for ALL the images
-        for(i in sources) {
-            img = sources[i];
-
-            if(typeof img === "string") {
-                useSize = false;
-                sources[i] = { src: img };
-
-            } else if(!img.size) {
-                useSize = false;
-
-            } else {
-                totalSize += img.size;
-            }
-
-            if(!img.src) {
-                throw gc.exception.WrongDataException("src is not defined for each image");
-            }
-
-            nImages++;
-        }
-
-        for(i in sources) {
-            loadImage(i, sources[i]);
-        };
-    };
-
-    /**
      * Take a box of size {@link w} x {@link h} and align its center to a position based on the {@link align} parameter
      *
-     * @param {Align} align {@link Align} enum with the desired alignment value
-     * @param {Number} w width of the box to align
-     * @param {Number} h height of the box to align
-     * @param {Number} [x=0] base x-position to calculate
-     * @param {Number} [y=0] base y-position to calculate
+     * @param {Align}              align {@link Align} enum with the desired alignment value
+     * @param {Number}             w width of the box to align
+     * @param {Number}             h height of the box to align
+     * @param {Number} [x=0]       base x-position to calculate
+     * @param {Number} [y=0]       base y-position to calculate
      * @param {Number} [centerX=0] x-position of the center of the box
      * @param {Number} [centerY=0] y-position of the center of the box
-     * @return {Object} object as {x, y} with the aligned position
+     * @return {Object}            object as {x, y} with the aligned position
      *
      * @public
      */
@@ -352,47 +293,47 @@
         centerY = centerY || 0;
 
         switch(align) {
-            case Align.Bottom:
+            case Align.BOTTOM:
                 x += w/2;
                 y += h - centerY;
                 break;
 
-            case Align.BottomLeft:
+            case Align.BOTTOM_LEFT:
                 x += w + centerX;
                 y += h - centerY;
                 break;
 
-            case Align.BottomRight:
+            case Align.BOTTOM_RIGHT:
                 x += -w + centerX;
                 y += h - centerY;
                 break;
 
-            case Align.Center:
+            case Align.CENTER:
                 x += w/2 + centerX;
                 y += h/2 - centerX;
                 break;
 
-            case Align.Left:
+            case Align.LEFT:
                 x += w + centerX;
                 y += h/2 - centerX;
                 break;
 
-            case Align.Right:
+            case Align.RIGHT:
                 x += -w + centerX;
                 y += h/2 - centerX;
                 break;
 
-            case Align.Top:
+            case Align.TOP:
                 x += w/2 + centerX;
                 y += centerY;
                 break;
 
-            case Align.TopLeft:
+            case Align.TOP_LEFT:
                 x += w + centerX;
                 y += centerY;
                 break;
 
-            case Align.TopRight:
+            case Align.TOP_RIGHT:
                 x += -w + centerX;
                 y += centerY;
                 break;

@@ -11,14 +11,14 @@
     /**
      * FPS for measuring Frames per Second.
      *
-     * @param {Object} options List of options to override
-     * @param {Number} [options.updateDelay=1000] Time between updates (in milliseconds)
-     * @param {String} [options.font=12 px Arial] style used by {@link FPS#draw}
-     * @param {String} [options.fillStyle=#FFFF00] font color style used by {@link draw}
-     * @param {Function} [options.update=undefined] function called when the fps counter is updated
-     * @param {Number} [options.x=0] x-position for the text, used by {@link draw}
-     * @param {Number} [options.y=0] y-position for the text, used by {@link draw}
-     * @param {gc.Align} [options.align=gc.Alicn.TopLeft] alineation for the text, used by {@link draw}
+     * @param {Object}                                     options List of options to override
+     * @param {Number} [options.updateDelay=1000]          Time between updates (in milliseconds)
+     * @param {String} [options.font=12 px Arial]          style used by {@link FPS#draw}
+     * @param {String} [options.fillStyle=#FFFF00]         font color style used by {@link draw}
+     * @param {Function} [options.update=undefined]        function called when the fps counter is updated
+     * @param {Number} [options.x=0]                       x-position for the text, used by {@link draw}
+     * @param {Number} [options.y=0]                       y-position for the text, used by {@link draw}
+     * @param {gc.Align} [options.align=gc.Alicn.TOP_LEFT] alineation for the text, used by {@link draw}
      *
      * @constructor
      * @memberOf gc
@@ -41,7 +41,7 @@
                 fillStyle: "#FFFF00",
                 x: 0,
                 y: 0,
-                align: gc.Align.TopLeft
+                align: gc.Align.TOP_LEFT
             };
 
         /////////////////////
@@ -66,8 +66,9 @@
          * If only <var>key</var> is specified, acts as a getter
          * If <var>value</var> is specified too, acts as a setter
          *
-         * @param {String} key Name of the option to get/set
+         * @param {String} key   Name of the option to get/set
          * @param {Object} value New value for the option specified by key
+         *
          * @public
          */
         this.option = function option(key, value) {
@@ -92,6 +93,7 @@
          *
          * @param  {DOMHighResTimeStamp} now milliseconds of the current time
          * @return {this}                Self object for allowing chaining
+         *
          * @public
          */
         this.update = function update(now) {
@@ -125,7 +127,8 @@
          * Draw a text with the most recent calculated FPS
          *
          * @param  {CanvasRenderingContext2D} ctx Where to draw
-         * @return {this} Self object for allowing chaining
+         * @return {this}                     Self object for allowing chaining
+         *
          * @public
          */
         this.draw = function draw(ctx) {

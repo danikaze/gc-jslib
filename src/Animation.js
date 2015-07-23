@@ -6,7 +6,12 @@
     /////////////////////////
 
     /**
-     * Direction of the animation, for internal control
+     * Enum: Direction of the animation, for internal control
+     *
+     * @property {Number} FORWARDS
+     * @property {Number} BACKWARDS
+     * @property {Number} RANDOM
+     *
      * @type {Number}
      */
     var PlayDirection = {
@@ -22,10 +27,20 @@
 
     var version = '1.0.0';
 
-
     /**
-     * Possible types of Animation
-     * @type {Number}
+     * Enum: Possible types of Animation
+     *
+     * @property {Number} NORMAL
+     * @property {Number} REVERSED
+     * @property {Number} PINGPONG
+     * @property {Number} LOOP
+     * @property {Number} LOOP_REVERSED
+     * @property {Number} LOOP_PINGPONG
+     * @property {Number} LOOP_RANDOM
+     *
+     * @enum {Number}
+     * @readOnly
+     * @memberOf gc.Animation
      */
     var PlayMode = {
             NORMAL: 0,
@@ -109,20 +124,20 @@
                     // global animation options
                     playMode: PlayMode.LOOP,
                     // global image options
-                    offsetX: 0,         // where the animation starts inside the image
+                    offsetX: 0,
                     offsetY: 0,
-                    marginX: 0,         // space between each frame
+                    marginX: 0,
                     marginY: 0,
-                    nFrames: 0,         // number of frames to read horizontally (<=0 means till the end of the image)
+                    nFrames: 0,
                     // global frame options
-                    frameWidth: 0,      // size of each frame
+                    frameWidth: 0,
                     frameHeight: 0,
                     frameCenterX: 0,
                     frameCenterY: 0,
-                    frameTime: 0,   // duration of the frames (the same for each)
+                    frameTime: 0,
                     // specific frame options (if specified the global ones will be replaced)
                     frames: undefined,  // [{ width, height, offsetX, offsetY, time }]
-                    onFinish: undefined,    // callback
+                    onFinish: undefined,
                     onChangeDirection: undefined
                 },
                 opt = gc.util.extend(defaultOptions, options),
@@ -160,6 +175,7 @@
          *
          * @param {Object} texture Image accepted by {@link CanvasRenderingContext2D#drawImage}.
          * @param {Object} options Options of the Animation as specified in the {@link constructor}.
+         *
          * @private
          */
         function _loadFrames(image, options) {
@@ -230,6 +246,7 @@
          * Call the registered triggers when needed
          *
          * @param {Object[]} callbacks list of functions to call
+         *
          * @private
          */
         function _triggerCallback(callbacks) {
@@ -366,9 +383,10 @@
          * Set the type of the Animation
          *
          * @param {Animation.PlayMode} playMode Type of the animation
-         * @param {boolean} reset If true, it will reset the animation.
-         *                        If false, it will continue from the current state
-         * @return {this} Self object to allow chaining
+         * @param {boolean}            reset    If true, it will reset the animation.
+         *                                      If false, it will continue from the current state
+         * @return {this}                       Self object to allow chaining
+         *
          * @public
          */
         this.setPlayMode = function setPlayMode(playMode , reset) {
@@ -390,6 +408,7 @@
                     if(reset) {
                         _currentFrameIndex = 0;
                         _currentFrame = _frames[_currentFrameIndex];
+                        _playDirection = PlayDirection.FORWARDS;
                     }
                     break;
 
@@ -398,6 +417,7 @@
                     if(reset) {
                         _currentFrameIndex = _frames.length - 1;
                         _currentFrame = _frames[_currentFrameIndex];
+                        _playDirection = PlayDirection.BACKWARDS;
                     }
                     break;
 
@@ -415,6 +435,7 @@
                     if(reset) {
                         _currentFrameIndex = 0;
                         _currentFrame = _frames[_currentFrameIndex];
+                        _playDirection = PlayDirection.FORWARDS;
                     }
                     break;
 
@@ -423,6 +444,7 @@
                     if(reset) {
                         _currentFrameIndex = _frames.length - 1;
                         _currentFrame = _frames[_currentFrameIndex];
+                        _playDirection = PlayDirection.BACKWARDS;
                     }
                     break;
 
@@ -441,6 +463,7 @@
                     if(reset) {
                         _currentFrameIndex = _rng.nextInt(_nFrames);
                         _currentFrame = _frames[_currentFrameIndex];
+                        _playDirection = PlayDirection.RANDOM;
                     }
                     break;
             }
@@ -452,7 +475,7 @@
          * Updates the Animation by the specified time
          *
          * @param {Number} delta Number of milliseconds to update the Animation
-         * @return {this} Self object to allow chaining
+         * @return {this}        Self object to allow chaining
          */
         this.update = function update(delta) {
             if(_playing) {
@@ -483,6 +506,7 @@
          *
          * @param  {Integer}                   n Number of the frame
          * @return {gc.TextureRegion}            TextureRegion object for the specified frame
+         *
          * @throws {IndexOutOfBoundsException}   n must be inside 0..getTotalFrames()-1
          * @public
          */
@@ -497,6 +521,7 @@
          * Get if the animation is playing currently or not
          *
          * @return {Boolean} true if it's playing, false if not
+         *
          * @public
          */
         this.isPlaying = function isPlaying() {
@@ -507,6 +532,7 @@
          * Get if the animation is completed
          *
          * @return {Boolean} true if it's finished (stopped and won't continue until is reset) , false if not
+         *
          * @public
          */
         this.isFinished = function isFinished() {
@@ -517,6 +543,7 @@
          * Get the total number of frames of the Animation
          *
          * @return {integer} number of frames of the Animation
+         *
          * @public
          */
         this.getTotalFrames = function getTotalFrames() {
@@ -528,6 +555,7 @@
          * If the Animation is LOOPED, PINGPONG... the sum of the frames is only taking into account once
          *
          * @return {Number} Duration of the animation in milliseconds.
+         *
          * @public
          */
         this.getTotalTime = function getTotalTime() {
@@ -540,6 +568,7 @@
          *
          * @param {Function} callback Function to execute
          * @return {this}             Self object to allow chaining
+         *
          * @public
          */
         this.finish = function finish(callback) {
@@ -554,6 +583,7 @@
          *
          * @param  {Function} callback Function to execute
          * @return {this}     Self object to allow chaining
+         *
          * @public
          */
         this.changeDirection = function changeDirection(callback) {
