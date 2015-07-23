@@ -548,7 +548,7 @@
          */
         this.getTotalFrames = function getTotalFrames() {
             return _nFrames;
-        }
+        };
 
         /**
          * Get the sum of the duration of the Animation's frames.
@@ -560,7 +560,7 @@
          */
         this.getTotalTime = function getTotalTime() {
             return _totalTime;
-        }
+        };
 
         /**
          * Add a callback to execute when the Animation is finished
@@ -571,7 +571,7 @@
          *
          * @public
          */
-        this.finish = function finish(callback) {
+        this.onFinish = function finish(callback) {
             _onFinish.push(callback);
 
             return this;
@@ -586,9 +586,9 @@
          *
          * @public
          */
-        this.changeDirection = function changeDirection(callback) {
+        this.onChangeDirection = function changeDirection(callback) {
             _onChangeDirection.push(callback);
-        }
+        };
 
         // call the constructor
         _construct.apply(this, arguments);

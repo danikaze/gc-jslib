@@ -143,7 +143,7 @@
          *
          * @public
          */
-        this.update = function update(callback) {
+        this.onUpdate = function update(callback) {
 
             if(!gc.util.isFunction(callback)) {
                 throw gc.exception.WrongSignatureException("callback is not a Function");
@@ -163,7 +163,7 @@
          *
          * @public
          */
-        this.finish = function finish(callback) {
+        this.onFinish = function finish(callback) {
 
             if(!gc.util.isFunction(callback)) {
                 throw gc.exception.WrongSignatureException("callback is not a Function");
