@@ -8,21 +8,11 @@
     /**
      * Enum: Alignment values
      *
-     * @property {Number} BOTTOM
-     * @property {Number} BOTTOM_LEFT
-     * @property {Number} BOTTOM_RIGHT
-     * @property {Number} CENTER
-     * @property {Number} LEFT
-     * @property {Number} RIGHT
-     * @property {Number} TOP
-     * @property {Number} TOP_LEFT
-     * @property {Number} TOP_RIGHT
-     *
      * @enum {Number}
      * @readOnly
      * @memberOf gc
      */
-    var Align = Object.freeze({
+    var Align = {
         BOTTOM       : 0,
         BOTTOM_LEFT  : 1,
         BOTTOM_RIGHT : 2,
@@ -32,7 +22,7 @@
         TOP          : 6,
         TOP_LEFT     : 7,
         TOP_RIGHT    : 8
-    });
+    };
 
     /**
      * Utility functions
@@ -43,6 +33,26 @@
      * @version 1.0.0
      */
     var Util = {};
+
+    /**
+     * Define a constant property inside an Object
+     *
+     * @param {Object} container Object where define the property in
+     * @param {String} name      Name of the constant
+     * @param {mixed}  value     Value of the constant
+     */
+    Util.defineConstant = function defineConstant(container, name, value) {
+        if(typeof value === "object") {
+            Object.freeze(value);
+        };
+
+        Object.defineProperty(container, name, {
+            configurable: false,
+            enumerable  : true,
+            value       : value,
+            writable    : false
+        });
+    };
 
     /**
      * Compare string versions as X.Y.Z
@@ -180,7 +190,7 @@
      *
      * @public
      */
-    Util.each = function each(obj, f) {
+    Util.forEach = function each(obj, f) {
         var i,
             n;
 
@@ -214,7 +224,7 @@
      *
      * @public
      */
-    Util.size = function size(obj) {
+    Util.getSize = function size(obj) {
         if(typeof(obj) !== "object") {
             throw gc.exception.WrongSignatureException("obj needs to be an object or an array");
         }
@@ -287,6 +297,10 @@
      * @public
      */
     Util.alignPosition = function alignPosition(align, w, h, x, y, centerX, centerY) {
+        if(arguments.length < 3) {
+            throw new gc.exception.WrongSignatureException("wrong number of parameters");
+        }
+
         x = x || 0;
         y = y || 0;
         centerX = centerX || 0;
@@ -357,7 +371,7 @@
         window.gc = {};
         gc = window.gc;
     }
-    gc.Align = Align;
     gc.util = Util;
+    gc.util.defineConstant(gc, "Align", Align);
 
 } (window, window.gc));

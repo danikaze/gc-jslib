@@ -5,7 +5,7 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
-    var version = "1.0.0";
+    var VERSION = "1.0.0";
 
     ///////////////////////////
     // STATIC PUBLIC METHODS //
@@ -190,6 +190,6 @@
         gc = window.gc;
     }
     gc.Canvas2D = Canvas2D;
-    gc.Canvas2D.version = version;
+    gc.util.defineConstant(gc.Canvas2D, "VERSION", VERSION);
 
 } (window, window.gc));

@@ -5,7 +5,7 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
-    var version = '1.0.0';
+    var VERSION = "1.0.0";
 
     /**
      * Object for validate several types of data
@@ -398,6 +398,6 @@
     gc.Validator = function(options) {
             return new Validator(gc.util.extend(true, { validators: gc.validatorDefinitions }, options));
         };
-    gc.Validator.version = version;
+    gc.util.defineConstant(gc.Validator, "VERSION", VERSION);
 
 } (window, window.gc));

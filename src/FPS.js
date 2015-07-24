@@ -5,7 +5,7 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
-    var version = '1.0.0';
+    var VERSION = "1.0.0";
 
 
     /**
@@ -67,8 +67,9 @@
          * If <var>value</var> is specified too, acts as a setter
          *
          * @param {String} key   Name of the option to get/set
-         * @param {Object} value New value for the option specified by key
+         * @param {mixed}  value New value for the option specified by key
          *
+         * @return {this|mixed} this to allow chaining for the setter, the asked value for the getter
          * @public
          */
         this.option = function option(key, value) {
@@ -90,6 +91,7 @@
 
         /**
          * Update the FPS.
+         * Needed to be called in each frame of the main loop.
          *
          * @param  {DOMHighResTimeStamp} now milliseconds of the current time
          * @return {this}                Self object for allowing chaining
@@ -165,6 +167,6 @@
         gc = window.gc;
     }
     gc.FPS = FPS;
-    gc.FPS.version = version;
+    gc.util.defineConstant(gc.FPS, "VERSION", VERSION);
 
 } (window, document, window.gc));

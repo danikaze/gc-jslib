@@ -8,11 +8,8 @@
     /**
      * Enum: Direction of the animation, for internal control
      *
-     * @property {Number} FORWARDS
-     * @property {Number} BACKWARDS
-     * @property {Number} RANDOM
-     *
-     * @type {Number}
+     * @enum {Number}
+     * @private
      */
     var PlayDirection = {
             FORWARDS: 0,
@@ -25,22 +22,15 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
-    var version = '1.0.0';
+    var VERSION = '1.0.0';
 
     /**
      * Enum: Possible types of Animation
      *
-     * @property {Number} NORMAL
-     * @property {Number} REVERSED
-     * @property {Number} PINGPONG
-     * @property {Number} LOOP
-     * @property {Number} LOOP_REVERSED
-     * @property {Number} LOOP_PINGPONG
-     * @property {Number} LOOP_RANDOM
-     *
      * @enum {Number}
      * @readOnly
      * @memberOf gc.Animation
+     * @public
      */
     var PlayMode = {
             NORMAL: 0,
@@ -92,11 +82,11 @@
         // PRIVATE INSTANCE VARS //
         ///////////////////////////
 
-        var self,                   /** reference to use the public methods from the private ones */
-            _texture,               /** image source for the TextureRegion of the frames */
-            _frames,                /** ordered list of frames as [{ src, time }] */
-            _nFrames,               /** cached number of frames (_frameslength) */
-            _totalTime,             /** cached duration of the full animation in millisecs. */
+        var self,                   // reference to use the public methods from the private ones
+            _texture,               // image source for the TextureRegion of the frames
+            _frames,                // ordered list of frames as [{ src, time }]
+            _nFrames,               // cached number of frames (_frameslength)
+            _totalTime,             // cached duration of the full animation in millisecs.
             _currentFrameIndex,
             _currentFrame,
             _elapsedFrameTime,
@@ -603,7 +593,7 @@
         gc = window.gc;
     }
     gc.Animation = Animation;
-    gc.Animation.version = version;
-    gc.Animation.PlayMode = PlayMode;
+    gc.util.defineConstant(gc.Animation, "VERSION", VERSION);
+    gc.util.defineConstant(gc.Animation, "PlayMode", PlayMode);
 
 } (window, window.gc));

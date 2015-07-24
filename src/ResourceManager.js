@@ -13,21 +13,18 @@
     /**
      * Enum: Type of managed resources
      *
-     * @property {Number} IMAGE
-     * @property {Number} FONT
-     * @property {Number} SOUND
-     *
      * @enum {Number}
      * @readOnly
      * @memberOf gc.ResourceManager
+     * @public
      */
-    var ResourceType = Object.freeze({
+    var ResourceType = {
         IMAGE : 0,
         FONT  : 1,
-        SOUND : 2,
-    });
+        AUDIO : 2,
+    };
 
-    var version = "1.0.0";
+    var VERSION = "1.0.0";
 
     /**
      * Description of the class
@@ -47,27 +44,22 @@
         ///////////////////////////
 
         /*
-         * List of resources, sources, loading status...
-         * Managed in objects like:
+         * List of resources managed in objects like:
          *  {
-         *      total   : {Integer},        // sum of all the items' sizes
-         *      loaded  : {Integer},        // total "sizes" loaded
-         *      useSize : {boolean},        // true if the size is specified for ALL the objects
-         *      items   : {
-         *          size    : {Integer},    // Size in bytes or 1 if not specified
-         *          src     : {String},     // URL of the resource's source
-         *          rsc     : {Object},     // when is not undefined, means that it's been loaded 100%
-         *          tmp     : {Object}      // used to create the resource while loading
-         *      }
+         *      size    : {Integer},    // Size in bytes or 1 if not specified
+         *      src     : {String},     // URL of the resource's source
+         *      rsc     : {Object},     // when is not undefined, means that it's been loaded 100%
+         *      tmp     : {Object}      // used to create the resource while loading. Not available after loaded
          *  }
          */
         var _images,
-            _fonts;
+            _fonts,
+            _audios;
 
-        var _total,
-            _loaded,
-            _onUpdate,
-            _onFinish;
+        var _total,         // total size (or number of elements) of ALL the resources
+            _loaded,        // total bytes (or number of elements) loaded for ALL the type of resources
+            _onUpdate,      // list of callbacks to execute when an element is loaded
+            _onFinish;      // list of callbacks to execute when all the elements are loaded
 
         /////////////////////
         // PRIVATE METHODS //
@@ -79,14 +71,13 @@
          * @private
          */
         function _construct() {
-
             _images = {};
             _fonts = {};
+            _audios = {};
             _total = 0;
             _loaded = 0;
             _onUpdate = [];
             _onFinish = [];
-
         };
 
         /**
@@ -105,7 +96,7 @@
             };
 
             if(_loaded === _total) {
-                for(i=0, n=_onUpdate.length; i<n; i++) {
+                for(i=0, n=_onFinish.length; i<n; i++) {
                     _onFinish[i](_loaded/_total, key, type);
                 };
             }
@@ -120,14 +111,91 @@
          * @private
          */
         function _loadImage(key, data) {
-            data.tmp =  new Image();
-            data.tmp.src = data.src;
-
+            data.tmp = new Image();
             data.tmp.onload = function() {
                 _loaded += data.size;
                 data.rsc = data.tmp;
                 delete data.tmp;
                 _update(key, ResourceType.IMAGE);
+            };
+            data.tmp.src = data.src;
+        }
+
+        /**
+         * Load one single font
+         *
+         * @param   {String} key  Key of the image to load
+         * @param   {Object} data Object with the properties of the image to load
+         *
+         * @private
+         */
+        function _loadFont(key, data) {
+        }
+
+        /**
+         * Load one single audio
+         *
+         * @param   {String} key  Key of the audio to load
+         * @param   {Object} data Object with the properties of the audio to load
+         *
+         * @private
+         */
+        function _loadAudio(key, data) {
+            data.tmp = new Audio();
+            data.tmp.oncanplaythrough = function() {    // onloadeddata ??
+                _loaded += data.size;
+                data.rsc = data.tmp;
+                delete data.tmp;
+                _update(key, ResourceType.AUDIO);
+            };
+            data.tmp.src = data.src;
+        }
+
+        /**
+         * Queue resources of one type, without start loading them
+         *
+         * @param  {Object} container     Object where the resources will be loaded into
+         * @param  {Object} data          Definition of the resources to ask as {key:resourceData}
+         * @param  {String} data.src      Source of the resource (usually a URL)
+         * @param  {Number} [data.size=1] Size of the resource
+         *
+         * @private
+         */
+        function _queueResources(container, data) {
+            var key,
+                size;
+
+            for(key in data) {
+                if(container[key]) {
+                    _total -= container[key].size;
+                    _loaded -= container[key].size;
+                }
+
+                size = data[key].size || 1;
+                container[key] = {
+                    size: size,
+                    src : data[key].src
+                };
+
+                _total += container[key].size;
+            }
+        }
+
+        /**
+         * Load the resources of one type, that are already queued and not loading/loaded
+         *
+         * @param  {Object}   container Object where the resources will be loaded into
+         * @param  {Function} loader    Function that loads a single resource of this type
+         *
+         * @private
+         */
+        function _loadResources(container, loader) {
+            var key;
+
+            for(key in container) {
+                if(!container[key].rsc && !container[key].tmp) {
+                    loader(key, container[key]);
+                }
             };
         }
 
@@ -177,53 +245,147 @@
         /**
          * Load images
          *
-         * @param  {Object}                  sources Object of the images to ask as {key:resourceData}
-         * @param  {String}                  sources.src Source of the resource (usually a URL)
-         * @param  {Number} [sources.size=1] Size of the resource
-         * @return {this}                    Self object to allow chaining
+         * @param  {Object} data          Object of the images to ask as {key:resourceData}
+         * @param  {String} data.src      Source of the image (usually a URL)
+         * @param  {Number} [data.size=1] Size of the image
+         * @return {this}                 Self object to allow chaining
          *
          * @public
          */
         this.loadImages = function loadImages(data) {
-            var key,
-                size;
+            if(!gc.util.isPlainObject(data)) {
+                throw gc.exception.WrongSignatureException("data is not an Object");
+            }
+            if(gc.util.isEmptyObject(data)) {
+                throw gc.exception.WrongDataException("data is empty");
+            }
 
+            _queueResources(_images, data);
+            _loadResources(_images, _loadImage);
+            return this;
+        };
+
+        /**
+         * Load Fonts
+         *
+         * @param  {Object} data        Object of the fonts to ask as {key:resourceData}
+         * @param  {String} data.src    Source of the font (usually a URL)
+         * @param  {Number} [data.size] Size of the font
+         * @return {this}               Self object to allow chaining
+         *
+         * @public
+         */
+        this.loadFonts = function loadFonts(data) {
+            if(!gc.util.isPlainObject(data)) {
+                throw gc.exception.WrongSignatureException("data is not an Object");
+            }
+            if(gc.util.isEmptyObject(data)) {
+                throw gc.exception.WrongDataException("data is empty");
+            }
+
+            _queueResources(_fonts, data);
+            _loadResources(_fonts, _loadFont);
+            return this;
+        };
+
+        /**
+         * Load Audios
+         *
+         * @param  {Object} data          Object of the audio files to ask as {key:resourceData}
+         * @param  {String} data.src      Source of the audio (usually a URL)
+         * @param  {Number} [data.size=1] Size of the audio
+         * @return {this}                 Self object to allow chaining
+         *
+         * @public
+         */
+        this.loadAudios = function loadAudios(data) {
+            if(!gc.util.isPlainObject(data)) {
+                throw gc.exception.WrongSignatureException("data is not an Object");
+            }
+            if(gc.util.isEmptyObject(data)) {
+                throw gc.exception.WrongDataException("data is empty");
+            }
+
+            _queueResources(_audios, data);
+            _loadResources(_audios, _loadAudio);
+            return this;
+        };
+
+        /**
+         * Load resources
+         *
+         * @param  {Object} data                                 Definitions of the resources to load
+         * @param  {Object} [data[ResourceType.IMAGE]=undefined] Object accepted by {@link loadImages}
+         * @param  {Object} [data[ResourceType.FONT]=undefined]  Object accepted by {@link loadFonts}
+         * @param  {Object} [data[ResourceType.AUDIO]=undefined] Object accepted by {@link loadAudios}
+         * @return {this}                                        Self object to allow chaining
+         *
+         * @public
+         */
+        this.load = function load(data) {
             if(!gc.util.isPlainObject(data)) {
                 throw gc.exception.WrongSignatureException("data is not an Object");
             }
 
-            // first, we create the object for all the passed images
-            for(key in data) {
-                size = data[key].size || 1;
-                _images[key] = {
-                    size: size,
-                    src : data[key].src
-                };
-                _total += size;
+            if(gc.util.isEmptyObject(data)) {
+                throw gc.exception.WrongDataException("data is empty");
             }
 
-            // and then, we start loading them
-            for(key in _images) {
-                _loadImage(key, _images[key]);
-            };
+            // queue
+            if(data[ResourceType.IMAGE]) {
+                _queueResources(_images, data[ResourceType.IMAGE]);
+            }
+            if(data[ResourceType.FONT]) {
+                _queueResources(_fonts, data[ResourceType.FONT]);
+            }
+            if(data[ResourceType.AUDIO]) {
+                _queueResources(_audios, data[ResourceType.AUDIO]);
+            }
+
+            // load
+            if(data[ResourceType.IMAGE]) {
+                _loadResources(_images, _loadImage);
+            }
+            if(data[ResourceType.FONT]) {
+                _loadResources(_fonts, _loadFont);
+            }
+            if(data[ResourceType.AUDIO]) {
+                _loadResources(_audios, _loadAudio);
+            }
 
             return this;
         };
 
         /**
-         * Get a loaded image
+         * Get a loaded Image
          *
-         * @param  {String} key Key of the image
+         * @param  {String} key Key of the Image
          * @return {Image}      Image resource, or undefined if not loaded or not found
          *
          * @public
          */
-        this.image = function image(key) {
+        this.getImage = function getImage(key) {
             if(!_images[key] || !_images[key].rsc) {
                 return undefined;
             }
 
             return _images[key].rsc;
+        };
+
+        /**
+         * Get a loaded Audio
+         *
+         * @param  {String} key Key of the Audio
+         * @return {Audio}      Audio resource, or undefined if not loaded or not found
+         *
+         * @public
+         */
+        this.getAudio = function getAudio(key) {
+            if(!_audio[key] || !_audio[key].rsc) {
+                return undefined;
+            }
+
+            return _audio[key].rsc;
         };
 
         // call the constructor after setting all the methods
@@ -240,7 +402,7 @@
         gc = window.gc;
     }
     gc.ResourceManager = ResourceManager;
-    gc.ResourceManager.version = version;
-    gc.ResourceManager.ResourceType = ResourceType;
+    gc.util.defineConstant(gc.ResourceManager, "VERSION", VERSION);
+    gc.util.defineConstant(gc.ResourceManager, "ResourceType", ResourceType);
 
 } (window, window.gc));

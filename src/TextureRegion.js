@@ -5,7 +5,7 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
-    var version = "1.0.0";
+    var VERSION = "1.0.0";
 
     /**
      * Description of the class
@@ -23,12 +23,19 @@
         // PUBLIC INSTANCE VARS //
         //////////////////////////
 
+        /** Texture source of the image. */
         this.src = src;
+        /** x-position of the start of the region. */
         this.offsetX = x;
+        /** y-position of the start of the region. */
         this.offsetY = y;
+        /** Width of the region */
         this.width = w;
+        /** Height of the region */
         this.height = h;
+        /** x-position of the center of the region */
         this.centerX = 0;
+        /** y-position of the center of the region */
         this.centerY = 0;
 
         ////////////////////
@@ -104,6 +111,6 @@
         gc = window.gc;
     }
     gc.TextureRegion = TextureRegion;
-    gc.TextureRegion.version = version;
+    gc.util.defineConstant(gc.TextureRegion, "VERSION", VERSION);
 
 } (window, window.gc));

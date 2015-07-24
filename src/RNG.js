@@ -14,7 +14,7 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
-    var version = '1.0.0';
+    var VERSION = "1.0.0";
 
     /**
      * Random Number Generator
@@ -215,6 +215,6 @@
         gc = window.gc;
     }
     gc.RNG = RNG;
-    gc.RNG.version = version;
+    gc.util.defineConstant(gc.RNG, "VERSION", VERSION);
 
 } (window, window.gc));
