@@ -538,10 +538,11 @@
          * @public
          */
         this.getFrame = function getFrame(n) {
-            if(n < 0 || n >= _nFrames) {
-                throw new gc.exception.IndexOutOfBounds();
+            if(n >= 0 && n < _nFrames) {
+                return _frames[n];
             }
-            return _frames[n];
+
+            throw new gc.exception.IndexOutOfBounds();
         };
 
         /**
