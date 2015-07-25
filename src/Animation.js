@@ -17,6 +17,7 @@
             RANDOM: 2
         };
 
+    var validator = new gc.Validator({ validators: gc.validatorDefinitions.Animation });
 
     ////////////////////////
     // STATIC PUBLIC VARS //
@@ -56,32 +57,35 @@
     /**
      * Animation class to use with canvas
      *
-     * @param {Object} image Image object accepted by CanvasRenderingContext2D#drawImage()
-     * @param {Object} options options to customize the animation
+     * @param {Object}             image                                      Image object accepted by CanvasRenderingContext2D#drawImage()
+     * @param {Object}             options                                    options to customize the animation
      * @param {Animation.PlayMode} [options.playMode=Animation.PlayMode.LOOP] Behavior of the frames of the Animation
-     * @param {Number} [options.offsetX=0] x-position where the animation graphics start relative to the {@link image}
-     * @param {Number} [options.offsetY=0] y-position where the animation graphics start relative to the {@link image}
-     * @param {Number} [options.marginX=0] horizontal space between each frame
-     * @param {Number} [options.marginY=0] vertical space between each frame
-     * @param {Number} [options.nFrames=0] number of frames to read horizontally
-     *                                     if less or equal than zero, it will read till the end of the image
-     *                                     if the number of frames is more than the number that can fit in the image horizontally, it will continue reading the next line
-     * @param {Number} [options.frameWidth=0] width of each frame (for all of them)
-     * @param {Number} [options.frameHeight=0] height of each frame (for all of them)
-     * @param {Number} [options.frameCenterX=0] x-position of the center of each frame (for all of them)
-     * @param {Number} [options.frameCenterY=0] y-position of the center of each frame (for all of them)
-     * @param {Number} [options.frameTime=0] duration of the frames in milliseconds (for all of them)
-     * @params {Object[]} [options.frames=undefined] If this option is specified options.nFrames will be overriden with options.frames.length,
-     *                                               and the following properties will override the global ones
-     * @params {Number} [options.frames[].width] width for the specified frame
-     * @params {Number} [options.frames[].height] height for the specified frame
-     * @params {Number} [options.frames[].centerX] x-position of the center of the specified frame
-     * @params {Number} [options.frames[].centerY] y-position of the center of the specified frame
-     * @params {Number} [options.frames[].time] duration of the specified frame
-     * @param {Function} [options.onFinish] callback to execute when the animation finishes (only on NORMAL, REVERSED, PINGPONG)
-     * @param {Function} [options.onChagneDirection] callback to execute when the animation changes the direction of play (only on PINGPONG and LOOP_PINGPONG)
+     * @param {Number}             [options.offsetX=0]                        x-position where the animation graphics start relative to the {@link image}
+     * @param {Number}             [options.offsetY=0]                        y-position where the animation graphics start relative to the {@link image}
+     * @param {Number}             [options.marginX=0]                        horizontal space between each frame
+     * @param {Number}             [options.marginY=0]                        vertical space between each frame
+     * @param {Number}             [options.nFrames=0]                        number of frames to read horizontally
+     *                                                                         if less or equal than zero, it will read till the end of the image
+     *                                                                         if the number of frames is more than the number that can fit in the image horizontally, it will continue reading the next line
+     * @param {Number}             [options.frameWidth=0]                     width of each frame (for all of them)
+     * @param {Number}             [options.frameHeight=0]                    height of each frame (for all of them)
+     * @param {Number}             [options.frameCenterX=0] x-position of the center of each frame (for all of them)
+     * @param {Number}             [options.frameCenterY=0]                   y-position of the center of each frame (for all of them)
+     * @param {Number}             [options.frameTime=0]                      duration of the frames in milliseconds (for all of them)
+     * @params {Object[]}          [options.frames=undefined]                 If this option is specified options.nFrames will be overriden with options.frames.length,
+     *                                                                         and the following properties will override the global ones
+     * @params {Number}            [options.frames[].width]                   width for the specified frame
+     * @params {Number}            [options.frames[].height]                  height for the specified frame
+     * @params {Number}            [options.frames[].x]                       x-position of the top-left corner of the specified frame
+     * @params {Number}            [options.frames[].y]                       y-position of the top-left corner of the specified frame
+     * @params {Number}            [options.frames[].centerX]                 x-position of the center of the specified frame
+     * @params {Number}            [options.frames[].centerY]                 y-position of the center of the specified frame
+     * @params {Number}            [options.frames[].time]                    duration of the specified frame
+     * @param {Function}           [options.onFinish] callback                to execute when the animation finishes (only on NORMAL, REVERSED, PINGPONG)
+     * @param {Function}           [options.onChangeDirection]                callback to execute when the animation changes the direction of play (only on PINGPONG and LOOP_PINGPONG)
      *
      * @requires gc.Util
+     * @requires gc.Validator
      * @uses     gc.exception
      *
      * @constructor
@@ -95,8 +99,7 @@
         // PRIVATE INSTANCE VARS //
         ///////////////////////////
 
-        var self,                   // reference to use the public methods from the private ones
-            _texture,               // image source for the TextureRegion of the frames
+        var _texture,               // image source for the TextureRegion of the frames
             _frames,                // ordered list of frames as [{ src, time }]
             _nFrames,               // cached number of frames (_frameslength)
             _totalTime,             // cached duration of the full animation in millisecs.
@@ -146,10 +149,24 @@
                 opt = gc.util.extend(defaultOptions, options),
                 i, n;
 
-            self = this;
+            validator.reset()
+                     .enumerated('playMode', opt.playMode, { enumerated: PlayMode })
+                     .intPositive('offsetX', opt.offsetX)
+                     .intPositive('offsetY', opt.offsetY)
+                     .intPositive('marginX', opt.marginX)
+                     .intPositive('marginY', opt.marginY)
+                     .int('nFrames', opt.nFrames)
+                     .intPositive('frameWidth', opt.frameWidth)
+                     .intPositive('frameHeight', opt.frameHeight)
+                     .int('frameCenterX', opt.frameCenterX)
+                     .int('frameCenterY', opt.frameCenterY)
+                     .intPositive('frameTime', opt.frameTime)
+                     .animationFrameArray('frames', opt.frames, { optional: true })
+                     .callback('onFinish', opt.onFinish, { optional: true })
+                     .callback('onChangeDirection', opt.onChangeDirection, { optional: true });
 
             _loadFrames(image, opt);
-            self.setPlayMode(opt.playMode, true);
+            this.setPlayMode(opt.playMode, true);
 
             if(opt.onFinish) {
                 if(!gc.util.isArray(opt.onFinish)) {
@@ -393,6 +410,13 @@
          * @public
          */
         this.setPlayMode = function setPlayMode(playMode , reset) {
+            validator.reset()
+                     .enumerated('playMode', playMode, { enumerated: PlayMode });
+
+            if(validator.errors()) {
+                throw new gc.exception.WrongSignatureException("playMode is not a valid gc.Animation.PlayMode");
+            }
+
             _playMode = playMode;
 
             if(reset) {
@@ -575,6 +599,10 @@
          * @public
          */
         this.onFinish = function finish(callback) {
+            if(!gc.util.isFunction(callback)) {
+                throw new gc.exception.WrongSignatureException("callback is not a Function");
+            }
+
             _onFinish.push(callback);
 
             return this;
@@ -590,6 +618,10 @@
          * @public
          */
         this.onChangeDirection = function changeDirection(callback) {
+            if(!gc.util.isFunction(callback)) {
+                throw new gc.exception.WrongSignatureException("callback is not a Function");
+            }
+
             _onChangeDirection.push(callback);
         };
 
