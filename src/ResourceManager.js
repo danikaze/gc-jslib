@@ -83,9 +83,9 @@
          */
         function _construct() {
             _images = {};
-            _fonts = {};
+            _fonts  = {};
             _audios = {};
-            _total = 0;
+            _total  = 0;
             _loaded = 0;
 
             // convert the ResourceManager in a Promise
@@ -131,17 +131,6 @@
         }
 
         /**
-         * Load one single font
-         *
-         * @param   {String} key  Key of the image to load
-         * @param   {Object} data Object with the properties of the image to load
-         *
-         * @private
-         */
-        function _loadFont(key, data) {
-        }
-
-        /**
          * Load one single audio
          *
          * @param   {String} key  Key of the audio to load
@@ -158,6 +147,26 @@
                 _update(key, ResourceType.AUDIO);
             };
             data.tmp.src = data.src;
+        }
+
+        /**
+         * Load one single generic file
+         *
+         * @param   {String}       key  Key of the file to load
+         * @param   {Object}       data Object with the properties of the file to load
+         * @param   {ResourceType} type Type of the object to load
+         *
+         * @private
+         */
+        function _loadFile(key, data, type) {
+            var request = new gc.XHR(data.src);
+            request.done(function() {
+                _loaded += data.size;
+                data.rsc = true;
+                delete data.tmp;
+                _update(key, ResourceType.FONT);
+            });
+            data.tmp = true;
         }
 
         /**
@@ -251,7 +260,7 @@
 
             _deferred.reset();
             _queueResources(_fonts, data);
-            _loadResources(_fonts, _loadFont);
+            _loadResources(_fonts, _loadFile, ResourceType.FONT);
             return this;
         };
 

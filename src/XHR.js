@@ -36,6 +36,13 @@
         DELETE : "DELETE"
     };
 
+    var ReadyState = {
+        UNSENT                   : 0,       // open() has not been called yet.
+        OPENED                   : 1,       // send() has been called.
+        HEADERS_RECEIVED         : 2,       // send() has been called, and headers and status are available.
+        LOADING                  : 3,       // Downloading; responseText holds partial data.
+        DONE                     : 4        // The operation is complete.
+    };
 
     var Status = {
         // success states
@@ -75,7 +82,6 @@
         ///////////////////////////
 
         var _xhr,
-            _timeoutTimer,
             _options,
             _deferred;
 
@@ -98,6 +104,7 @@
                 };
 
             _options = gc.util.extend(defaultOptions, options);
+            _options.url = url;
 
             if(!_options.url) {
                 throw new gc.exception.WrongDataException("URL is not specified");
@@ -120,6 +127,13 @@
 
             _xhr.open(_options.method, _options.url, _options.async);
 
+            if(_options.async && _options.timeout > 0) {
+                _xhr.timeout = _options.timeout;
+
+            } else {
+                _xhr.timeout = 0;
+            }
+
             _xhr.onload = function(progress) {
                 // status 0 is for file protocol (local)
                 if(_xhr.status === 0 || (_xhr.status >= 200 && _xhr.status < 400)) {
@@ -135,6 +149,10 @@
 
             _xhr.onerror = function(progress) {
                 _deferred.reject(progress);
+            };
+
+            _xhr.ontimeout = function(progress) {
+
             };
 
             try {
