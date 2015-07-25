@@ -27,6 +27,7 @@
      * @param {boolean} [options.strict=false]                   true to use strict validation
      * @param {boolean} [options.canonize=true]                  true convert data to its canonical form
      * @param {boolean} [options.returnNullOnErrors=true]        if there is any error, {@link valid} will return null
+     * @param {boolean} [options.optional=false]                 accept undefined values (not null) in the validations
      * @param {Object}  [options.validators={}]                  object with validators to load with addValidator(name, validator)
      * @param {boolean} [options.allowOverwriteValidators=false] if an existing validator is defined and this option is false, an exception will raise
      *
@@ -39,7 +40,6 @@
      * @author @danikaze
      */
     var Validator = function(options) {
-
 
         ///////////////////////////
         // PRIVATE INSTANCE VARS //
@@ -63,6 +63,7 @@
                     strict                  : false,    // strict validation
                     canonize                : true,     // convert data to its canonical form
                     returnNullOnErrors      : true,     // if there are any errors, valid() returns null
+                    optional                : false,    // if true, a undefined value will validate
                     validators              : {},       // object with the default validators to load with addValidator(name, validator)
                     allowOverwriteValidators: false     // if an existing validator is defined and this option is false, an exception will raise
                 },
@@ -72,10 +73,8 @@
             _good = {};
             _bad = {};
 
-            if(gc.util.isPlainObject(_options.validators))
-            {
-                for(v in _options.validators)
-                {
+            if(gc.util.isPlainObject(_options.validators)) {
+                for(v in _options.validators) {
                     this.addValidator(v, _options.validators[v]);
                 }
             }
@@ -91,14 +90,11 @@
          *
          * @private
          */
-        function　_store(key, originalData, canonizedData, validates)
-        {
-            if(validates)
-            {
+        function　_store(key, originalData, canonizedData, validates) {
+            if(validates) {
                 _good[key] = canonizedData;
-            }
-            else
-            {
+
+            } else {
                 _bad[key] = originalData;
             }
         }
@@ -113,11 +109,12 @@
          *
          * @private
          */
-        function _validateData(validator, key, data, options)
-        {
+        function _validateData(validator, key, data, options) {
             var res,
                 extendedOptions = gc.util.extend({}, _options, options);
-            res = validator(data, extendedOptions);
+
+            res = (data === undefined && options.optional) ? res = { data: undefined, valid: true }
+                                                           : validator(data, extendedOptions);
 
             _store(key, data, extendedOptions.canonize ? res.data : data, res.valid);
         }
@@ -133,8 +130,7 @@
          *                             The validator needs to check for options.strict
          * @private
          */
-        function _validateArray(validator, key, data, options)
-        {
+        function _validateArray(validator, key, data, options) {
             var ok = true,
                 extendedOptions = gc.util.extend({}, _options, options),
                 val,
@@ -142,25 +138,25 @@
                 n,
                 i;
 
-            if(gc.util.isArray(data))
-            {
+            if(gc.util.isArray(data)) {
                 val = data.slice();
-                for(i=0; i<val.length; i++)
-                {
+                for(i=0; i<val.length; i++) {
                     res = validator(val[i], extendedOptions);
-                    if(!res.valid)
-                    {
+
+                    if(!res.valid) {
                         ok = false;
                         break;
                     }
-                    if(extendedOptions.canonize)
-                    {
+
+                    if(extendedOptions.canonize) {
                         val[i] = res.data;
                     }
                 }
-            }
-            else
-            {
+
+            } else if(data === undefined && options.optional) {
+                ok = true;
+
+            } else {
                 ok = false;
             }
 
@@ -178,8 +174,7 @@
          *
          * @private
          */
-        function _validateObject(validator, key, data, options)
-        {
+        function _validateObject(validator, key, data, options) {
             var ok = true,
                 extendedOptions = gc.util.extend({}, _options, options),
                 val,
@@ -187,25 +182,25 @@
                 n,
                 i;
 
-            if(gc.util.isPlainObject(data))
-            {
+            if(gc.util.isPlainObject(data)) {
                 val = gc.util.extend(true, {}, data);
-                for(i in val)
-                {
+                for(i in val) {
                     res = validator(val[i], extendedOptions);
-                    if(!res.valid)
-                    {
+
+                    if(!res.valid) {
                         ok = false;
                         break;
                     }
-                    if(extendedOptions.canonize)
-                    {
+
+                    if(extendedOptions.canonize) {
                         val[i] = res.data;
                     }
                 }
-            }
-            else
-            {
+
+            } else if(data === undefined && options.optional) {
+                ok = true;
+
+            } else {
                 ok = false;
             }
 
@@ -223,8 +218,7 @@
          *                  or an object with the original value of each validated data
          * @public
          */
-        this.errors = function errors()
-        {
+        this.errors = function errors() {
             return gc.util.isEmptyObject(_bad) ? null
                                                : _bad;
         };
@@ -240,28 +234,21 @@
          *                       or null if there were errors and returnNullOnErrors option is true
          * @public
          */
-        this.valid = function valid(base)
-        {
+        this.valid = function valid(base) {
             var valid = null,
                 i;
 
-            if(typeof(base) !== 'undefined' && !gc.util.isPlainObject(base))
-            {
+            if(typeof(base) !== 'undefined' && !gc.util.isPlainObject(base)) {
                 throw new gc.exception.WrongParametersException('base needs to be a plain object if specified');
             }
 
-            if(!_options.returnNullOnErrors || gc.util.isEmptyObject(_bad))
-            {
-                if(base)
-                {
-                    for(i in _good)
-                    {
+            if(!_options.returnNullOnErrors || gc.util.isEmptyObject(_bad)) {
+                if(base) {
+                    for(i in _good) {
                         base[i] = _good[i];
                     }
                     valid = base;
-                }
-                else
-                {
+                } else {
                     valid = _good;
                 }
             }
@@ -276,8 +263,7 @@
          *
          * @public
          */
-        this.clear = function clear()
-        {
+        this.reset = function reset() {
             this.clearErrors();
             this.clearValid();
             return this;
@@ -290,8 +276,7 @@
          *
          * @public
          */
-        this.clearErrors = function clearErrors()
-        {
+        this.resetErrors = function resetErrors() {
             _bad = {};
             return this;
         };
@@ -303,7 +288,7 @@
          *
          * @public
          */
-        this.clearValid = function clearValid()
+        this.resetValid = function resetValid()
         {
             _good = {};
             return this;
@@ -328,31 +313,29 @@
          *
          * @public
          */
-        this.addValidator = function addValidator(name, validator)
-        {
+        this.addValidator = function addValidator(name, validator) {
             /*
              * it will be funny if a validator doesn't validate its data ;)
              */
-            if(typeof(name) !== 'string' || typeof(validator) !== 'function')
-            {
-                throw new P.exceptions.WrongParametersException({ name: name, validator: validator });
+            if(!gc.util.isString(name)) {
+                throw new gc.exception.WrongSignatureException("name is not a string");
             }
 
-            if(!_options.allowOverwriteValidators)
-            {
-                if(this[name])
-                {
-                    throw new P.exceptions.WrongParametersException('The method ' + name + ' is already defined');
+            if(!gc.util.isFunction(validator)) {
+                throw new gc.exception.WrongSignatureException("validator is not a function");
+            }
+
+            if(!_options.allowOverwriteValidators) {
+                if(this[name]) {
+                    throw new gc.exception.WrongDataException('The method ' + name + ' is already defined');
                 }
 
-                if(this[name + 'Array'])
-                {
-                    throw new P.exceptions.WrongParametersException('The method ' + name + 'Array is already defined');
+                if(this[name + 'Array']) {
+                    throw new gc.exception.WrongDataException('The method ' + name + 'Array is already defined');
                 }
 
-                if(this[name + 'Object'])
-                {
-                    throw new P.exceptions.WrongParametersException('The method ' + name + 'Object is already defined');
+                if(this[name + 'Object']) {
+                    throw new gc.exception.WrongDataException('The method ' + name + 'Object is already defined');
                 }
             }
 
@@ -362,30 +345,18 @@
 
             // validator for simple data
             this[name] = function(key, data, options) {
-                if(typeof(data) === 'undefined')
-                {
-                    throw new P.exceptions.WrongParametersException();
-                }
                 _validateData(validator, key, data, options);
                 return this;
             };
 
             // validator for array of data
             this[name + 'Array'] = function(key, data, options) {
-                if(typeof(data) === 'undefined')
-                {
-                    throw new P.exceptions.WrongParametersException();
-                }
                 _validateArray(validator, key, data, options);
                 return this;
             };
 
             // validator for object of whatever key => data
             this[name + 'Object'] = function(key, data, options) {
-                if(typeof(data) === 'undefined')
-                {
-                    throw new P.exceptions.WrongParametersException();
-                }
                 _validateObject(validator, key, data, options);
                 return this;
             };
@@ -406,9 +377,7 @@
         window.gc = {};
         gc = window.gc;
     }
-    gc.Validator = function(options) {
-            return new Validator(gc.util.extend(true, { validators: gc.validatorDefinitions }, options));
-        };
+    gc.Validator = Validator;
     gc.util.defineConstant(gc.Validator, "VERSION", VERSION);
 
 } (window, window.gc));
