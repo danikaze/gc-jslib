@@ -5,12 +5,26 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.TextureRegion
+     * @public
+     */
     var VERSION = "1.0.0";
 
     /**
      * Description of the class
      *
-     * @params
+     * @param {Object}  src Source of the image
+     * @param {Integer} x   x-position of the start of the region
+     * @param {Integer} y   y-position of the start of the region
+     * @param {Integer} w   Width of the start of the region
+     * @param {Integer} h   height of the start of the region
+     *
+     * @requires gc.Util
      *
      * @constructor
      * @memberOf gc

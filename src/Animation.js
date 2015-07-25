@@ -22,10 +22,20 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.Animation
+     * @public
+     */
     var VERSION = '1.0.0';
 
     /**
      * Enum: Possible types of Animation
+     *
+     * @requires gc.Util
      *
      * @enum {Number}
      * @readOnly
@@ -70,6 +80,9 @@
      * @params {Number} [options.frames[].time] duration of the specified frame
      * @param {Function} [options.onFinish] callback to execute when the animation finishes (only on NORMAL, REVERSED, PINGPONG)
      * @param {Function} [options.onChagneDirection] callback to execute when the animation changes the direction of play (only on PINGPONG and LOOP_PINGPONG)
+     *
+     * @requires gc.Util
+     * @uses     gc.exception
      *
      * @constructor
      * @memberOf gc
@@ -139,7 +152,7 @@
             self.setPlayMode(opt.playMode, true);
 
             if(opt.onFinish) {
-                if(!gc.isArray(opt.onFinish)) {
+                if(!gc.util.isArray(opt.onFinish)) {
                     opt.onFinish = [opt.onFinish];
                 }
                 _onFinish = opt.onFinish;
@@ -149,7 +162,7 @@
             }
 
             if(opt.onChangeDirection) {
-                if(!gc.isArray(opt.onChangeDirection)) {
+                if(!gc.util.isArray(opt.onChangeDirection)) {
                     opt.onChangeDirection = [opt.onChangeDirection];
                 }
                 _onChangeDirection = opt.onChangeDirection;

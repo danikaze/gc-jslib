@@ -11,6 +11,16 @@
     ////////////////////////
 
     /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.ResourceManager
+     * @public
+     */
+    var VERSION = "1.0.0";
+
+    /**
      * Enum: Type of managed resources
      *
      * @enum {Number}
@@ -24,15 +34,16 @@
         AUDIO : 2,
     };
 
-    var VERSION = "1.0.0";
 
     /**
-     * Description of the class
+     * Resource (assets) Manager
      *
-     * @params
+     * @requires gc.Util
+     * @requires gc.Deferred
+     * @uses     gc.exception
      *
      * @constructor
-     * @memberOf gc
+     * @memberOf gc.ResourceManager
      * @version 1.0.0
      * @author @danikaze
      */

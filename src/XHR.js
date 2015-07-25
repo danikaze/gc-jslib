@@ -11,9 +11,20 @@
     ////////////////////////
 
     /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.XHR
+     * @public
+     */
+    var VERSION = "0.1.0";
+
+    /**
      * Enum: Possible request methods
      *
      * @enum {String}
+     * @readOnly
      * @memberOf gc.XHR
      * @public
      */
@@ -24,6 +35,7 @@
         PUT    : "PUT",
         DELETE : "DELETE"
     };
+
 
     var Status = {
         // success states
@@ -36,7 +48,6 @@
         ABORT       : 5
     };
 
-    var VERSION = "1.0.0";
 
     /**
      * Class for asynchronous comunication over XMLHttpRequests
@@ -47,6 +58,10 @@
      * @param {Method}   [Options.method=Method.GET]    Type of request
      * @param {boolean}  [async=true]                   false if we want the request to be synchronous
      * @param {Integer}  [Options.timeout=30000]        Milliseconds to wait before triggering fail (0, null, false... will disable it)
+     *
+     * @requires gc.Util
+     * @requires gc.Deferred
+     * @uses     gc.exception
      *
      * @constructor
      * @memberOf gc

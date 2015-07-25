@@ -5,6 +5,14 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.Canvas2D
+     * @public
+     */
     var VERSION = "1.0.0";
 
     ///////////////////////////
@@ -122,6 +130,9 @@
      * Wrapper for Canvas2D objects
      *
      * @params {DOM} canvas DOM element of the canvas object
+     *
+     * @requires gc.Util
+     * @uses     gc.TextureRegion
      *
      * @constructor
      * @memberOf gc

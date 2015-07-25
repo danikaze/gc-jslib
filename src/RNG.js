@@ -14,12 +14,22 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.RNG
+     * @public
+     */
     var VERSION = "1.0.0";
 
     /**
      * Random Number Generator
      *
      * @param {Integer} seed Initial seed for the pseudo-random number generator
+     *
+     * @requires gc.Util
      *
      * @constructor
      * @memberOf gc

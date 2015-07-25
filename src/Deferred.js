@@ -10,6 +10,14 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.Deferred
+     * @public
+     */
     var VERSION = "1.0.0";
 
     /**
@@ -27,6 +35,9 @@
 
     /**
      * Deferred implementation for asynchronous methods
+     *
+     * @requires gc.Util
+     * @uses     gc.exception
      *
      * @constructor
      * @memberOf gc

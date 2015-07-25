@@ -5,6 +5,14 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.Validator
+     * @public
+     */
     var VERSION = "1.0.0";
 
     /**
@@ -21,6 +29,9 @@
      * @param {boolean} [options.returnNullOnErrors=true]        if there is any error, {@link valid} will return null
      * @param {Object}  [options.validators={}]                  object with validators to load with addValidator(name, validator)
      * @param {boolean} [options.allowOverwriteValidators=false] if an existing validator is defined and this option is false, an exception will raise
+     *
+     * @requires  gc.Util
+     * @uses      gc.exception
      *
      * @constructor
      * @memberOf gc

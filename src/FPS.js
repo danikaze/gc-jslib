@@ -5,6 +5,14 @@
     // STATIC PUBLIC VARS //
     ////////////////////////
 
+    /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.FPS
+     * @public
+     */
     var VERSION = "1.0.0";
 
 
@@ -18,7 +26,9 @@
      * @param {Function} [options.update=undefined]        function called when the fps counter is updated
      * @param {Number} [options.x=0]                       x-position for the text, used by {@link draw}
      * @param {Number} [options.y=0]                       y-position for the text, used by {@link draw}
-     * @param {gc.Align} [options.align=gc.Alicn.TOP_LEFT] alineation for the text, used by {@link draw}
+     * @param {gc.Align} [options.align=gc.Align.TOP_LEFT] alineation for the text, used by {@link draw}
+     *
+     * @requires gc.Util
      *
      * @constructor
      * @memberOf gc
