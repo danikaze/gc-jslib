@@ -56,10 +56,10 @@
             _fonts,
             _audios;
 
-        var _total,         // total size (or number of elements) of ALL the resources
-            _loaded,        // total bytes (or number of elements) loaded for ALL the type of resources
-            _onUpdate,      // list of callbacks to execute when an element is loaded
-            _onFinish;      // list of callbacks to execute when all the elements are loaded
+        var _total,         // Total size (or number of elements) of ALL the resources
+            _loaded,        // Total bytes (or number of elements) loaded for ALL the type of resources
+            _deferred;      // Deferred object to manage callbacks
+
 
         /////////////////////
         // PRIVATE METHODS //
@@ -76,8 +76,10 @@
             _audios = {};
             _total = 0;
             _loaded = 0;
-            _onUpdate = [];
-            _onFinish = [];
+
+            // convert the ResourceManager in a Promise
+            _deferred = new gc.Deferred();
+            _deferred.promise(this);
         };
 
         /**
@@ -91,14 +93,10 @@
         function _update(key, type) {
             var i, n;
 
-            for(i=0, n=_onUpdate.length; i<n; i++) {
-                _onUpdate[i](_loaded/_total, key, type);
-            };
+            _deferred.notify(_loaded/_total, key, type);
 
             if(_loaded === _total) {
-                for(i=0, n=_onFinish.length; i<n; i++) {
-                    _onFinish[i](_loaded/_total, key, type);
-                };
+                _deferred.resolve(_loaded/_total, key, type);
             }
         }
 
@@ -199,48 +197,10 @@
             };
         }
 
+
         ////////////////////
         // PUBLIC METHODS //
         ////////////////////
-
-        /**
-         * Add a callback to be executed on a status update
-         *
-         * @param  {Function} callback Function to execute
-         * @return {this}              Self object to allow chaining
-         *
-         * @public
-         */
-        this.onUpdate = function update(callback) {
-
-            if(!gc.util.isFunction(callback)) {
-                throw gc.exception.WrongSignatureException("callback is not a Function");
-            }
-
-            _onUpdate.push(callback);
-
-            return this;
-        };
-
-        /**
-         * Add a callback to be executed when all the resources are loaded
-         * This can happen more than once (i.e. loading more resources after the first batch is loaded)
-         *
-         * @param  {Function} callback Function to execute
-         * @return {this}              Self object to allow chaining
-         *
-         * @public
-         */
-        this.onFinish = function finish(callback) {
-
-            if(!gc.util.isFunction(callback)) {
-                throw gc.exception.WrongSignatureException("callback is not a Function");
-            }
-
-            _onFinish.push(callback);
-
-            return this;
-        };
 
         /**
          * Load images
@@ -256,10 +216,8 @@
             if(!gc.util.isPlainObject(data)) {
                 throw gc.exception.WrongSignatureException("data is not an Object");
             }
-            if(gc.util.isEmptyObject(data)) {
-                throw gc.exception.WrongDataException("data is empty");
-            }
 
+            _deferred.reset();
             _queueResources(_images, data);
             _loadResources(_images, _loadImage);
             return this;
@@ -279,10 +237,8 @@
             if(!gc.util.isPlainObject(data)) {
                 throw gc.exception.WrongSignatureException("data is not an Object");
             }
-            if(gc.util.isEmptyObject(data)) {
-                throw gc.exception.WrongDataException("data is empty");
-            }
 
+            _deferred.reset();
             _queueResources(_fonts, data);
             _loadResources(_fonts, _loadFont);
             return this;
@@ -302,10 +258,8 @@
             if(!gc.util.isPlainObject(data)) {
                 throw gc.exception.WrongSignatureException("data is not an Object");
             }
-            if(gc.util.isEmptyObject(data)) {
-                throw gc.exception.WrongDataException("data is empty");
-            }
 
+            _deferred.reset();
             _queueResources(_audios, data);
             _loadResources(_audios, _loadAudio);
             return this;
@@ -327,9 +281,7 @@
                 throw gc.exception.WrongSignatureException("data is not an Object");
             }
 
-            if(gc.util.isEmptyObject(data)) {
-                throw gc.exception.WrongDataException("data is empty");
-            }
+            _deferred.reset();
 
             // queue
             if(data[ResourceType.IMAGE]) {
@@ -390,7 +342,7 @@
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);
-    }
+    };
 
 
     ///////////////////////////////
