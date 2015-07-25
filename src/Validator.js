@@ -384,7 +384,7 @@
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);
-    }
+    };
 
 
     ///////////////////////////////

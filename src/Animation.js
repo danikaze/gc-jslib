@@ -582,7 +582,7 @@
 
         // call the constructor
         _construct.apply(this, arguments);
-    }
+    };
 
     ///////////////////////////////
     // Export the public objects //
