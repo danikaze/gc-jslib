@@ -264,8 +264,8 @@
          * @public
          */
         this.reset = function reset() {
-            this.clearErrors();
-            this.clearValid();
+            this.resetErrors();
+            this.resetValid();
             return this;
         };
 
