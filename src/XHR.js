@@ -5,6 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
+    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.XHR });
 
     ////////////////////////
     // STATIC PUBLIC VARS //
@@ -64,7 +65,7 @@
      * @param {Object}   [Options.data={}]              Parameters to send
      * @param {Method}   [Options.method=Method.GET]    Type of request
      * @param {boolean}  [async=true]                   false if we want the request to be synchronous
-     * @param {Integer}  [Options.timeout=30000]        Milliseconds to wait before triggering fail (0, null, false... will disable it)
+     * @param {Integer}  [Options.timeout=30000]        Milliseconds to wait before triggering fail (0 will disable it)
      *
      * @requires gc.Util
      * @requires gc.Deferred
@@ -104,11 +105,23 @@
                 };
 
             _options = gc.util.extend(defaultOptions, options);
-            _options.url = url;
 
+            // data validation :start
             if(!_options.url) {
                 throw new gc.exception.WrongDataException("URL is not specified");
             }
+
+            _validator.reset()
+                      .enumerated('method', _options.method, { enumerated: Method })
+                      .bool('async', _options.async)
+                      .intPositive('timeout', _options.timeout);
+
+            if(_validator.errors()) {
+                throw new gc.exception.WrongDataException(_validator.errors());
+            }
+            _options = _validator.valid();
+            _options.url = url;
+            // data validation :end
 
             // convert the XHR in a Promise
             _deferred = new gc.Deferred();

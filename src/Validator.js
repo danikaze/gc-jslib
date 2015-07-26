@@ -113,8 +113,8 @@
             var res,
                 extendedOptions = gc.util.extend({}, _options, options);
 
-            res = (data === undefined && options.optional) ? res = { data: undefined, valid: true }
-                                                           : validator(data, extendedOptions);
+            res = (data === undefined && extendedOptions.optional) ? res = { data: undefined, valid: true }
+                                                                   : validator(data, extendedOptions);
 
             _store(key, data, extendedOptions.canonize ? res.data : data, res.valid);
         }
@@ -153,7 +153,7 @@
                     }
                 }
 
-            } else if(data === undefined && options.optional) {
+            } else if(data === undefined && extendedOptions.optional) {
                 ok = true;
 
             } else {
@@ -197,7 +197,7 @@
                     }
                 }
 
-            } else if(data === undefined && options.optional) {
+            } else if(data === undefined && extendedOptions.optional) {
                 ok = true;
 
             } else {

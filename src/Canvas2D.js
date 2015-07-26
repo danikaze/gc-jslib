@@ -160,11 +160,11 @@
          */
         function _construct(canvas) {
             if(!canvas) {
-                throw "Needs a canvas element as parameter";
+                throw new gc.exception.WrongSignatureException("canvas is not specified");
             }
 
             if(!canvas.getContext) {
-                throw "canvas.getContext is not supported";
+                throw new gc.exception.NotImplementedException("canvas.getContext is not supported");
             }
 
             _ctx = canvas.getContext("2d");

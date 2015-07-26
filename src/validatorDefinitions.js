@@ -13,22 +13,25 @@
             'float'         : validatorFloat,
             'floatPositive' : validatorFloatPositive,
             'str'           : validatorStr,
-            'strNonEmpty'   : validatorStrNonEmpty,
+            'strNotEmpty'   : validatorStrNotEmpty,
             'callback'      : validatorCallback,
             'enumerated'    : validatorEnumerated
-        },
-        // Animation validators
-        AnimationValidators = gc.util.extend({
-            'animationFrame': validatorAnimationFrame
-        }, basicValidators);
+        };
 
     // declare the different validators object used by each class
     gc.validatorDefinitions = {
-        Animation: AnimationValidators
+        Animation: gc.util.extend({
+                'animationFrame': validatorAnimationFrame
+            }, basicValidators),
+        FPS: basicValidators,
+        ResourceManager: gc.util.extend({
+                'resourceDefinition': validatorResourceDefinition
+            }),
+        XHR: basicValidators
     };
 
     // validator object used to validate other objects
-    var validator = new gc.Validator({ validators: basicValidators });
+    var _validator = new gc.Validator({ validators: basicValidators });
 
     /*
      * Generic Boolean data validator
@@ -111,7 +114,7 @@
     /*
      * Generic non-empty String validator
      */
-    function validatorStrNonEmpty(data, options) {
+    function validatorStrNotEmpty(data, options) {
         var val = String(data),
             ok = data != null && (!options.strict || gc.util.isString(data)) && data.length > 0;
 
@@ -174,17 +177,17 @@
             ok = false;
 
         if(gc.util.isPlainObject(data)) {
-            validator.reset()
-                     .intPositive('x', data.x, { optional: true })
-                     .intPositive('y', data.y, { optional: true })
-                     .intPositive('width', data.width, { optional: true })
-                     .intPositive('height', data.height, { optional: true })
-                     .intPositive('centerX', data.centerX, { optional: true })
-                     .intPositive('centerY', data.centerY, { optional: true })
-                     .intPositive('time', data.time, { optional: true });
+            _validator.reset()
+                      .intPositive('x', data.x, { optional: true })
+                      .intPositive('y', data.y, { optional: true })
+                      .intPositive('width', data.width, { optional: true })
+                      .intPositive('height', data.height, { optional: true })
+                      .intPositive('centerX', data.centerX, { optional: true })
+                      .intPositive('centerY', data.centerY, { optional: true })
+                      .intPositive('time', data.time, { optional: true });
 
-            ok = !validator.errors();
-            val = validator.valid();
+            ok = !_validator.errors();
+            val = _validator.valid();
         }
 
         return {
@@ -193,5 +196,30 @@
         };
     }
 
+    ////////////////////////////////
+    // ResourceManager Validators //
+    ////////////////////////////////
+
+    /*
+     *
+     */
+    function validatorResourceDefinition(data, options) {
+        var val = null,
+            ok = false;
+
+        if(gc.util.isPlainObject(data)) {
+            _validator.reset()
+                      .strNotEmpty('src', data.src)
+                      .intPositive('size', data.size, { optional: true });
+
+            ok = !_validator.errors();
+            val = _validator.valid();
+        }
+
+        return {
+            data: val,
+            valid: ok
+        };
+    }
 
 } (window.gc));

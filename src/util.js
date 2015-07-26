@@ -269,7 +269,13 @@
             if(Util.isPlainObject(o)) {
                 for(p in o) {
                     if(o[p] !== undefined) {
-                        if(recursive) {
+                        if(recursive && typeof o[p] === "object") {
+                            if(Util.isPlainObject(o[p]) !== Util.isPlainObject(base[o])) {
+                                base[p] = {};
+
+                            } else if(Util.isArray(o[p]) !== Util.isArray(base[o])) {
+                                base[p] = [];
+                            }
                             Util.extend(true, base[p], o[p]);
                         } else {
                             base[p] = o[p];

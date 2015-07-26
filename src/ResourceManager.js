@@ -5,6 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
+    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.ResourceManager });
 
     ////////////////////////
     // STATIC PUBLIC VARS //
@@ -40,6 +41,7 @@
      *
      * @requires gc.Util
      * @requires gc.Deferred
+     * @requires gc.Validator
      * @uses     gc.exception
      *
      * @constructor
@@ -217,6 +219,14 @@
             };
         }
 
+        function _validateResourceDefinition(data) {
+            _validator.reset()
+                      .resourceDefinitionObject('data', data);
+
+            if(_validator.errors()) {
+                throw new gc.exception.WrongDataException(_validator.errors());
+            }
+        }
 
         ////////////////////
         // PUBLIC METHODS //
@@ -233,9 +243,7 @@
          * @public
          */
         this.loadImages = function loadImages(data) {
-            if(!gc.util.isPlainObject(data)) {
-                throw gc.exception.WrongSignatureException("data is not an Object");
-            }
+            _validateResourceDefinition(data);
 
             _deferred.reset();
             _queueResources(_images, data);
@@ -246,17 +254,15 @@
         /**
          * Load Fonts
          *
-         * @param  {Object} data        Object of the fonts to ask as {key:resourceData}
-         * @param  {String} data.src    Source of the font (usually a URL)
-         * @param  {Number} [data.size] Size of the font
-         * @return {this}               Self object to allow chaining
+         * @param  {Object} data          Object of the fonts to ask as {key:resourceData}
+         * @param  {String} data.src      Source of the font (usually a URL)
+         * @param  {Number} [data.size=1] Size of the font
+         * @return {this}                 Self object to allow chaining
          *
          * @public
          */
         this.loadFonts = function loadFonts(data) {
-            if(!gc.util.isPlainObject(data)) {
-                throw gc.exception.WrongSignatureException("data is not an Object");
-            }
+            _validateResourceDefinition(data);
 
             _deferred.reset();
             _queueResources(_fonts, data);
@@ -275,9 +281,7 @@
          * @public
          */
         this.loadAudios = function loadAudios(data) {
-            if(!gc.util.isPlainObject(data)) {
-                throw gc.exception.WrongSignatureException("data is not an Object");
-            }
+            _validateResourceDefinition(data);
 
             _deferred.reset();
             _queueResources(_audios, data);
@@ -288,11 +292,11 @@
         /**
          * Load resources
          *
-         * @param  {Object} data                                 Definitions of the resources to load
-         * @param  {Object} [data[ResourceType.IMAGE]=undefined] Object accepted by {@link loadImages}
-         * @param  {Object} [data[ResourceType.FONT]=undefined]  Object accepted by {@link loadFonts}
-         * @param  {Object} [data[ResourceType.AUDIO]=undefined] Object accepted by {@link loadAudios}
-         * @return {this}                                        Self object to allow chaining
+         * @param  {Object} data                       Definitions of the resources to load
+         * @param  {Object} [data[ResourceType.IMAGE]] Object accepted by {@link loadImages}
+         * @param  {Object} [data[ResourceType.FONT]]  Object accepted by {@link loadFonts}
+         * @param  {Object} [data[ResourceType.AUDIO]] Object accepted by {@link loadAudios}
+         * @return {this}                              Self object to allow chaining
          *
          * @public
          */

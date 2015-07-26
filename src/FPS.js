@@ -1,6 +1,12 @@
 ;(function(window, document, gc, undefined) {
     "use strict";
 
+    /////////////////////////
+    // STATIC PRIVATE VARS //
+    /////////////////////////
+
+    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.FPS });
+
     ////////////////////////
     // STATIC PUBLIC VARS //
     ////////////////////////
@@ -20,15 +26,16 @@
      * FPS for measuring Frames per Second.
      *
      * @param {Object}                                     options List of options to override
-     * @param {Number} [options.updateDelay=1000]          Time between updates (in milliseconds)
-     * @param {String} [options.font=12 px Arial]          style used by {@link FPS#draw}
-     * @param {String} [options.fillStyle=#FFFF00]         font color style used by {@link draw}
+     * @param {Number}   [options.updateDelay=1000]        Time between updates (in milliseconds)
+     * @param {String}   [options.font=12 px Arial]        style used by {@link FPS#draw}
+     * @param {String}   [options.fillStyle=#FFFF00]       font color style used by {@link draw}
      * @param {Function} [options.update=undefined]        function called when the fps counter is updated
-     * @param {Number} [options.x=0]                       x-position for the text, used by {@link draw}
-     * @param {Number} [options.y=0]                       y-position for the text, used by {@link draw}
+     * @param {Number}   [options.x=0]                     x-position for the text, used by {@link draw}
+     * @param {Number}   [options.y=0]                     y-position for the text, used by {@link draw}
      * @param {gc.Align} [options.align=gc.Align.TOP_LEFT] alineation for the text, used by {@link draw}
      *
      * @requires gc.Util
+     * @requires gc.Validator
      *
      * @constructor
      * @memberOf gc
@@ -44,15 +51,7 @@
         var _nextUpdateTime = 0,        // next time the _fps value will be updated
             _fpsCount = 0,              // count of fps for this update
             _fps,                       // cached fps until the next update
-            _options = {                // {@see constructor}
-                updateDelay: 1000,
-                update: undefined,
-                font: "12px Arial",
-                fillStyle: "#FFFF00",
-                x: 0,
-                y: 0,
-                align: gc.Align.TOP_LEFT
-            };
+            _options;
 
         /////////////////////
         // PRIVATE METHODS //
@@ -64,7 +63,33 @@
          * @private
          */
         function _construct(options) {
-            gc.util.extend(_options, options);
+            var defaultOptions = {
+                    updateDelay: 1000,
+                    update: undefined,
+                    font: "12px Arial",
+                    fillStyle: "#FFFF00",
+                    x: 0,
+                    y: 0,
+                    align: gc.Align.TOP_LEFT
+                };
+
+            _options = gc.util.extend(defaultOptions, options);
+
+            // data validation :start
+            _validator.reset()
+                      .intPositive('updateDelay', _options.updateDelay)
+                      .callback('update', _options.update, { optional: true })
+                      .str('font', _options.font)
+                      .str('fillStyle', _options.fillStyle)
+                      .int('x', _options.x)
+                      .int('y', _options.y)
+                      .enumerated('align', _options.align, { enumerated: gc.Align });
+
+            if(_validator.errors()) {
+                throw new gc.exception.WrongDataException(_validator.errors());
+            }
+            _options = _validator.valid();
+            // data validation :end
         }
 
         ////////////////////

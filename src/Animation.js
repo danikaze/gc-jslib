@@ -17,7 +17,7 @@
             RANDOM: 2
         };
 
-    var validator = new gc.Validator({ validators: gc.validatorDefinitions.Animation });
+    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.Animation });
 
     ////////////////////////
     // STATIC PUBLIC VARS //
@@ -149,21 +149,28 @@
                 opt = gc.util.extend(defaultOptions, options),
                 i, n;
 
-            validator.reset()
-                     .enumerated('playMode', opt.playMode, { enumerated: PlayMode })
-                     .intPositive('offsetX', opt.offsetX)
-                     .intPositive('offsetY', opt.offsetY)
-                     .intPositive('marginX', opt.marginX)
-                     .intPositive('marginY', opt.marginY)
-                     .int('nFrames', opt.nFrames)
-                     .intPositive('frameWidth', opt.frameWidth)
-                     .intPositive('frameHeight', opt.frameHeight)
-                     .int('frameCenterX', opt.frameCenterX)
-                     .int('frameCenterY', opt.frameCenterY)
-                     .intPositive('frameTime', opt.frameTime)
-                     .animationFrameArray('frames', opt.frames, { optional: true })
-                     .callback('onFinish', opt.onFinish, { optional: true })
-                     .callback('onChangeDirection', opt.onChangeDirection, { optional: true });
+            // data validation :start
+            _validator.reset()
+                      .enumerated('playMode', opt.playMode, { enumerated: PlayMode })
+                      .intPositive('offsetX', opt.offsetX)
+                      .intPositive('offsetY', opt.offsetY)
+                      .intPositive('marginX', opt.marginX)
+                      .intPositive('marginY', opt.marginY)
+                      .int('nFrames', opt.nFrames)
+                      .intPositive('frameWidth', opt.frameWidth)
+                      .intPositive('frameHeight', opt.frameHeight)
+                      .int('frameCenterX', opt.frameCenterX)
+                      .int('frameCenterY', opt.frameCenterY)
+                      .intPositive('frameTime', opt.frameTime)
+                      .animationFrameArray('frames', opt.frames, { optional: true })
+                      .callback('onFinish', opt.onFinish, { optional: true })
+                      .callback('onChangeDirection', opt.onChangeDirection, { optional: true });
+
+            if(_validator.errors()) {
+                throw new gc.exception.WrongDataException(_validator.errors());
+            }
+            opt = _validator.valid();
+            // data validation :end
 
             _loadFrames(image, opt);
             this.setPlayMode(opt.playMode, true);
@@ -410,10 +417,10 @@
          * @public
          */
         this.setPlayMode = function setPlayMode(playMode , reset) {
-            validator.reset()
-                     .enumerated('playMode', playMode, { enumerated: PlayMode });
+            _validator.reset()
+                      .enumerated('playMode', playMode, { enumerated: PlayMode });
 
-            if(validator.errors()) {
+            if(_validator.errors()) {
                 throw new gc.exception.WrongSignatureException("playMode is not a valid gc.Animation.PlayMode");
             }
 
