@@ -53,7 +53,7 @@ Temporary Items
 # Project Files
 # =========================
 docs
-jsdoc-generate.bat
 *.SUBLIME-PROJECT
 *.SUBLIME-WORKSPACE
 src/_template_.js
+node_modules
