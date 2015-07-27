@@ -27,12 +27,12 @@
      *
      * @param {Object}                                     options List of options to override
      * @param {Number}   [options.updateDelay=1000]        Time between updates (in milliseconds)
-     * @param {String}   [options.font=12 px Arial]        style used by {@link FPS#draw}
-     * @param {String}   [options.fillStyle=#FFFF00]       font color style used by {@link draw}
+     * @param {String}   [options.font=12 px Arial]        style used by {@link gc.FPS#draw}
+     * @param {String}   [options.fillStyle=#FFFF00]       font color style used by {@link gc.FPS#draw}
      * @param {Function} [options.update=undefined]        function called when the fps counter is updated
-     * @param {Number}   [options.x=0]                     x-position for the text, used by {@link draw}
-     * @param {Number}   [options.y=0]                     y-position for the text, used by {@link draw}
-     * @param {gc.Align} [options.align=gc.Align.TOP_LEFT] alineation for the text, used by {@link draw}
+     * @param {Number}   [options.x=0]                     x-position for the text, used by {@link gc.FPS#draw}
+     * @param {Number}   [options.y=0]                     y-position for the text, used by {@link gc.FPS#draw}
+     * @param {gc.Align} [options.align=gc.Align.TOP_LEFT] alineation for the text, used by {@link gc.FPS#draw}
      *
      * @requires gc.Util
      * @requires gc.Validator
@@ -101,10 +101,10 @@
          * If only <var>key</var> is specified, acts as a getter
          * If <var>value</var> is specified too, acts as a setter
          *
-         * @param {String} key   Name of the option to get/set
-         * @param {mixed}  value New value for the option specified by key
+         * @param {String}        key   Name of the option to get/set
+         * @param {mixed}         value New value for the option specified by key
          *
-         * @return {this|mixed} this to allow chaining for the setter, the asked value for the getter
+         * @return {gc.FPS|mixed}       this to allow chaining for the setter, the asked value for the getter
          * @public
          */
         this.option = function option(key, value) {
@@ -128,8 +128,8 @@
          * Update the FPS.
          * Needed to be called in each frame of the main loop.
          *
-         * @param  {DOMHighResTimeStamp} now milliseconds of the current time
-         * @return {this}                Self object for allowing chaining
+         * @param  {DOMHighResTimeStamp}   now milliseconds of the current time
+         * @return {gc.FPS}                Self object for allowing chaining
          *
          * @public
          */
@@ -163,8 +163,8 @@
         /**
          * Draw a text with the most recent calculated FPS
          *
-         * @param  {CanvasRenderingContext2D} ctx Where to draw
-         * @return {this}                     Self object for allowing chaining
+         * @param  {CanvasRenderingContext2D}   ctx Where to draw
+         * @return {gc.FPS}                     Self object for allowing chaining
          *
          * @public
          */

@@ -45,7 +45,7 @@
      * @uses     gc.exception
      *
      * @constructor
-     * @memberOf gc.ResourceManager
+     * @memberOf gc
      * @version 1.0.0
      * @author @danikaze
      */
@@ -238,7 +238,7 @@
          * @param  {Object} data          Object of the images to ask as {key:resourceData}
          * @param  {String} data.src      Source of the image (usually a URL)
          * @param  {Number} [data.size=1] Size of the image
-         * @return {this}                 Self object to allow chaining
+         * @return {gc.ResourceManager}   Self object to allow chaining
          *
          * @public
          */
@@ -257,7 +257,7 @@
          * @param  {Object} data          Object of the fonts to ask as {key:resourceData}
          * @param  {String} data.src      Source of the font (usually a URL)
          * @param  {Number} [data.size=1] Size of the font
-         * @return {this}                 Self object to allow chaining
+         * @return {gc.ResourceManager}   Self object to allow chaining
          *
          * @public
          */
@@ -276,7 +276,7 @@
          * @param  {Object} data          Object of the audio files to ask as {key:resourceData}
          * @param  {String} data.src      Source of the audio (usually a URL)
          * @param  {Number} [data.size=1] Size of the audio
-         * @return {this}                 Self object to allow chaining
+         * @return {gc.ResourceManager}   Self object to allow chaining
          *
          * @public
          */
@@ -293,10 +293,10 @@
          * Load resources
          *
          * @param  {Object} data                       Definitions of the resources to load
-         * @param  {Object} [data[ResourceType.IMAGE]] Object accepted by {@link loadImages}
-         * @param  {Object} [data[ResourceType.FONT]]  Object accepted by {@link loadFonts}
-         * @param  {Object} [data[ResourceType.AUDIO]] Object accepted by {@link loadAudios}
-         * @return {this}                              Self object to allow chaining
+         * @param  {Object} [data[ResourceType.IMAGE]] Object accepted by {@link gc.ResourceManager#loadImages}
+         * @param  {Object} [data[ResourceType.FONT]]  Object accepted by {@link gc.ResourceManager#loadFonts}
+         * @param  {Object} [data[ResourceType.AUDIO]] Object accepted by {@link gc.ResourceManager#loadAudios}
+         * @return {gc.ResourceManager}                Self object to allow chaining
          *
          * @public
          */

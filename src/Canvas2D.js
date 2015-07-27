@@ -52,16 +52,16 @@
          * Method to draw all kind of supported images (not only the default ones but also gc.TextureRegion s) too
          * As need to see which kind of image is it, it's better to call the original method (like ctx.drawImage or {@link TextureRegion#draw}) directly
          *
-         * @param  {Image|gc.TextureRegion} image Image or TextureRegion to draw
-         * @param  {Number} sx              source image x-offset
-         * @param  {Number} sy              source image y-offset
-         * @param  {Number} sw              source image width
-         * @param  {Number} sh              source image height
-         * @param  {Number} dx              destination x-position
-         * @param  {Number} dy              destination y-position
-         * @param  {Number} dw              destination width
-         * @param  {Number} dh              destination height
-         * @return {this}                   The own decorated context to allow chaining
+         * @param  {Image|gc.TextureRegion}   image Image or TextureRegion to draw
+         * @param  {Number} sx                source image x-offset
+         * @param  {Number} sy                source image y-offset
+         * @param  {Number} sw                source image width
+         * @param  {Number} sh                source image height
+         * @param  {Number} dx                destination x-position
+         * @param  {Number} dy                destination y-position
+         * @param  {Number} dw                destination width
+         * @param  {Number} dh                destination height
+         * @return {CanvasRenderingContext2D} The own decorated context to allow chaining
          *
          * @public
          */

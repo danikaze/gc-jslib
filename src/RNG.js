@@ -144,7 +144,7 @@
         /**
          * Reset the state of the generator to the first number of the seed
          *
-         * @return {this} Self object to allow chaining
+         * @return {gc.RNG} Self object to allow chaining
          *
          * @public
          */
@@ -167,7 +167,7 @@
         /**
          * Set the seed (initial state) of the generator, and resets it
          *
-         * @return {this} Self object to allow chaining
+         * @return {gc.RNG} Self object to allow chaining
          *
          * @public
          */
@@ -178,7 +178,7 @@
 
         /**
          * Get the state (number of numbers generated) of the generator.
-         * With {@link setState} allow storing and recovering the state of the generator
+         * With {@link gc.RNG#setState} allow storing and recovering the state of the generator
          *
          * @return {Integer} state of the generator
          *
@@ -191,7 +191,7 @@
         /**
          * Set the state of the generator to N generations
          *
-         * @return {this} Self object to allow chaining
+         * @return {gc.RNG} Self object to allow chaining
          *
          * @public
          */

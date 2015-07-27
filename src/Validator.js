@@ -26,7 +26,7 @@
      * @param {Object}  options                                  list of options to override the default ones
      * @param {boolean} [options.strict=false]                   true to use strict validation
      * @param {boolean} [options.canonize=true]                  true convert data to its canonical form
-     * @param {boolean} [options.returnNullOnErrors=true]        if there is any error, {@link valid} will return null
+     * @param {boolean} [options.returnNullOnErrors=true]        if there is any error, {@link gc.Validator#valid} will return null
      * @param {boolean} [options.optional=false]                 accept undefined values (not null) in the validations
      * @param {Object}  [options.validators={}]                  object with validators to load with addValidator(name, validator)
      * @param {boolean} [options.allowOverwriteValidators=false] if an existing validator is defined and this option is false, an exception will raise
@@ -81,7 +81,7 @@
         };
 
         /**
-         * Stores the data to be retrieved via {@link valid} and {@link error}
+         * Stores the data to be retrieved via {@link gc.Validator#valid} and {@link gc.Validator#error}
          *
          * @param {String}  key           key to access data
          * @param {mixed}   originalData  data as passed to validate
@@ -259,7 +259,7 @@
         /**
          * Clear the list of errors and validated data stored in the validator
          *
-         * @return {this} Self object for allowing chaining
+         * @return {gc.Validator} Self object for allowing chaining
          *
          * @public
          */
@@ -272,7 +272,7 @@
         /**
          * Clear the list of errors stored in the validator
          *
-         * @return {this} Self object for allowing chaining
+         * @return {gc.Validator} Self object for allowing chaining
          *
          * @public
          */
@@ -284,7 +284,7 @@
         /**
          * Clear the list of validated data stored in the validator
          *
-         * @return {this} Self object for allowing chaining
+         * @return {gc.Validator} Self object for allowing chaining
          *
          * @public
          */
@@ -309,7 +309,7 @@
          *                              return object:
          *                                  data: a copy of the data, canonized
          *                                  valid: a boolean telling if it validated or not
-         * @return {this}               Self object for allowing chaining
+         * @return {gc.Validator}       Self object for allowing chaining
          *
          * @public
          */

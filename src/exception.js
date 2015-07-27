@@ -15,7 +15,8 @@
          * NotImplementedException
          * Raised when a method or part of a method that is not implemented is called.
          *
-         * @param {Object} data Usually the name of the not implemented method or property
+         * @param {mixed} data Usually the name of the not implemented method or property
+         *
          * @constructor
          * @memberOf gc.exception
          */
@@ -28,7 +29,8 @@
          * IndexOutOfBoundsException
          * Raised when an index is out of the bounds of an array.
          *
-         * @param {Object} data Extra data to include in the exception for debug
+         * @param {mixed} data Extra data to include in the exception for debug
+         *
          * @constructor
          * @memberOf gc.exception
          */
@@ -41,10 +43,11 @@
          * WrongSignatureException
          * Raised when calling a method with the wrong number or type of parameters.
          *
-         * @param {Object} data Extra data to include in the exception for debug
+         * @param {mixed} data Extra data to include in the exception for debug
+         *
          * @constructor
          * @memberOf gc.exception
-         * @see WrongDataException
+         * @see gc.exception.WrongDataException
          */
         WrongSignatureException: function WrongSignatureException(data) {
             this.data = data;
@@ -55,10 +58,11 @@
          * WrongDataException
          * Raised when a method is called with the correct parameters but the specified data is wrong.
          *
-         * @param {Object} data Extra data to include in the exception for debug
+         * @param {mixed} data Extra data to include in the exception for debug
+         *
          * @constructor
          * @memberOf gc.exception
-         * @see WrongSignatureException
+         * @see gc.exception.WrongSignatureException
          */
         WrongDataException: function WrongDataException(data) {
             this.data = data;

@@ -1,0 +1,37 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+
+    "plugins": [
+        "plugins/markdown"
+    ],
+
+    "templates": {
+        "systemName"            : "gc-jslib",
+        "cleverLinks"           : true,
+        "monospaceLinks"        : true,
+        "default"               : {
+            "outputSourceFiles": true
+        },
+        "navType"               : "vertical",
+        "theme"                 : "flatly",
+        "linenums"              : true,
+        "collapseSymbols"       : false,
+        "inverseNav"            : true,
+        "copyright"             : "Copyright © 2015 @danikaze",
+        "footer"                : "",
+        "protocol"              : "html://",
+        "highlightTutorialCode" : true
+    },
+
+    "opts": {
+        "template": "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template"
+    },
+
+    "markdown": {
+        "parser": "gfm",
+        "hardwrap" : true
+    }
+}

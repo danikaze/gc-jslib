@@ -57,7 +57,7 @@
     /**
      * Animation class to use with canvas
      *
-     * @param {Object}             image                                      Image object accepted by CanvasRenderingContext2D#drawImage()
+     * @param {Object}             image                                      Image object accepted by {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D|CanvasRenderingContext2D#drawImage}
      * @param {Object}             options                                    options to customize the animation
      * @param {Animation.PlayMode} [options.playMode=Animation.PlayMode.LOOP] Behavior of the frames of the Animation
      * @param {Number}             [options.offsetX=0]                        x-position where the animation graphics start relative to the {@link image}
@@ -409,10 +409,10 @@
         /**
          * Set the type of the Animation
          *
-         * @param {Animation.PlayMode} playMode Type of the animation
-         * @param {boolean}            reset    If true, it will reset the animation.
-         *                                      If false, it will continue from the current state
-         * @return {this}                       Self object to allow chaining
+         * @param {gc.Animation.PlayMode} playMode Type of the animation
+         * @param {boolean}               reset    If true, it will reset the animation.
+         *                                         If false, it will continue from the current state
+         * @return {gc/Animation}                  Self object to allow chaining
          *
          * @public
          */
@@ -508,8 +508,8 @@
         /**
          * Updates the Animation by the specified time
          *
-         * @param {Number} delta Number of milliseconds to update the Animation
-         * @return {this}        Self object to allow chaining
+         * @param {Number}         delta Number of milliseconds to update the Animation
+         * @return {gc.Animation}        Self object to allow chaining
          */
         this.update = function update(delta) {
             if(_playing) {
@@ -541,7 +541,6 @@
          * @param  {Integer}                   n Number of the frame
          * @return {gc.TextureRegion}            TextureRegion object for the specified frame
          *
-         * @throws {IndexOutOfBoundsException}   n must be inside 0..getTotalFrames()-1
          * @public
          */
         this.getFrame = function getFrame(n) {
@@ -601,8 +600,8 @@
          * Add a callback to execute when the Animation is finished
          * This happens in the NORMAL, REVERSED and PINGPONG Animation.PlayMode s
          *
-         * @param {Function} callback Function to execute
-         * @return {this}             Self object to allow chaining
+         * @param {Function}      callback Function to execute
+         * @return {gc.Animation}          Self object to allow chaining
          *
          * @public
          */
@@ -620,8 +619,8 @@
          * Add a callback to execute when the Animation changes direction.
          * This happens in the Animation.PlayMode.PINGPONG and Animation.PlayMode.LOOP_PINGPONG animations
          *
-         * @param  {Function} callback Function to execute
-         * @return {this}     Self object to allow chaining
+         * @param  {Function}      callback Function to execute
+         * @return {gc.Animation}           Self object to allow chaining
          *
          * @public
          */

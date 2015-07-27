@@ -58,7 +58,8 @@
 
 
     /**
-     * Class for asynchronous comunication over XMLHttpRequests
+     * Class for asynchronous comunication over XMLHttpRequests.
+     * It has all the methods of {@link gc.Deferred#promise}
      *
      * @param {String}   url                            URL to request
      * @param {Object}   Options                        User specified options to override the default ones

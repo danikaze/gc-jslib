@@ -105,10 +105,10 @@
         };
 
         /**
-         * Add a Function to the list of callbacks to be executed when the Deferred is resolved via {@link resolve}
+         * Add a Function to the list of callbacks to be executed when the Deferred is resolved via {@link gc.Deferred#resolve}
          *
          * @param  {Function} callback Callback to execute when resolved
-         * @return {this}              Self object to allow chaining
+         * @return {gc.Deferred}       Self object to allow chaining
          *
          * @public
          */
@@ -127,10 +127,10 @@
         };
 
         /**
-         * Add a Function to the list of callbacks to be executed when the Deferred is rejected via {@link reject}
+         * Add a Function to the list of callbacks to be executed when the Deferred is rejected via {@link gc.Deferred#reject}
          *
          * @param  {Function} callback Callback to execute when rejected
-         * @return {this}              Self object to allow chaining
+         * @return {gc.Deferred}       Self object to allow chaining
          *
          * @public
          */
@@ -150,10 +150,10 @@
 
         /**
          * Add a Function to the list of callbacks to be executed when the Deferred is resolved or rejected.
-         * The functions added here are executed AFTER the ones added in {@link done} and {@link fail}
+         * The functions added here are executed AFTER the ones added in {@link gc.Deferred#done} and {@link gc.Deferred#fail}
          *
          * @param  {Function} callback Callback to execute when resolved or rejected
-         * @return {this}              Self object to allow chaining
+         * @return {gc.Deferred}       Self object to allow chaining
          *
          * @public
          */
@@ -172,10 +172,10 @@
         };
 
         /**
-         * Add a Function to the list of callbacks to be executed when the Deferred is updated via {@link notify}
+         * Add a Function to the list of callbacks to be executed when the Deferred is updated via {@link gc.Deferred#notify}
          *
          * @param  {Function} callback Callback to execute when updated
-         * @return {this}              Self object to allow chaining
+         * @return {gc.Deferred}       Self object to allow chaining
          *
          * @public
          */
@@ -192,16 +192,16 @@
         /**
          * Creates a new Deferred and chains it to the current one.
          *
-         * @param  {Function} [done=undefined]     Callback to execute after the current Deferred is resolved via {@link resolve}.
-         *                                         The parameters accepted will be the returned value of the previous
-         *                                         {@link Deferred#then} or the value which is resolved with.
-         * @param  {Function} [fail=undefined]     Callback to execute after the current Deferred is rejected via {@link reject}
-         *                                         The parameters accepted will be the returned value of the previous
-         *                                         {@link Deferred#then} or the value which is rejected with.
-         * @param  {Function} [progress=undefined] Callback to execute after the current Deferred is notified via {@link notify}
-         *                                         The parameters accepted will be the returned value of the previous
-         *                                         {@link Deferred#then} or the value which is notified with.
-         * @return {Promise}                       {@link promise} of the new Deferred chained to the current one
+         * @param  {Function} [done]     Callback to execute after the current Deferred is resolved via {@link gc.Deferred#resolve}.
+         *                               The parameters accepted will be the returned value of the previous
+         *                               {@link gc.Deferred#then} or the value which is resolved with.
+         * @param  {Function} [fail]     Callback to execute after the current Deferred is rejected via {@link gc.Deferred#reject}
+         *                               The parameters accepted will be the returned value of the previous
+         *                               {@link gc.Deferred#then} or the value which is rejected with.
+         * @param  {Function} [progress] Callback to execute after the current Deferred is notified via {@link gc.Deferred#notify}
+         *                               The parameters accepted will be the returned value of the previous
+         *                               {@link gc.Deferred#then} or the value which is notified with.
+         * @return {Promise}             {@link gc.Deferred#promise} of the new Deferred chained to the current one
          *
          * @public
          */
@@ -236,8 +236,8 @@
          * A Promise is nothing else than a read-only Deferred. Since the only that should modify the status of
          * the Deferred is its creator, this is a way to encapsulate the read-only methods.
          *
-         * @param  {Object} [obj] If an object is specified, it will be extended with Promise methods
-         * @return {Promise}      Promise for the current Deferred
+         * @param  {Object}  [obj] If an object is specified, it will be extended with Promise methods
+         * @return {Promise}       Promise for the current Deferred
          *
          * @public
          */
@@ -257,8 +257,8 @@
         };
 
         /**
-         * Set the status to {@link State.PENDING} again without losing the attached listeners.
-         * To reset everything, better create a new {@gc.Deferred}
+         * Set the status to {@link gc.Deferred#State.PENDING} again without losing the attached listeners.
+         * To reset everything, better create a new {@link gc.Deferred}
          *
          * @public
          */
@@ -272,10 +272,10 @@
 
         /**
          * Set the Deferred as resolved.
-         * This will trigger the callbacks specified with {@link done}, {@link always} and resolve the
-         * chained Deferred with {@link then}, in that order, with the specified parameters if any.
+         * This will trigger the callbacks specified with {@link gc.Deferred#done}, {@link gc.Deferred#always} and resolve the
+         * chained Deferred with {@link gc.Deferred#then}, in that order, with the specified parameters if any.
          *
-         * @return {this} Self object to allow chaining
+         * @return {gc.Deferred} Self object to allow chaining
          *
          * @public
          */
@@ -309,10 +309,10 @@
 
         /**
          * Set the Deferred as rejected.
-         * This will trigger the callbacks specified with {@link fail}, {@link always} and reject the
-         * chained Deferred with {@link then}, in that order, with the specified parameters if any.
+         * This will trigger the callbacks specified with {@link gc.Deferred#fail}, {@link gc.Deferred#always} and reject the
+         * chained Deferred with {@link gc.Deferred#then}, in that order, with the specified parameters if any.
          *
-         * @return {this} Self object to allow chaining
+         * @return {gc.Deferred} Self object to allow chaining
          *
          * @public
          */
@@ -346,10 +346,10 @@
 
         /**
          * Notify the Deferred of an update with the specified parameters if any.
-         * This will trigger the callbacks specified with {@link progress} and notify the
-         * chained Deferred with {@link then}, in that order.
+         * This will trigger the callbacks specified with {@link gc.Deferred#progress} and notify the
+         * chained Deferred with {@link gc.Deferred#then}, in that order.
          *
-         * @return {this} Self object to allow chaining
+         * @return {gc.Deferred} Self object to allow chaining
          *
          * @public
          */
