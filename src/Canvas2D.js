@@ -113,7 +113,7 @@
                         break;
 
                     default:
-                        throw "Incorrect number of parameters"
+                        throw new gc.exception.WrongSignatureException("Incorrect number of parameters");
                         break;
                 }
 

@@ -6,8 +6,7 @@ module.exports = function(grunt) {
 
         clean : {
             docs: ['docs'],
-            build: ['build'],
-            default: ['docs', 'build']
+            build: ['build']
         },
 
         jsdoc : {
@@ -29,7 +28,7 @@ module.exports = function(grunt) {
             options: {
                 screwIE8: true,
                 sourceMap: true,
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */'
+                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd HH:MM") %> */'
             },
             build: {
                 files: {

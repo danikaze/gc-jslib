@@ -27,7 +27,8 @@
         ResourceManager: gc.util.extend({
                 'resourceDefinition': validatorResourceDefinition
             }),
-        XHR: basicValidators
+        XHR: basicValidators,
+        Text: basicValidators
     };
 
     // validator object used to validate other objects
