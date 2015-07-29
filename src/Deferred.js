@@ -50,8 +50,7 @@
         // PRIVATE INSTANCE VARS //
         ///////////////////////////
 
-        var _self,
-            _state,         // state of the Deferred
+        var _state,         // state of the Deferred
             _done,          // list of callbacks executed when resolved
             _fail,          // list of callbacks executed when rejected
             _always,        // list of callbacks executed when resolved or rejected
@@ -70,7 +69,6 @@
          * @private
          */
         function _construct(func) {
-            _self = this;
             _state = State.PENDING;
             _done = [];
             _fail = [];
@@ -243,13 +241,13 @@
          */
         this.promise = function promise(obj) {
             var promise = {
-                    state   : _self.state,
-                    done    : _self.done,
-                    fail    : _self.fail,
-                    always  : _self.always,
-                    progress: _self.progress,
-                    then    : _self.then,
-                    promise : _self.promise
+                    state   : this.state,
+                    done    : this.done,
+                    fail    : this.fail,
+                    always  : this.always,
+                    progress: this.progress,
+                    then    : this.then,
+                    promise : this.promise
                 };
 
             return obj != null ? gc.util.extend(obj, promise)
