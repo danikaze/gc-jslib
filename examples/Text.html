@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
 
-    <title>gc.Text example</title>
+    <title>gc.Text examples</title>
 
     <script type="text/javascript" src="../src/polyfill.js"></script>
     <script type="text/javascript" src="../src/exception.js"></script>
@@ -11,6 +11,9 @@
     <script type="text/javascript" src="../src/Validator.js"></script>
     <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
     <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/Size2.js"></script>
+    <script type="text/javascript" src="../src/Drawable.js"></script>
     <script type="text/javascript" src="../src/Text.js"></script>
 </head>
 
@@ -23,12 +26,16 @@
 
 <style type="text/css">
     canvas {
-        border: 3px double black;
+        border: 2px solid black;
     }
 </style>
 
 <script type="text/javascript">
+    "use strict";
 
+    /*
+     * Small function to draw a horizontal line with style (and swag)
+     */
     function testLine(ctx, x, y, len, style) {
         ctx.strokeStyle = style;
         ctx.beginPath();
@@ -38,50 +45,99 @@
         ctx.stroke();
     };
 
-    var canvas = new gc.Canvas2D(document.getElementById("canvas"));
-    var ctx = canvas.getContext();
-    ctx.font = "bold 48px Arial";
-    var textMetrics = gc.Text.getTextMetrics(ctx.font);
+    var canvas,
+        ctx,
+        textMetrics;
 
-    var text = "Text metrics: (Hg/憂鬱)";
-    var w = ctx.measureText(text).width;
-    var x = ctx.canvas.width - w - 10;
-    var y = ctx.canvas.height - textMetrics.height - 10;
+    var defaultOptions,
+        styles, text, texts, textSize,
+        x, y, w, m, n,
+        p;
+
+    /*
+     * Initialize the canvas and set some style for a metrics text
+     */
+    canvas = new gc.Canvas2D(document.getElementById("canvas"));
+    ctx = canvas.getContext();
+    ctx.font = "bold 24px Arial";
+    textMetrics = gc.Text.getTextMetrics(ctx.font);
+
+    /*
+     * Draw a test text with "native" methods, to see how the metrics works
+     */
+    text = "Text metrics: (Hg/憂鬱)";
+    w = ctx.measureText(text).width;
+    x = 10;
+    y = 10;
+
+    testLine(ctx, x, y, w, "red");                          // bounds-top: red
+    testLine(ctx, x, y + textMetrics.ascent, w, "green");   // baseline: green
+    testLine(ctx, x, y + textMetrics.height, w, "blue");    // bounds-bottom: blue
+    textSize = textMetrics;
+
     ctx.textBaseline = 'top';
     ctx.fillText(text, x, y);
 
-    testLine(ctx, x, y, w, 'red');
-    testLine(ctx, x, y + textMetrics.ascent, w, 'green');
-    testLine(ctx, x, y + textMetrics.height, w, 'blue');
+    /*
+     * Set some styles to use with escaped strings in our Texts
+     */
+    styles = {
+        s0: { font: "16px Arial",                   fillStyle: "#000000", strokeStyle: null,      fill: true,  stroke: false },
+        s1: { font: "24px Verdana",                 fillStyle: "#0000ff", strokeStyle: null,      fill: true,  stroke: false, lineMargin: -5 },
+        s2: { font: "bold 24px Arial",              fillStyle: "#000000", strokeStyle: null,      fill: true,  stroke: false },
+        s3: { font: "24px sans-serif",              fillStyle: "#ff0000", strokeStyle: null,      fill: true,  stroke: false },
+        s4: { font: "bold italic 36px Impact",      fillStyle: "#ffff00", strokeStyle: "#000000", fill: true,  stroke: true  },
+        s5: { font: "bold 24px 'Comic Sans MS'",    fillStyle: null,      strokeStyle: "#ff0000", fill: false, stroke: true  }
+    };
 
-    var escapeStrings = {
-            s0: { font: "24px Arial",             fillStyle: "#000000", strokeStyle: null,      fill: true,  stroke: false },
-            s1: { font: "36px Verdana",           fillStyle: "#0000ff", strokeStyle: null,      fill: true,  stroke: false },
-            s2: { font: "bold 36px Arial",        fillStyle: "#000000", strokeStyle: null,      fill: true,  stroke: false },
-            s3: { font: "36px sans-serif",        fillStyle: "#ff0000", strokeStyle: null,      fill: true,  stroke: false },
-            s4: { font: "bold italic 48px Arial", fillStyle: "#ffff00", strokeStyle: "#000000", fill: true,  stroke: true  },
-            s5: { font: "bold 36px Arial",        fillStyle: null,      strokeStyle: "#ff0000", fill: false, stroke: true  }
-        };
-
-    for(var s in escapeStrings) {
-        gc.Text.registerAction(s, escapeStrings[s]);
+    // register the texts
+    for(var s in styles) {
+        gc.Text.registerAction(s, styles[s]);
     }
 
-    gc.Text.setDefaultOptions({ style: escapeStrings.s0 });
+    // define the \s0 as default style
+    defaultOptions = {
+        marginRight: 20,
+        marginLeft: 10,
+        marginTop: 5,
+        marginBottom: 10,
+        style: styles.s0
+    };
+    gc.Text.setDefaultOptions(defaultOptions);
 
-    var texts = [{ bounds: "red",   text: "Text 1: Small and simple text" },
-                 { bounds: "green", text: "\\s1Text \\s52\\s1: with\nnew lines" },
-                 { bounds: "blue",  text: "Text 3: with \\s2change \\s3of \\s4format\\s0\nAND newlines" }];
-    x = 10;
-    y = 10;
+    // define some texts and the color of their bound box to see them
+    texts = [{ text: "Text 1: Small and simple text" },
+             { text: "\\s1Text \\s52\\s1: with\nnew lines" },
+             { text: "Text 3: with \\s2change \\s3of \\s4format\\s0\nAND newlines" }];
+
+    x = 10;     // we are going to draw the texts starting at
+    y = 70;     // position (10, 70)
+    m = 20;     // with a margin of 20px between them
     for(var i=0; i<texts.length; i++) {
-        var txt = new gc.Text(texts[i].text);
-        var textSize = txt.fullTextSize();
-        ctx.strokeStyle = texts[i].bounds;
-        ctx.strokeRect(x, y, textSize.width, textSize.height);
-        txt.draw(ctx, x, y);
-        y += 20 + textSize.height;
+        // create the text (at this point everything is precalculated
+        text = new gc.Text(texts[i].text);
+        // draw information about the Drawable
+        text.drawBounds(ctx, x, y);
+        text.drawCenter(ctx, x, y);
+        // draw a bound box of the text
+        textSize = text.getFullTextSize();
+        ctx.strokeStyle = "#ccf";
+        ctx.strokeRect(text.getOption("marginLeft") + x, text.getOption("marginTop") + y, textSize.width, textSize.height);
+        // draw the text
+        text.draw(ctx, x, y);
+        y += textSize.height + m;
     }
+
+    // try a long text with custom options
+    x = ctx.canvas.width - 5;
+    y = 5;
+    text = new gc.Text("Long text with with some styles and \\s1limits defined so it needs to break itself.\n\\s3分けられない長い文もあって、大体いい結果出せるかな～...\n\\s0After that long one everything is ok.", { width: 200 });
+    text.setCenter(gc.Align.TOP_RIGHT);
+    // draw information about the Drawable
+    text.drawBounds(ctx, x, y);
+    text.drawCenter(ctx, x, y);
+
+    text.draw(ctx, x, y);
 
 </script>
 
