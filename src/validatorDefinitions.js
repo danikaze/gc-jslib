@@ -28,7 +28,8 @@
                 'resourceDefinition': validatorResourceDefinition
             }),
         XHR: basicValidators,
-        Text: basicValidators
+        Text: basicValidators,
+        Drawable:  basicValidators
     };
 
     // validator object used to validate other objects
