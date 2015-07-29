@@ -4,9 +4,13 @@
     /////////////////////////
     // STATIC PRIVATE VARS //
     /////////////////////////
-    
+
     var _validator = new gc.Validator({ validators: gc.validatorDefinitions.Drawable });
-    
+    var BOUNDS_STROKESTYLE = "#ccc";
+    var BOUNDS_LINE_WIDTH = 1;
+    var CENTER_FILLSTYLE = "#f00";
+    var CENTER_RADIUS = 2;
+
     ////////////////////////
     // STATIC PUBLIC VARS //
     ////////////////////////
@@ -19,8 +23,8 @@
      * @memberOf gc.Drawable
      * @public
      */
-    var VERSION = "0.1.0";
-    
+    var VERSION = "0.2.0";
+
     /**
      * Class to provide common basic drawing functionality
      *
@@ -36,7 +40,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 0.1.0
+     * @version 0.2.0
      * @author @danikaze
      */
     var Drawable = function(src, w, h, x, y, cx, cy) {
@@ -49,11 +53,11 @@
             _size,      // Size of the image
             _offset,    // position of the start of the image
             _center;    // position of the center of the image
-        
+
         /////////////////////
         // PRIVATE METHODS //
         /////////////////////
-        
+
         /**
          * Constructor called when creating a new object instance
          *
@@ -64,7 +68,7 @@
             _size = new gc.Size2(width || src.width, height || src.height);
             _offset = new gc.Point2(offsetX || 0, offsetY || 0);
             _center = new gc.Point2(centerX || 0, centerY || 0);
-            
+
             _validator.reset()
                       .intPositive("width", _size.width)
                       .intPositive("height", _size.height)
@@ -72,7 +76,7 @@
                       .intPositive("offsetY", _offset.y)
                       .int("centerX", _center.x)
                       .int("centerY", _center.y);
-            
+
             if(_validator.errors()) {
                 throw new gc.exception.WrongSignatureException(_validator.errors());
             }
@@ -84,13 +88,13 @@
 
         /**
          * Draw the Drawable into a CanvasRenderingContext2D
+         * It has the same signatures that {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D|CanvasRenderingContext2D}
          *
-         * @param  {CanvasRenderingContext2D} ctx Canvas2D context where to draw the Drawable
-         * @return {gc.Size2} Self reference for allowing chaining
+         * @return {gc.Drawable} Self reference for allowing chaining
          *
          * @public
          */
-        this.draw = function(ctx) {
+        this.draw = function draw(ctx) {
             switch(arguments.length) {
                 case 3: // draw(ctx, x, y)
                     ctx.drawImage(
@@ -125,7 +129,7 @@
                         _src,
                         _offset.x + arguments[1],
                         _offset.y + arguments[2],
-                        Math.min(arguments[3], _size.width - arguments[1]),
+                        Math.min(arguments[3], _size.width  - arguments[1]),
                         Math.min(arguments[4], _size/height - arguments[2]),
                         arguments[5] - _center.x * (arguments[7]/_size.width),
                         arguments[6] - _center.y * (arguments[8]/_size.height),
@@ -138,24 +142,101 @@
                     throw "Incorrect number of parameters"
                     break;
             }
-            
+
             return this;
         };
-        
+
+        /**
+         * Stroke a rectangle as the boundaries of the Drawable element
+         * It accept the same parameters as {@link gc.Drawable#draw}
+         *
+         * @return {gc.Drawable} Self reference for allowing chaining
+         *
+         * @public
+         */
+        this.drawBounds = function drawBounds(ctx) {
+            ctx.strokeStyle = BOUNDS_STROKESTYLE;
+            ctx.lineWidth = BOUNDS_LINE_WIDTH;
+
+            switch(arguments.length) {
+                case 3: // draw(ctx, x, y)
+                    ctx.strokeRect(
+                        Math.round(arguments[1] - _center.x) - BOUNDS_LINE_WIDTH/2,
+                        Math.round(arguments[2] - _center.y) - BOUNDS_LINE_WIDTH/2,
+                        _size.width  + BOUNDS_LINE_WIDTH,
+                        _size.height + BOUNDS_LINE_WIDTH
+                    );
+                    break;
+
+                case 5: // draw(ctx, x, y, w, h)
+                    ctx.strokeRect(
+                        Math.round(arguments[1] - _center.x * (arguments[3]/_size.width))  - BOUNDS_LINE_WIDTH/2,
+                        Math.round(arguments[2] - _center.y * (arguments[4]/_size.height)) - BOUNDS_LINE_WIDTH/2,
+                        arguments[3],
+                        arguments[4]
+                    );
+                    break;
+
+                case 9: // draw(ctx, sx, sy, sw, sh, dx, dy, dw, dh)
+                    ctx.strokeRect(
+                        Math.round(arguments[3] - _center.x * (arguments[7]/_size.width))  - BOUNDS_LINE_WIDTH/2,
+                        Math.round(arguments[4] - _center.y * (arguments[8]/_size.height)) - BOUNDS_LINE_WIDTH/2,
+                        arguments[7],
+                        arguments[8]
+                    );
+                    break;
+
+                default:
+                    throw "Incorrect number of parameters"
+                    break;
+            }
+
+            return this;
+        };
+
+        /**
+         * Draw a point at the center of the Drawable element.
+         * It accept the same parameters as {@link gc.Drawable#draw}
+         *
+         * @return {gc.Drawable} Self reference for allowing chaining
+         *
+         * @public
+         */
+        this.drawCenter = function drawCenter(ctx) {
+            ctx.fillStyle = CENTER_FILLSTYLE;
+
+            switch(arguments.length) {
+                case 3: // draw(ctx, x, y)
+                case 5: // draw(ctx, x, y, w, h)
+                    ctx.fillRect(arguments[1] - CENTER_RADIUS, arguments[2] - CENTER_RADIUS, CENTER_RADIUS*2+1, CENTER_RADIUS*2+1);
+                    break;
+
+                case 9: // draw(ctx, sx, sy, sw, sh, dx, dy, dw, dh)
+                    ctx.fillRect(arguments[5] - CENTER_RADIUS, arguments[6] - CENTER_RADIUS, CENTER_RADIUS*2+1, CENTER_RADIUS*2+1);
+                    break;
+
+                default:
+                    throw "Incorrect number of parameters"
+                    break;
+            }
+
+            return this;
+        }
+
         /**
          * Set a new size for the Drawable element.
          * It accepts the same parameters that {@link gc.Size2#set}
          *
-         * @return {gc.Size2} Self reference for allowing chaining
+         * @return {gc.Drawable} Self reference for allowing chaining
          *
          * @public
          */
         this.setSize = function setSize(w, h) {
             _size.set(w, h);
-            
+
             return this;
         };
-        
+
         /**
          * Get the size of the Drawable element
          *
@@ -166,21 +247,21 @@
         this.getSize = function getSize() {
             return _size.get();
         };
-        
+
         /**
          * Set a new offset for the Drawable element.
          * It accepts the same parameters that {@link gc.Point2#set}
          *
-         * @return {gc.Size2} Self reference for allowing chaining
+         * @return {gc.Drawable} Self reference for allowing chaining
          *
          * @public
          */
         this.setOffset = function setOffset(x, y) {
             _offset.set(x, y);
-            
+
             return this;
         };
-        
+
         /**
          * Get the offset of the Drawable element
          *
@@ -191,15 +272,15 @@
         this.getOffset = function getOffset() {
             return _offset.get();
         };
-        
+
         /**
-         * Set the center of the Drawable object. When calling draw, the center of the object will 
+         * Set the center of the Drawable object. When calling draw, the center of the object will
          * be placed at the x,y positions. This function has three signatures:
          *  1 parameter : A {@link gc.Align} value to automatically calculate the center position
          *  1 parameter : A {@link gc.Point2} Point2 object to copy the {x, y} from
          *  2 parameters: (centerX, centerY) as explicit values
          *
-         * @return {gc.Size2} Self reference for allowing chaining
+         * @return {gc.Drawable} Self reference for allowing chaining
          *
          * @public
          */
@@ -211,42 +292,42 @@
                         _center.set(arguments[0]);
                         break;
                     }
-                    
+
                     // setCenter(gc.Align)
                     switch(arguments[0]) {
-                        case Align.BOTTOM:
+                        case gc.Align.BOTTOM:
                             _center.set(_size.width/2, _size.height);
                             break;
 
-                        case Align.BOTTOM_LEFT:
+                        case gc.Align.BOTTOM_LEFT:
                             _center.set(0, _size.height);
                             break;
 
-                        case Align.BOTTOM_RIGHT:
+                        case gc.Align.BOTTOM_RIGHT:
                             _center.set(_size.width, _size.height);
                             break;
 
-                        case Align.CENTER:
+                        case gc.Align.CENTER:
                             _center.set(_size.width/2, _size.height/2);
                             break;
 
-                        case Align.LEFT:
+                        case gc.Align.LEFT:
                             _center.set(0, _size.height/2);
                             break;
 
-                        case Align.RIGHT:
+                        case gc.Align.RIGHT:
                             _center.set(_size.width, _size.height/2);
                             break;
 
-                        case Align.TOP:
+                        case gc.Align.TOP:
                             _center.set(_size.width/2, 0);
                             break;
 
-                        case Align.TOP_LEFT:
+                        case gc.Align.TOP_LEFT:
                             _center.set(0, 0);
                             break;
 
-                        case Align.TOP_RIGHT:
+                        case gc.Align.TOP_RIGHT:
                             _center.set(_size.width, 0);
                             break;
 
@@ -254,19 +335,19 @@
                             throw gc.exception.WrongDataException("align is not a value of gc.Align");
                     }
                     break;
-                
+
                 // setCenter(x, y)
                 case 2:
                     _center.set(arguments[0], arguments[1]);
                     break;
-                    
+
                 default:
                     throw new gc.exception.WrongSignatureException("Incorrect number of parameters");
             }
-            
+
             return this;
         };
-        
+
         /**
          * Get the center of the Drawable element
          *
@@ -277,7 +358,7 @@
         this.getCenter = function getCenter() {
             return _center.get();
         };
-        
+
         /**
          * Return an object with the public methods for the Drawable,
          * or extend an {@link obj} if provided
@@ -290,16 +371,18 @@
          */
         this.drawable = function drawable(obj) {
             var drawable = {
-                draw     : this.draw,
-                setOffset: this.setOffset,
-                getOffset: this.getOffset,
-                setSize  : this.setSize,
-                getSize  : this.getSize,
-                setCenter: this.setCenter,
-                getCenter: this.getCenter,
-                drawable : this.drawable
+                draw      : this.draw,
+                drawBounds: this.drawBounds,
+                drawCenter: this.drawCenter,
+                setOffset : this.setOffset,
+                getOffset : this.getOffset,
+                setSize   : this.setSize,
+                getSize   : this.getSize,
+                setCenter : this.setCenter,
+                getCenter : this.getCenter,
+                drawable  : this.drawable
             };
-            
+
             return obj != null ? gc.util.extend(obj, drawable)
                                : drawable;
         };
