@@ -248,44 +248,44 @@
      * @public
      */
     Util.extend = function extend() {
-        var recursive = false,
-            i = 1,
-            base = 0,
-            n = arguments.length,
-            base,
-            o,
-            p;
+        var out;
 
         if(arguments[0] === true) {
-            recursive = true;
-            i++;
-            base = arguments[1];
-        } else {
-            base = arguments[0];
-        }
+            out = arguments[1] || {};
 
-        for(; i<n; i++) {
-            o = arguments[i];
-            if(Util.isPlainObject(o)) {
-                for(p in o) {
-                    if(o[p] !== undefined) {
-                        if(recursive && typeof o[p] === "object") {
-                            if(Util.isPlainObject(o[p]) !== Util.isPlainObject(base[o])) {
-                                base[p] = {};
+            for (var i = 2; i < arguments.length; i++) {
+                var obj = arguments[i];
 
-                            } else if(Util.isArray(o[p]) !== Util.isArray(base[o])) {
-                                base[p] = [];
-                            }
-                            Util.extend(true, base[p], o[p]);
-                        } else {
-                            base[p] = o[p];
-                        }
+                if (!obj) {
+                    continue;
+                }
+
+                for (var key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        if (typeof obj[key] === 'object')
+                            extend(true, out[key], obj[key]);
+                        else
+                            out[key] = obj[key];
                     }
+                }
+            }
+
+        } else {
+          out = arguments[0] || {};
+
+          for (var i = 1; i < arguments.length; i++) {
+            if (!arguments[i]) {
+                continue;
+            }
+
+            for (var key in arguments[i]) {
+                if (arguments[i].hasOwnProperty(key))
+                    out[key] = arguments[i][key];
                 }
             }
         }
 
-        return base;
+        return out;
     };
 
     /**
