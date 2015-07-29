@@ -6,6 +6,8 @@
     /////////////////////////
 
     var _validator = new gc.Validator({ validators: gc.validatorDefinitions.Text }),
+        _escapeChar = "\\",
+        _wordSplitRegEx = "[ \t]",
         _escapedActions = {},
         _escapeRegEx,
         _textMetricsCache = {},
@@ -41,55 +43,99 @@
      * @public
      * @memberOf gc.Text
      */
-    var VERSION = "1.0.0";
-
-    /**
-     * Character to detect a escape sequence
-     *
-     * @type {String}
-     * @readOnly
-     * @public
-     * @memberOf gc.Text
-     */
-    var ESCAPE_CHAR = "\\";
-
+    var VERSION = "0.2.0";
 
     ///////////////////////////
     // STATIC PUBLIC METHODS //
     ///////////////////////////
 
     /**
+     * Set the escape string that triggers an action
+     *
+     * @param  {String} [str="\\"] String preceding the name of the action
+     *
+     * @public
+     * @memberOf gc.Text
+     */
+    function setEscapeChar(str) {
+        var i;
+
+        _escapeChar = str | "\\";
+
+        // regenerate the _escapeRegEx
+        _escapeRegEx = undefined;
+        for(i in _escapedActions) {
+            registerAction(i, _escapedActions[i]);
+        }
+    }
+
+    /**
+     * Get the string that precedes the name of the actions
+     *
+     * @return {String} escape string
+     *
+     * @public
+     * @memberOf gc.Text
+     */
+    function getEscapeChar() {
+        return _escapeChar;
+    }
+
+    /**
+     * Set the regular expression to split words for line wrapping
+     *
+     * @param  {String} [regExpSource="[ \t]" source for the regexp as string, not regExp
+     *
+     * @public
+     * @memberOf gc.Text
+     */
+    function setWordSplitRegExp(regExpSource) {
+        _wordSplitRegEx = regExpSource | "[ \t]";
+    }
+
+    /**
+     * Get the regular expression to split words for line wrapping
+     *
+     * @return  {String} source for the regexp as string
+     *
+     * @public
+     * @memberOf gc.Text
+     */
+    function getWordSplitRegExp() {
+        return _wordSplitRegEx;
+    }
+
+    /**
      * Register an action associated to an escape string and prepares a RegExp for future later processing
      *
-     * @param  {String} escapeString Escape String without the ESCAPE_CHAR. I.e "s1" would be used with \s1
+     * @param  {String} escapeString Escape String without the {@link gc.Text#getEscapeChar}. I.e "s1" would be used with \s1
      * @param  {Object} options      Options of the action
      *
      * @public
      * @memberOf gc.Text
      */
     function registerAction(escapeString, options) {
-        var regExpEscapedStrings = ["bBcdDfnrsStvwWxu0123456789"],
-            re = _escapeRegEx ? _escapeRegEx.source : "",
+        var re = _escapeRegEx ? _escapeRegEx.source : "",
             i;
 
         _escapedActions[escapeString] = options;
 
-        re = (_escapeRegEx ? _escapeRegEx.source +"|(" :  "(") + ESCAPE_CHAR + ESCAPE_CHAR + escapeString + ")";
+        re = (_escapeRegEx ? _escapeRegEx.source +"|(" :  "(") + (_escapeChar === "\\" ? _escapeChar + _escapeChar : _escapeChar) + escapeString + ")";
 
         _escapeRegEx = new RegExp(re, "g");
     }
 
     /**
-     * Get metrics information about a font (with style)
+     * Get metrics information about a font (with style).
+     * The result is cached for the font:testText pair
      *
-     * @param  {String} font                  Font style (the same that ctx.font)
-     * @param  {String} [alphabeticText="Hg"] Alphabetic text to get the metrics from
-     * @param  {String} [ideographicText="達"] Ideographic text to get the metrics from
-     * @return {Object}                       Font information as {
-     *                                            ascent,
-     *                                            descent,
-     *                                            height
-     *                                        }
+     * @param  {String} font              Font style (the same that ctx.font)
+     * @param  {String} [testText="Hg達"]  Alphabetic text to get the metrics from
+     * @return {Object}                   Font information as {
+     *                                        ascent,
+     *                                        descent,
+     *                                        height
+     *                                    }
      *
      * @public
      * @memberOf gc.Text
@@ -138,40 +184,54 @@
         }
 
         _textMetricsCache[cacheKey] = result;
-
         return result;
     }
 
+    /**
+     * Extend the default options to use when creating a new Text instance
+     *
+     * @param {Object} options set or subset of options as specified in {@gc.Text}
+     *
+     * @public
+     * @memberOf gc.Text
+     */
     function setDefaultOptions(options) {
-        _defaultOptions = gc.util.extend(_defaultOptions, options);
+        _defaultOptions = gc.util.extend(true, _defaultOptions, options);
     }
 
     /**
      * Class to write formatted text and cache it in Images
      *
-     * @param
+     * @param {String} text     Formatted text to draw
+     * @param {Object} options  Options to define the Text behavior
+     * @param {Canvas} [canvas] Canvas to use as a background
      *
      * @requires gc.Util
      * @requires gc.Validator
+     * @requires gc.Canvas2D
+     * @requires gc.Drawable
+     * @requires gc.Point2
+     * @requires gc.Size2
      * @uses     gc.exception
      *
      * @constructor
      * @memberOf gc
-     * @version 1.0.0
+     * @version 0.2.0
      * @author @danikaze
      */
-    var Text = function(text, options) {
+    var Text = function(text, options, canvas) {
 
         ///////////////////////////
         // PRIVATE INSTANCE VARS //
         ///////////////////////////
 
-        var _originalText,  // original text string
+        var _drawable,
+            _originalText,  // original text string
             _text,          // processed text object with all the parameters needed to render
-            _fbo,           // canvas used as cache for the rendered text
-            _fullTextSize,  // size of the full text
-            _options,       // behavior options
-            _state;         // rendering state properties
+            _fbo,           // canvas context used as cache for the rendered text
+            _fullTextSize,  // size of the full text as { width, height }
+            _options,       // behavior options (see gc.Text constructor)
+            _state;         // rendering state properties (see gc.Text.resetState)
 
         /////////////////////
         // PRIVATE METHODS //
@@ -179,10 +239,6 @@
 
         /**
          * Constructor called when creating a new object instance
-         *
-         * @param {String} text     text to draw
-         * @param {Object} options  options to modify the behavior of the Text
-         * @param {canvas} [canvas] if specified, it will store a reference and draw over this canvas instead of creating a new one
          *
          * @private
          */
@@ -218,12 +274,12 @@
             _originalText = text;
             _text = _processText(text);
 
-            _fullTextSize = this.fullTextSize(true);
+            textSize = this.getFullTextSize(true);
 
             if(newCanvas) {
-                canvas.width = _options.width || _fullTextSize.width;
+                canvas.width = _options.width || textSize.width;
                 _options.width = canvas.width;
-                canvas.height = _options.height || _fullTextSize.height;
+                canvas.height = _options.height || textSize.height;
                 _options.height = canvas.height;
             }
 
@@ -236,6 +292,8 @@
 
             _resetState();
             _renderText();
+            _drawable = new gc.Drawable(canvas);
+            _drawable.drawable(this);
         };
 
         /**
@@ -245,15 +303,14 @@
          */
         function _resetState() {
             _state = {
-                x           : _options.x,
-                y           : _options.y,
                 fill        : true,
                 stroke      : false,
                 lineMargin  : _options.style.lineMargin,
                 line        : 0,
                 token       : 0,
                 character   : 0,
-                textMetrics : getTextMetrics(_options.style.font)
+                textMetrics : getTextMetrics(_options.style.font),
+                pause       : 0
             };
 
             _fbo.font = _options.style.font;
@@ -291,95 +348,207 @@
             if(typeof action.stroke !== undefined) {
                 _state.stroke = action.stroke;
             }
+            if(action.pause) {
+                _state.pause += action.pause;
+            }
         }
+
         /**
          * Prepare the text into an object for faster drawing
          * Note: it modifies the current state of the object: _state
          *
          * @param  {String} text Formated text to draw
          * @return {Array}  List of lines as res[lines]. Each line having properties and a list of tokens as:
-         *                    res.y                 - y-position of the line
+         *                    res.y       y-position of the line
          *                    res[] = {
-         *                        x           - x-position of the line
-         *                        text        - text to draw at (res[].x, res.y)
-         *                        action      - action to apply after drawing the token text
+         *                        x       x-position of the line
+         *                        text    text to draw at (res[].x, res.y)
+         *                        action  action to apply after drawing the token text
          *                    }
          * @private
          */
         function _processText(text)
         {
+            /*
+             * Get the escape strings from a formatted text, as [{text,escape}]
+             */
             function getEscapeStrings(txt) {
                 var res = [],
-                    m;
+                    m,
+                    i = 0;
 
                 if(_escapeRegEx) {
                     while(m = _escapeRegEx.exec(txt)) {
                         res.push({
-                            index: m.index,
-                            str  : m[0].substring(ESCAPE_CHAR.length)
+                            txt   : txt.substring(i, m.index),
+                            action: m[0].substring(_escapeChar.length)
                         });
+                        i = m.index + m[0].length;
                     }
+                }
+                if(i < txt.length) {
+                    res.push({ txt: txt.substring(i) });
                 }
 
                 return res;
             }
 
+             /*
+             * Split a text to fit in certain size, and fill the needed variables with the new subwords
+             */
+            function fitWord(txt, txtWidth, availableWidth, wi, words, separators) {
+                var i = Math.floor((txt.length - 1) * (availableWidth / txtWidth)),
+                    word = txt.substring(0, i),
+                    tryWord,
+                    width = _fbo.measureText(word).width,
+                    searching = true;
+
+                // try to guess the correct i, and then correct it to fit the maximum available space
+                while(searching) {
+                    if(width < availableWidth) {
+                        tryWord = word + txt[i];
+                        for(;;) {
+                            width = _fbo.measureText(tryWord).width;
+                            if(width > availableWidth) {
+                                words.splice(wi+1, 0, word);
+                                separators.splice(wi, 0, "");
+                                searching = false;
+                                break;
+                            }
+                            word = tryWord;
+                            tryWord += txt[i++];
+                        }
+
+                    } else {
+                        for(;;) {
+                            word = word.substring(0, i-1);
+                            width = _fbo.measureText(word).width;
+                            if(width < availableWidth) {
+                                words.splice(wi+1, 0, word);
+                                separators.splice(wi, 0, "");
+                                searching = false;
+                                break;
+                            }
+                            i--;
+                        }
+                    }
+                }
+
+                words.splice(wi+2, 0, txt.substring(word.length));
+                separators.splice(wi, 0, separators[wi]);
+            }
+
+            /*
+             * Given a unformatted text, pushes tokens while splitting it into lines if needed
+             */
+            function tokenizeString(txt, action) {
+                var word, wordWidth,
+                    re = new RegExp(_wordSplitRegEx, "g"),
+                    words = txt.split(re),
+                    separators = [],
+                    separator,
+                    tokenText = "",
+                    xx = x,
+                    i;
+
+                while(i = re.exec(txt)) {
+                    separators.push(i[0])
+                }
+
+                for(i=0; i<words.length; i++) {
+                    word = words[i];
+                    separator = separators[i] ? separators[i] : "";
+                    wordWidth = _fbo.measureText(word).width;
+
+                    // if the word can't be splitted... just put as much as fits
+                    if(wordWidth > availableWidth) {
+                        fitWord(word, wordWidth, availableWidth, i, words, separators);
+                        continue;
+                    }
+
+                    // if the word still fits the line, keep pushing
+                    if(xx + wordWidth < maxX) {
+                        tokenText += word + separator;
+                        xx += wordWidth + _fbo.measureText(separator).width;
+
+                    // if the word doesn't fits the line
+                    } else {
+                        // put whatever fits
+                        token = {
+                            x     : x,
+                            txt   : tokenText
+                        };
+                        res[line].push(token);
+                        // put the rest in the next line
+                        text.splice(line+1, 0, txt.substring(tokenText.length));
+                        // and set the variables as starting to the next line
+                        y += lineHeight;
+                        res[line].y = y;
+                        res.push([]);
+                        line++;
+                        y += _state.lineMargin;
+                        _fullTextSize.width = Math.max(_fullTextSize.width, xx - _options.marginLeft);
+                        tokenText = word + separator;
+                        x = _options.marginLeft;
+                        xx = x + wordWidth + _fbo.measureText(separator).width;
+                    }
+                }
+                // and put the final part, which doesn't break
+                token = {
+                    x     : x,
+                    txt   : tokenText,
+                    action: action
+                };
+                res[line].push(token);
+                x = xx;
+            }
+
+            //////////////////
+            // _processText //
+            //////////////////
             var res = [],
-                line, nLines,
-                escaped, nEscaped,
-                e, offset,
+                line,
+                e, escaped, nEscaped,
                 token,
                 x,
-                y = 0,
+                maxX = _options.width != 0 ? _options.width - _options.marginRight : Infinity,
+                availableWidth = maxX - _options.marginLeft,
+                y = _options.marginTop,
                 lineHeight;
 
             // first, split it in lines by new-lines characters
             text = text.split("\n");
             _resetState();
+            lineHeight = _state.textMetrics.height;
             _fullTextSize = {
                 width: 0,
                 height: 0
             };
 
             // then, split each line into an array of parts that can be drawn all at once
-            for(line=0, nLines=text.length; line<nLines; line++) {
+            for(line=0; line<text.length; line++) {
                 res[line] = [];
-                x = 0;
-                lineHeight = _state.textMetrics.height;
+                x = _options.marginLeft;
+                lineHeight;
 
                 escaped = getEscapeStrings(text[line]);
-                offset = 0;
 
                 for(e=0, nEscaped=escaped.length; e<nEscaped; e++) {
-                    token = {
-                        x     : x,
-                        txt   : text[line].substring(offset, escaped[e].index),
-                        action: escaped[e].str
-                    };
-                    res[line].push(token);
+                    tokenizeString(escaped[e].txt, escaped[e].action);
 
-                    offset = escaped[e].index + ESCAPE_CHAR.length + escaped[e].str.length;
-                    x += _fbo.measureText(token.txt).width;
-
-                    _applyAction(escaped[e].str);
-                    lineHeight = Math.max(lineHeight, _state.textMetrics.height);
+                    if(escaped[e].action) {
+                        _applyAction(escaped[e].action);
+                        lineHeight = Math.max(lineHeight, _state.textMetrics.height);
+                    }
                 }
 
-                token = {
-                    x  : x,
-                    txt: text[line].substring(offset)
-                };
-
-                x += _fbo.measureText(token.txt).width;
                 y += lineHeight;
-
-                res[line].push(token);
                 res[line].y = y;
 
-                _fullTextSize.width = Math.max(_fullTextSize.width, x);
+                _fullTextSize.width = Math.max(_fullTextSize.width, x - _options.marginLeft);
             }
 
-            _fullTextSize.height = y;
+            _fullTextSize.height = y - _options.marginTop;
 
             return res;
         }
@@ -391,22 +560,22 @@
          * @private
          */
         function _renderText() {
-            var i, nLines,
-                t, nTokens,
+            var nLines,
+                nTokens,
                 token;
 
             _resetState();
 
             // for each line apply the actions to see how to draw the last token
-            for(i=0, nLines=_text.length; i<nLines; i++) {
-                for(t=0, nTokens=_text[i].length; t<nTokens; t++) {
-                    token = _text[i][t];
+            for(_state.line=0, nLines=_text.length; _state.line<nLines; _state.line++) {
+                for(_state.token=0, nTokens=_text[_state.line].length; _state.token<nTokens; _state.token++) {
+                    token = _text[_state.line][_state.token];
 
                     if(_state.fill) {
-                        _fbo.fillText(token.txt, token.x, _text[i].y);
+                        _fbo.fillText(token.txt, token.x, _text[_state.line].y);
                     }
                     if(_state.stroke) {
-                        _fbo.strokeText(token.txt, token.x, _text[i].y);
+                        _fbo.strokeText(token.txt, token.x, _text[_state.line].y);
                     }
 
                     if(token.action) {
@@ -420,16 +589,15 @@
         // PUBLIC METHODS //
         ////////////////////
 
-
-        this.draw = function draw(ctx) {
-            switch(arguments.length) {
-                case 3: // draw(img, x, y)
-                    ctx.drawImage(_fbo.canvas, arguments[1], arguments[2]);
-                    break;
-            }
-        }
-
-        this.fullTextSize = function fullTextSize(includeMargins) {
+        /**
+         * Get the size that the text would have without limits, but with format
+         *
+         * @param  {boolean} includeMargins if true, the margins will be included in the result
+         * @return {Object}                 Object as {width, height}
+         *
+         * @public
+         */
+        this.getFullTextSize = function getFullTextSize(includeMargins) {
             var width  = _fullTextSize.width,
                 height = _fullTextSize.height;
 
@@ -442,6 +610,23 @@
                 width : Math.ceil(width),
                 height: Math.ceil(height)
             };
+        }
+
+        /**
+         * Get an option.
+         * If the requested option doesn't exist, it will trigger an exception.
+         *
+         * @param  {String} key Name of the option to get
+         * @return {mixed}      Value of the requested option.
+         *
+         * @public
+         */
+        this.getOption = function getOption(key) {
+            if(typeof _options[key] === "undefined") {
+                throw new gc.exception.WrongDataException("Option " + key + " is not defined");
+            }
+
+            return _options[key];
         }
 
         // call the constructor after setting all the methods
@@ -459,9 +644,12 @@
     }
     gc.Text = Text;
     gc.util.defineConstant(gc.Text, "VERSION", VERSION);
-    gc.util.defineConstant(gc.Text, "ESCAPE_CHAR", ESCAPE_CHAR);
-    gc.Text.registerAction = registerAction;
-    gc.Text.getTextMetrics = getTextMetrics;
-    gc.Text.setDefaultOptions = setDefaultOptions;
+    gc.Text.setEscapeChar       = setEscapeChar;
+    gc.Text.getEscapeChar       = getEscapeChar;
+    gc.Text.setWordSplitRegExp  = setWordSplitRegExp;
+    gc.Text.getWordSplitRegExp  = getWordSplitRegExp;
+    gc.Text.registerAction      = registerAction;
+    gc.Text.getTextMetrics      = getTextMetrics;
+    gc.Text.setDefaultOptions   = setDefaultOptions;
 
 } (window, window.gc));
