@@ -6,7 +6,7 @@
     /////////////////////////
 
     var _validator = new gc.Validator({ validators: gc.validatorDefinitions.Drawable });
-    var BOUNDS_STROKESTYLE = "#ccc";
+    var BOUNDS_STROKESTYLE = "#0f0";
     var BOUNDS_LINE_WIDTH = 1;
     var CENTER_FILLSTYLE = "#f00";
     var CENTER_RADIUS = 2;
@@ -23,7 +23,7 @@
      * @memberOf gc.Drawable
      * @public
      */
-    var VERSION = "0.2.0";
+    var VERSION = "0.2.1";
 
     /**
      * Class to provide common basic drawing functionality
@@ -40,7 +40,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 0.2.0
+     * @version 0.2.1
      * @author @danikaze
      */
     var Drawable = function(src, w, h, x, y, cx, cy) {
@@ -232,7 +232,7 @@
          * @public
          */
         this.setSize = function setSize(w, h) {
-            _size.set(w, h);
+            _size.set.apply(_size, arguments);
 
             return this;
         };
@@ -257,7 +257,7 @@
          * @public
          */
         this.setOffset = function setOffset(x, y) {
-            _offset.set(x, y);
+            _offset.apply(_offset, arguments);
 
             return this;
         };
