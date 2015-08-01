@@ -13,7 +13,7 @@
      * @memberOf gc.Validator
      * @public
      */
-    var VERSION = "1.0.0";
+    var VERSION = "1.1.0";
 
     /**
      * Object for validate several types of data
@@ -21,13 +21,16 @@
      * Define a new validator for each type of validated data:
      * Don't use something like isValid = isNumber && isPositive to validate a recordId,
      * but define a validator specialized in doing that, so it can be used just for that type of data.
-     * Validators can use already defined validators
+     * Validators can use already defined validators.
+     *
+     * From 1.1.0 can use {@link options.def}
      *
      * @param {Object}  options                                  list of options to override the default ones
      * @param {boolean} [options.strict=false]                   true to use strict validation
      * @param {boolean} [options.canonize=true]                  true convert data to its canonical form
      * @param {boolean} [options.returnNullOnErrors=true]        if there is any error, {@link gc.Validator#valid} will return null
      * @param {boolean} [options.optional=false]                 accept undefined values (not null) in the validations
+     * @param {mixed}   [options.def]                            if optional is true and the data is not defined, this value will be assigned by default
      * @param {Object}  [options.validators={}]                  object with validators to load with addValidator(name, validator)
      * @param {boolean} [options.allowOverwriteValidators=false] if an existing validator is defined and this option is false, an exception will raise
      *
@@ -36,7 +39,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 1.0.0
+     * @version 1.1.0
      * @author @danikaze
      */
     var Validator = function(options) {
@@ -113,7 +116,7 @@
             var res,
                 extendedOptions = gc.util.extend({}, _options, options);
 
-            res = (data === undefined && extendedOptions.optional) ? res = { data: undefined, valid: true }
+            res = (data === undefined && extendedOptions.optional) ? res = { data: extendedOptions.def ? extendedOptions.def : undefined, valid: true }
                                                                    : validator(data, extendedOptions);
 
             _store(key, data, extendedOptions.canonize ? res.data : data, res.valid);
@@ -154,6 +157,10 @@
                 }
 
             } else if(data === undefined && extendedOptions.optional) {
+                if(extendedOptions.def) {
+                    val = extendedOptions.def;
+                }
+
                 ok = true;
 
             } else {
@@ -198,6 +205,10 @@
                 }
 
             } else if(data === undefined && extendedOptions.optional) {
+                if(extendedOptions.def) {
+                    val = extendedOptions.def;
+                }
+
                 ok = true;
 
             } else {
