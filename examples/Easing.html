@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.Easing examples</title>
+
+<!--
+    <script type="text/javascript" src="../src/polyfill.js"></script>
+    <script type="text/javascript" src="../src/exception.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/Size2.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/Deferred.js"></script>
+    <script type="text/javascript" src="../src/Easing.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+</head>
+
+<body>
+
+<canvas id="canvas" width="400" height="500" moz-opaque>
+    Your browser doesn't support canvas.
+    WHAT YEAR IS IT!???
+</canvas>
+
+<p>
+    <select id="selector">
+        <option value="1" selected="selected">LINEAR</option>
+        <option value="2">IN_QUAD</option>
+        <option value="3">OUT_QUAD</option>
+        <option value="4">INOUT_QUAD</option>
+        <option value="5">IN_CUBIC</option>
+        <option value="6">OUT_CUBIC</option>
+        <option value="7">INOUT_CUBIC</option>
+        <option value="8">IN_QUART</option>
+        <option value="9">OUT_QUART</option>
+        <option value="10">INOUT_QUART</option>
+        <option value="11">IN_QUINT</option>
+        <option value="12">OUT_QUINT</option>
+        <option value="13">INOUT_QUINT</option>
+        <option value="14">IN_EXPO</option>
+        <option value="15">OUT_EXPO</option>
+        <option value="16">INOUT_EXPO</option>
+        <option value="17">IN_CIRC</option>
+        <option value="18">OUT_CIRC</option>
+        <option value="19">INOUT_CIRC</option>
+        <option value="20">IN_SINE</option>
+        <option value="21">OUT_SINE</option>
+        <option value="22">INOUT_SINE</option>
+        <option value="23">IN_BACK</option>
+        <option value="24">OUT_BACK</option>
+        <option value="25">INOUT_BACK</option>
+        <option value="26">IN_ELASTIC</option>
+        <option value="27">OUT_ELASTIC</option>
+        <option value="28">INOUT_ELASTIC</option>
+        <option value="29">IN_BOUNCE</option>
+        <option value="30">OUT_BOUNCE</option>
+        <option value="31">INOUT_BOUNCE</option>
+    </select>
+
+    <button id="play">Play</button>
+</p>
+
+<style type="text/css">
+    canvas {
+        border: 2px solid black;
+    }
+</style>
+
+<script type="text/javascript">
+    "use strict";
+
+    function drawGraph(type) {
+        var title = "gc.Easing." + easingNames[type],
+            txtSize,
+            grd;
+
+        // title
+        ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
+        ctx.font = "bold 16px Arial";
+        ctx.fillStyle = "#333";
+        txtSize = ctx.measureText(title);
+        ctx.fillText(title, canvasSize.width/2 - txtSize.width/2, 20);
+
+        // bg
+        grd = ctx.createRadialGradient(graphMarginLeft + graphSize.width/2, graphMarginTop + graphSize.height/2, 0,
+                                       graphMarginLeft + graphSize.width/2, graphMarginTop + graphSize.height/2, canvasSize.height);
+        grd.addColorStop(0, "#eee");
+        grd.addColorStop(1, "#ccc");
+        ctx.fillStyle = grd;
+        ctx.fillRect(graphMarginLeft, graphMarginTop, graphSize.width, graphSize.height);
+
+        // axis
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.moveTo(graphMarginLeft - 1, graphMarginTop);
+        ctx.lineTo(graphMarginLeft - 1, graphMarginTop + graphSize.height + 20);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(graphMarginLeft - 20, canvasSize.height - graphMarginBottom + 1);
+        ctx.lineTo(graphMarginLeft + graphSize.width, canvasSize.height - graphMarginBottom + 1);
+        ctx.stroke();
+    }
+
+    function drawEasingPath(type, percentElapsed) {
+        var e = new gc.Easing(graphMarginTop + graphSize.height, graphMarginTop, graphSize.width, type),
+            changed = false,
+            i,
+            elapsed = graphSize.width * percentElapsed;
+
+        ctx.strokeStyle = "rgb(11, 46, 213)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(graphMarginLeft, e.getValue());
+        for(i=1; i<=graphSize.width; i++) {
+            e.update(1);
+            if(!changed && e.getElapsed() > elapsed) {
+                ctx.stroke();
+
+                changed = true;
+
+                ctx.beginPath();
+                ctx.moveTo(graphMarginLeft + i, e.getValue());
+                ctx.strokeStyle = "rgb(81, 109, 247)";
+            }
+            ctx.lineTo(graphMarginLeft + i, e.getValue());
+        }
+        ctx.stroke();
+
+        // current point
+        e.setElapsed(elapsed);
+        ctx.beginPath();
+        ctx.fillStyle = "#f00";
+        ctx.arc(graphMarginLeft + Math.min(elapsed, graphSize.width), e.getValue(), 3, 0, 2*Math.PI, false);
+        ctx.fill();
+
+        // projection
+        // ctx.beginPath();
+        ctx.fillStyle = "#f00";
+        ctx.arc(graphMarginLeft + graphSize.width, e.getValue(), 3, 0, 2*Math.PI, false);
+        ctx.fill();
+    }
+
+    function easeUpdate(now) {
+        var delta = Math.max(0, now - lastFrameTime);
+        lastFrameTime = now;
+
+        ease.update(delta);
+
+        drawGraph(ease.getEaseType());
+        drawEasingPath(ease.getEaseType(), ease.getElapsed()/ease.getDuration());
+
+        if(!ease.hasFinished()) {
+            requestAnimationFrame(easeUpdate);
+        }
+    }
+
+    var canvas,
+        canvasSize,
+        ctx,
+        ease,
+        select,
+        playButton,
+        animDuration      = 1000,
+        graphMarginTop    = 100,
+        graphMarginRight  = 50,
+        graphMarginLeft   = 50,
+        graphMarginBottom = 100,
+        graphSize,
+        lastFrameTime;
+
+    var easingNames = {};
+    easingNames[gc.Easing.EaseType.LINEAR] = "LINEAR";
+    easingNames[gc.Easing.EaseType.IN_QUAD] = "IN_QUAD";
+    easingNames[gc.Easing.EaseType.OUT_QUAD] = "OUT_QUAD";
+    easingNames[gc.Easing.EaseType.INOUT_QUAD] = "INOUT_QUAD";
+    easingNames[gc.Easing.EaseType.IN_CUBIC] = "IN_CUBIC";
+    easingNames[gc.Easing.EaseType.OUT_CUBIC] = "OUT_CUBIC";
+    easingNames[gc.Easing.EaseType.INOUT_CUBIC] = "INOUT_CUBIC";
+    easingNames[gc.Easing.EaseType.IN_QUART] = "IN_QUART";
+    easingNames[gc.Easing.EaseType.OUT_QUART] = "OUT_QUART";
+    easingNames[gc.Easing.EaseType.INOUT_QUART] = "INOUT_QUART";
+    easingNames[gc.Easing.EaseType.IN_QUINT] = "IN_QUINT";
+    easingNames[gc.Easing.EaseType.OUT_QUINT] = "OUT_QUINT";
+    easingNames[gc.Easing.EaseType.INOUT_QUINT] = "INOUT_QUINT";
+    easingNames[gc.Easing.EaseType.IN_EXPO] = "IN_EXPO";
+    easingNames[gc.Easing.EaseType.OUT_EXPO] = "OUT_EXPO";
+    easingNames[gc.Easing.EaseType.INOUT_EXPO] = "INOUT_EXPO";
+    easingNames[gc.Easing.EaseType.IN_CIRC] = "IN_CIRC";
+    easingNames[gc.Easing.EaseType.OUT_CIRC] = "OUT_CIRC";
+    easingNames[gc.Easing.EaseType.INOUT_CIRC] = "INOUT_CIRC";
+    easingNames[gc.Easing.EaseType.IN_SINE] = "IN_SINE";
+    easingNames[gc.Easing.EaseType.OUT_SINE] = "OUT_SINE";
+    easingNames[gc.Easing.EaseType.INOUT_SINE] = "INOUT_SINE";
+    easingNames[gc.Easing.EaseType.IN_BACK] = "IN_BACK";
+    easingNames[gc.Easing.EaseType.OUT_BACK] = "OUT_BACK";
+    easingNames[gc.Easing.EaseType.INOUT_BACK] = "INOUT_BACK";
+    easingNames[gc.Easing.EaseType.IN_ELASTIC] = "IN_ELASTIC";
+    easingNames[gc.Easing.EaseType.OUT_ELASTIC] = "OUT_ELASTIC";
+    easingNames[gc.Easing.EaseType.INOUT_ELASTIC] = "INOUT_ELASTIC";
+    easingNames[gc.Easing.EaseType.IN_BOUNCE] = "IN_BOUNCE";
+    easingNames[gc.Easing.EaseType.OUT_BOUNCE] = "OUT_BOUNCE";
+    easingNames[gc.Easing.EaseType.INOUT_BOUNCE] = "INOUT_BOUNCE";
+
+    /*
+     * Initialize the canvas
+     */
+    canvas = new gc.Canvas2D(document.getElementById("canvas"));
+    ctx = canvas.getContext();
+    canvasSize = canvas.getSize();
+    graphSize = new gc.Size2(canvasSize).sub(graphMarginLeft+graphMarginRight, graphMarginTop+graphMarginBottom);
+
+    ease = new gc.Easing(graphMarginTop + graphSize.height, graphMarginTop, animDuration, gc.Easing.EASE_LINEAR),
+
+    drawGraph(ease.getEaseType());
+    drawEasingPath(ease.getEaseType(), 0);
+
+    /*
+     * Select behavior
+     */
+    select = document.getElementById("selector");
+    select.focus();
+    select.onchange = function() {
+        var type = parseInt(select.value);
+
+        ease.setEaseType(type);
+        ease.begin();
+
+        drawGraph(type);
+        drawEasingPath(type, 0);
+
+        playButton.onclick();
+    };
+
+    playButton = document.getElementById("play");
+    playButton.onclick = function() {
+        ease.begin();
+        lastFrameTime = performance.now();
+        requestAnimationFrame(easeUpdate);
+    };
+
+</script>
+
+</body>
+</html>
