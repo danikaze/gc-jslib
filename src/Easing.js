@@ -640,8 +640,8 @@
     /**
      * Interpolate a number between an initial value and an end value.
      * Easing function based on Robert Penner and Timothee Groleau's code.
-     * http://robertpenner.com/easing/easing_demo.html
-     * http://timotheegroleau.com/Flash/experiments/easing_function_generator.htm
+     * {@link http://robertpenner.com/easing/easing_demo.html}
+     * {@link http://timotheegroleau.com/Flash/experiments/easing_function_generator.htm}
      *
      * @param {Float}              [begin=0]               Initial value
      * @param {Float}              [end=1.0]               End value
