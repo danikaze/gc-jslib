@@ -569,7 +569,7 @@
          *
          * @public
          */
-        this.isFinished = function isFinished() {
+        this.hasFinished = function hasFinished() {
             return _finished;
         };
 
