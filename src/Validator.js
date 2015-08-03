@@ -116,7 +116,7 @@
             var res,
                 extendedOptions = gc.util.extend({}, _options, options);
 
-            res = (data === undefined && extendedOptions.optional) ? res = { data: extendedOptions.def ? extendedOptions.def : undefined, valid: true }
+            res = (data === undefined && extendedOptions.optional) ? res = { data: extendedOptions.def !== undefined ? extendedOptions.def : undefined, valid: true }
                                                                    : validator(data, extendedOptions);
 
             _store(key, data, extendedOptions.canonize ? res.data : data, res.valid);
@@ -157,7 +157,7 @@
                 }
 
             } else if(data === undefined && extendedOptions.optional) {
-                if(extendedOptions.def) {
+                if(extendedOptions.def !== undefined) {
                     val = extendedOptions.def;
                 }
 
@@ -205,7 +205,7 @@
                 }
 
             } else if(data === undefined && extendedOptions.optional) {
-                if(extendedOptions.def) {
+                if(extendedOptions.def !== undefined) {
                     val = extendedOptions.def;
                 }
 

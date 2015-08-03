@@ -16,8 +16,7 @@
             'strNotEmpty'   : validatorStrNotEmpty,
             'callback'      : validatorCallback,
             'enumerated'    : validatorEnumerated,
-            'textStyle'     : validatorTextStyle,
-            'ninePatchData' : validatorNinePatchData
+            'defined'       : validatorDefined
         };
 
     // declare the different validators object used by each class
@@ -148,8 +147,7 @@
      * Check that data is one of the values inside the definition of options.enum
      */
     function validatorEnumerated(data, options) {
-        if(!options || !gc.util.isPlainObject(options.enumerated))
-        {
+        if(!options || !gc.util.isPlainObject(options.enumerated)) {
             throw new P.exceptions.WrongParametersException('options.enumerated is not an Object');
         }
 
@@ -157,10 +155,8 @@
             ok = false,
             i;
 
-        for(i in options.enumerated)
-        {
-            if(!options.strict && data == options.enumerated[i] || options.strict && data === options.enumerated[i])
-            {
+        for(i in options.enumerated) {
+            if(!options.strict && data == options.enumerated[i] || options.strict && data === options.enumerated[i]) {
                 val = options.enumerated[i];
                 ok = true;
                 break;
@@ -172,6 +168,17 @@
             valid: ok
         };
     }
+
+    /*
+     * Just check that the data exists (even if it's 0, "" or null)
+     */
+    function validatorDefined(data, options) {
+        return {
+            data: data,
+            valid: data !== undefined
+        };
+    }
+
 
 
     //////////////////////////
@@ -275,8 +282,7 @@
 
         if(gc.util.isPlainObject(data)) {
             _validator.reset()
-                      .strNotEmpty('src', data.src)
-                      .intPositive('size', data.size, { optional: true })
+                      .defined('texture', data.texture)
                       .intPositive('topLeftX', data.topLeftX)
                       .intPositive('topLeftY', data.topLeftY)
                       .intPositive('topLeftW', data.topLeftW)
@@ -292,8 +298,7 @@
         } else if(gc.util.isArray(data)) {
             if(data.length === 9 || data.length === 10) {
                 _validator.reset()
-                          .strNotEmpty('src', data[0])
-                          .intPositive('size', data[9], { optional: true })
+                          .defined('texture', data[0])
                           .intPositive('topLeftX', data[1])
                           .intPositive('topLeftY', data[2])
                           .intPositive('topLeftW', data[3])

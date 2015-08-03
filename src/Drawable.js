@@ -28,7 +28,7 @@
     /**
      * Class to provide common basic drawing functionality
      *
-     * @param {Image}   src             Source of the image
+     * @param {Image}   texture         Source of the image
      * @param {Integer} [w=src.width]   Width of the start of the region
      * @param {Integer} [h=src.height]  height of the start of the region
      * @param {Integer} [x=0]           x-position of the start of the region
@@ -49,7 +49,7 @@
         // PUBLIC INSTANCE VARS //
         //////////////////////////
 
-        var _src,       // Source of the image
+        var _texture,   // Source of the image
             _size,      // Size of the image
             _offset,    // position of the start of the image
             _center;    // position of the center of the image
@@ -63,9 +63,9 @@
          *
          * @private
          */
-        function _construct(src, width, height, offsetX, offsetY, centerX, centerY) {
-            _src = src;
-            _size = new gc.Size2(width || src.width, height || src.height);
+        function _construct(texture, width, height, offsetX, offsetY, centerX, centerY) {
+            _texture = texture;
+            _size = new gc.Size2(width || texture.width, height || texture.height);
             _offset = new gc.Point2(offsetX || 0, offsetY || 0);
             _center = new gc.Point2(centerX || 0, centerY || 0);
 
@@ -98,7 +98,7 @@
             switch(arguments.length) {
                 case 3: // draw(ctx, x, y)
                     ctx.drawImage(
-                        _src,
+                        _texture,
                         _offset.x,
                         _offset.y,
                         _size.width,
@@ -112,7 +112,7 @@
 
                 case 5: // draw(ctx, x, y, w, h)
                     ctx.drawImage(
-                        _src,
+                        _texture,
                         _offset.x,
                         _offset.y,
                         _size.width,
@@ -126,7 +126,7 @@
 
                 case 9: // draw(ctx, sx, sy, sw, sh, dx, dy, dw, dh)
                     ctx.drawImage(
-                        _src,
+                        _texture,
                         _offset.x + arguments[1],
                         _offset.y + arguments[2],
                         Math.min(arguments[3], _size.width  - arguments[1]),

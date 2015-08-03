@@ -18,11 +18,11 @@
     /**
      * Description of the class
      *
-     * @param {Object}  src Source of the image
-     * @param {Integer} x   x-position of the start of the region
-     * @param {Integer} y   y-position of the start of the region
-     * @param {Integer} w   Width of the start of the region
-     * @param {Integer} h   height of the start of the region
+     * @param {Object}  texture Source of the image
+     * @param {Integer} x       x-position of the start of the region
+     * @param {Integer} y       y-position of the start of the region
+     * @param {Integer} w       Width of the start of the region
+     * @param {Integer} h       height of the start of the region
      *
      * @requires gc.Util
      *
@@ -31,14 +31,14 @@
      * @version 1.0.0
      * @author @danikaze
      */
-    var TextureRegion = function(src, x, y, w, h) {
+    var TextureRegion = function(texture, x, y, w, h) {
 
         //////////////////////////
         // PUBLIC INSTANCE VARS //
         //////////////////////////
 
         /** Texture source of the image. */
-        this.src = src;
+        this.texture = texture;
         /** x-position of the start of the region. */
         this.offsetX = x;
         /** y-position of the start of the region. */
@@ -67,7 +67,7 @@
             switch(arguments.length) {
                 case 3: // draw(ctx, x, y)
                     ctx.drawImage(
-                        this.src,
+                        this.texture,
                         this.offsetX,
                         this.offsetY,
                         this.width,
@@ -81,7 +81,7 @@
 
                 case 5: // draw(ctx, x, y, w, h)
                     ctx.drawImage(
-                        this.src,
+                        this.texture,
                         this.offsetX,
                         this.offsetY,
                         this.width,
@@ -95,7 +95,7 @@
 
                 case 9: // draw(ctx, sx, sy, sw, sh, dx, dy, dw, dh)
                     ctx.drawImage(
-                        this.src,
+                        this.texture,
                         this.offsetX + arguments[1],
                         this.offsetY + arguments[2],
                         Math.min(arguments[3], this.width - arguments[1]),
