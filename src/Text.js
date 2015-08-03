@@ -20,6 +20,9 @@
             height      : 0,
             limit       : null,
             delay       : 0,
+            speed       : 0,
+            pauseOn     : ",、.。"
+            pauseLength : 1000
             style       : {
                 font        : "10px sans-serif",
                 fill        : true,
@@ -43,7 +46,7 @@
      * @public
      * @memberOf gc.Text
      */
-    var VERSION = "0.2.0";
+    var VERSION = "0.2.1";
 
     ///////////////////////////
     // STATIC PUBLIC METHODS //
@@ -118,7 +121,14 @@
         var re = _escapeRegEx ? _escapeRegEx.source : "",
             i;
 
-        _escapedActions[escapeString] = options;
+        _validator.reset()
+                  .textStyle("options", options);
+
+        if(_validator.errors()) {
+            throw new gc.exception.WrongDataException(_validator.errors());
+        }
+
+        _escapedActions[escapeString] = _validator.valid().options;
 
         re = (_escapeRegEx ? _escapeRegEx.source +"|(" :  "(") + (_escapeChar === "\\" ? _escapeChar + _escapeChar : _escapeChar) + escapeString + ")";
 
@@ -202,21 +212,37 @@
     /**
      * Class to write formatted text and cache it in Images
      *
-     * @param {String} text     Formatted text to draw
-     * @param {Object} options  Options to define the Text behavior
-     * @param {Canvas} [canvas] Canvas to use as a background
+     * @param {String}  text                         Formatted text to draw
+     * @param {Object}  options                      Options to define the Text behavior
+     * @param {Integer} [options.marginTop=0]        Margin between the text and the top of the limits
+     * @param {Integer} [options.marginRight=0]      Margin between the text and the right of the limits
+     * @param {Integer} [options.marginBottom=0]     Margin between the text and the bottom of the limits
+     * @param {Integer} [options.marginLeft=0]       Margin between the text and the left of the limits
+     * @param {Integer} [options.width=0]            If specified, the text will break lines to this width
+     * @param {Integer} [options.height=0]           If specified, the text will be limited to this height
+     * @param {Integer} [options.limit=null]         Number of printable characters to draw
+     * @param {Integer} [options.delay=0]            Delay before start drawing
+     * @param {Integer} [options.speed=0]            Speed to draw the text or 0 to draw it all at once.
+     * @param {String}  [options.pauseOn=",.、。"]     Make a pause when find one of this characters
+     * @param {Integer} [options.pauseLength=1000]   Length of the pause (in ms.) done after drawing a character in {@link options.pauseOn}
+     * @param {Object}  [options.style]              Style options
+     * @param {String}  [options.style.font]         Style to use for the font
+     * @param {boolean} [options.style.fill=true]    true to fill the text
+     * @param {String}  [options.style.fillStyle]    Style to apply to the text when filled
+     * @param {boolean} [options.style.stroke=false] true to stroke the text
+     * @param {String}  [options.style.strokeStyle]  Style to apply to the text when stroked
+     * @param {Integer} [options.style.lineMargin]   Extra margin to add between lines in px.
+     * @param {Canvas}  [canvas]                     Canvas to use as a buffer background
      *
      * @requires gc.Util
      * @requires gc.Validator
      * @requires gc.Canvas2D
      * @requires gc.Drawable
-     * @requires gc.Point2
-     * @requires gc.Size2
      * @uses     gc.exception
      *
      * @constructor
      * @memberOf gc
-     * @version 0.2.0
+     * @version 0.2.1
      * @author @danikaze
      */
     var Text = function(text, options, canvas) {
@@ -257,6 +283,12 @@
                       .int("marginLeft", _options.marginLeft)
                       .intPositive("width", _options.width)
                       .intPositive("height", _options.height);
+                      .intPositive("options.limit", _options.limit)
+                      .intPositive("options.delay", _options.delay)
+                      .floatPositive("options.speed", _options.speed)
+                      .str("options.pauseOn", _options.pauseOn)
+                      .floatPositive("options.pauseLength", _options.pauseLength)
+                      .textStyle(options.style);
 
             if(_validator.errors()) {
                 throw new gc.exception.WrongDataException(_validator.errors());
@@ -266,7 +298,7 @@
             // data validation :end
 
             if(newCanvas) {
-                canvas = document.createElement('canvas');
+                canvas = document.createElement("canvas");
             }
 
             _fbo = new gc.Canvas2D(canvas).getContext();

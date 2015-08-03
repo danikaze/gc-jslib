@@ -15,7 +15,9 @@
             'str'           : validatorStr,
             'strNotEmpty'   : validatorStrNotEmpty,
             'callback'      : validatorCallback,
-            'enumerated'    : validatorEnumerated
+            'enumerated'    : validatorEnumerated,
+            'textStyle'     : validatorTextStyle,
+            'ninePatchData' : validatorNinePatchData
         };
 
     // declare the different validators object used by each class
@@ -28,8 +30,13 @@
                 'resourceDefinition': validatorResourceDefinition
             }),
         XHR: basicValidators,
-        Text: basicValidators,
-        Drawable:  basicValidators
+        Text: gc.util.extend({
+            'textStyle': validatorTextStyle
+        }, basicValidators),
+        Drawable: basicValidators,
+        NinePatch: gc.util.extend({
+            'ninePatchData': validatorNinePatchData
+        }, basicValidators)
     };
 
     // validator object used to validate other objects
@@ -223,5 +230,89 @@
             valid: ok
         };
     }
+
+    /////////////////////
+    // Text Validators //
+    /////////////////////
+
+    /*
+     *
+     */
+    function validatorTextStyle(data, options) {
+        var val = null,
+            ok = false;
+
+        if(gc.util.isPlainObject(data)) {
+            _validator.reset()
+                      .strNotEmpty("font", data.font, { optional: true })
+                      .bool("fill", data.fill, { optional: true })
+                      .strNotEmpty("fillStyle", data.fillStyle, { optional: true })
+                      .bool("stroke", data.stroke, { optional: true })
+                      .strNotEmpty("strokeStyle", data.strokeStyle, { optional: true })
+                      .intPositive("lineMargin", data.lineMargin, { optional: true })
+                      .intPositive("pause", data.pause, { optional: true });
+
+            ok = !_validator.errors();
+            val = _validator.valid();
+        }
+
+        return {
+            data: val,
+            valid: ok
+        };
+    }
+
+    //////////////////////////
+    // NinePatch Validators //
+    //////////////////////////
+
+    /*
+     *
+     */
+    function validatorNinePatchData(data, options) {
+        var val = null,
+            ok = false;
+
+        if(gc.util.isPlainObject(data)) {
+            _validator.reset()
+                      .strNotEmpty('src', data.src)
+                      .intPositive('size', data.size, { optional: true })
+                      .intPositive('topLeftX', data.topLeftX)
+                      .intPositive('topLeftY', data.topLeftY)
+                      .intPositive('topLeftW', data.topLeftW)
+                      .intPositive('topLeftH', data.topLeftH)
+                      .intPositive('bottomRightX', data.bottomRightX)
+                      .intPositive('bottomRightH', data.bottomRightH)
+                      .intPositive('bottomRightW', data.bottomRightW)
+                      .intPositive('bottomRightH', data.bottomRightH);
+
+            ok = !_validator.errors();
+            val = _validator.valid();
+
+        } else if(gc.util.isArray(data)) {
+            if(data.length === 9 || data.length === 10) {
+                _validator.reset()
+                          .strNotEmpty('src', data[0])
+                          .intPositive('size', data[9], { optional: true })
+                          .intPositive('topLeftX', data[1])
+                          .intPositive('topLeftY', data[2])
+                          .intPositive('topLeftW', data[3])
+                          .intPositive('topLeftH', data[4])
+                          .intPositive('bottomRightX', data[5])
+                          .intPositive('bottomRightH', data[6])
+                          .intPositive('bottomRightW', data[7])
+                          .intPositive('bottomRightH', data[8]);
+
+                ok = !_validator.errors();
+                val = _validator.valid();
+            }
+        }
+
+        return {
+            data: val,
+            valid: ok
+        };
+    }
+
 
 } (window.gc));
