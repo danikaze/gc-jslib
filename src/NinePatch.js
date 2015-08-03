@@ -111,7 +111,7 @@
                 _fbo.canvas.height = valid.height;
             }
 
-            _parts = _loadParts(data);
+            _parts = _loadParts(valid.data);
 
             // create the drawable, but choosing which methods to use
             _drawable = new gc.Drawable(_fbo.canvas, valid.width, valid.height, 0, 0, valid.centerX, valid.centerY);

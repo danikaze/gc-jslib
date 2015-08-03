@@ -288,7 +288,7 @@
                       .intPositive('topLeftW', data.topLeftW)
                       .intPositive('topLeftH', data.topLeftH)
                       .intPositive('bottomRightX', data.bottomRightX)
-                      .intPositive('bottomRightH', data.bottomRightH)
+                      .intPositive('bottomRightY', data.bottomRightY)
                       .intPositive('bottomRightW', data.bottomRightW)
                       .intPositive('bottomRightH', data.bottomRightH);
 
@@ -304,7 +304,7 @@
                           .intPositive('topLeftW', data[3])
                           .intPositive('topLeftH', data[4])
                           .intPositive('bottomRightX', data[5])
-                          .intPositive('bottomRightH', data[6])
+                          .intPositive('bottomRightY', data[6])
                           .intPositive('bottomRightW', data[7])
                           .intPositive('bottomRightH', data[8]);
 

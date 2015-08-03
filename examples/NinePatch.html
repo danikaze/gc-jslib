@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
 
     <title>gc.Easing examples</title>
-<!--
+
     <script type="text/javascript" src="../src/polyfill.js"></script>
     <script type="text/javascript" src="../src/exception.js"></script>
     <script type="text/javascript" src="../src/util.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../src/TextureRegion.js"></script>
     <script type="text/javascript" src="../src/Drawable.js"></script>
     <script type="text/javascript" src="../src/NinePatch.js"></script>
--->
-    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+
+<!--    <script type="text/javascript" src="../build/gc-jslib.min.js"></script> -->
 </head>
 
 <body>
@@ -39,7 +39,8 @@
     var canvas,
         canvasSize,
         ctx,
-        patch,
+        patch1,
+        patch2,
         img;
 
     img = new Image();
@@ -56,7 +57,7 @@
             bottomRightW: 12,
             bottomRightH: 8
         },
-        patchData2 = [img, 1, 1, 12, 31, 25, 38, 12, 8];
+        patchData2 = [img, 1, 1, 12, 31, 21, 38, 12, 8];
 
     /*
      * Initialize the canvas
@@ -66,22 +67,23 @@
     canvasSize = canvas.getSize();
 
     img.onload = function() {
-        patch = new gc.NinePatch(patchData1);
+        patch1 = new gc.NinePatch(patchData1);
+        patch2 = new gc.NinePatch(patchData2);
 
-        patch.draw(ctx, 10, 10);
-        patch.drawBounds(ctx, 10, 10);
+        patch1.draw(ctx, 10, 10);
+        patch1.drawBounds(ctx, 10, 10);
 
-        patch.setSize(300, 100);
-        patch.draw(ctx, 150, 10);
-        patch.drawBounds(ctx, 150, 10);
+        patch1.setSize(300, 100);
+        patch1.draw(ctx, 150, 10);
+        patch1.drawBounds(ctx, 150, 10);
 
-        patch.setSize(200, 200)
-        patch.draw(ctx, 10, 150);
-        patch.drawBounds(ctx, 10, 150);
+        patch2.setSize(200, 200)
+        patch2.draw(ctx, 10, 150);
+        patch2.drawBounds(ctx, 10, 150);
 
-        patch.setSize(5, 5)
-        patch.draw(ctx, 350, 150);
-        patch.drawBounds(ctx, 350, 150);
+        patch1.setSize(5, 5)
+        patch1.draw(ctx, 350, 150);
+        patch1.drawBounds(ctx, 350, 150);
     }
 
 </script>
