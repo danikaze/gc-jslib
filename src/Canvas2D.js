@@ -13,7 +13,7 @@
      * @memberOf gc.Canvas2D
      * @public
      */
-    var VERSION = "1.0.0";
+    var VERSION = "0.2.0";
 
     ///////////////////////////
     // STATIC PUBLIC METHODS //
@@ -129,14 +129,15 @@
     /**
      * Wrapper for Canvas2D objects
      *
-     * @params {DOM} canvas DOM element of the canvas object
+     * @params {DOM} [canvas] DOM element of the canvas object. Since 0.2.0, if not specified, a new one will be created.
      *
      * @requires gc.Util
+     * @uses     gc.Size2
      * @uses     gc.TextureRegion
      *
      * @constructor
      * @memberOf gc
-     * @version 1.0.0
+     * @version 0.2.0
      * @author @danikaze
      */
     var Canvas2D = function(canvas) {
@@ -160,7 +161,7 @@
          */
         function _construct(canvas) {
             if(!canvas) {
-                throw new gc.exception.WrongSignatureException("canvas is not specified");
+                canvas = document.createElement("canvas");
             }
 
             if(!canvas.getContext) {
@@ -186,6 +187,58 @@
             return _decoratedContext(_ctx);
         };
 
+        /**
+         * Get the associated Canvas DOM element
+         *
+         * @return {DOM} Canvas associated with this object
+         *
+         * @public
+         * @since  0.2.0
+         */
+        this.getCanvas = function getCanvas() {
+            return _fbo.canvas;
+        };
+
+        /**
+         * Set the size of the Canvas
+         * This method accept two signatures:
+         *  1 parameter : get the values of another object with { width, height } properties (such as {@link gc.Size2})
+         *  2 parameters: explicit values as (width, height)
+         *
+         * @return {gc.Canvas2D} Self reference for allowing chaining
+         *
+         * @public
+         * @since 0.2.0
+         */
+        this.setSize = function setSize() {
+            switch(arguments.length) {
+                case 1:
+                    this.width = arguments[0].width;
+                    this.height = arguments[0].height;
+                    break;
+
+                case 2:
+                    this.width = arguments[0];
+                    this.height = arguments[1];
+                    break;
+
+                default:
+                    throw new gc.exception.WrongSignatureException("Incorrect number of parameters");
+            }
+
+            return this;
+        };
+
+        /**
+         * Get the size of the Canvas
+         *
+         * @return {gc.Size2} Current size of the canvas element
+         *
+         * @public
+         */
+        this.getSize = function getSize() {
+            return new gc.Size2(_fbo.canvas.width, _fbo.canvas.height);
+        };
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);
