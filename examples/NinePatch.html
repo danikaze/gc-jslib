@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.Easing examples</title>
+<!--
+    <script type="text/javascript" src="../src/polyfill.js"></script>
+    <script type="text/javascript" src="../src/exception.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/Validator.js"></script>
+    <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
+    <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/Size2.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/TextureRegion.js"></script>
+    <script type="text/javascript" src="../src/Drawable.js"></script>
+    <script type="text/javascript" src="../src/NinePatch.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+</head>
+
+<body>
+
+<canvas id="canvas" width="640" height="360" moz-opaque>
+    Your browser doesn't support canvas.
+    WHAT YEAR IS IT!???
+</canvas>
+
+<style type="text/css">
+    canvas {
+        border: 2px solid black;
+    }
+</style>
+
+<script type="text/javascript">
+    "use strict";
+
+    var canvas,
+        canvasSize,
+        ctx,
+        patch,
+        img;
+
+    img = new Image();
+    img.src = 'img/window9.png';
+
+    var patchData1 = {
+            texture     : img,
+            topLeftX    : 1,
+            topLeftY    : 1,
+            topLeftW    : 12,
+            topLeftH    : 31,
+            bottomRightX: 21,
+            bottomRightY: 38,
+            bottomRightW: 12,
+            bottomRightH: 8
+        },
+        patchData2 = [img, 1, 1, 12, 31, 25, 38, 12, 8];
+
+    /*
+     * Initialize the canvas
+     */
+    canvas = new gc.Canvas2D(document.getElementById("canvas"));
+    ctx = canvas.getContext();
+    canvasSize = canvas.getSize();
+
+    img.onload = function() {
+        patch = new gc.NinePatch(patchData1);
+
+        patch.draw(ctx, 10, 10);
+        patch.drawBounds(ctx, 10, 10);
+
+        patch.setSize(300, 100);
+        patch.draw(ctx, 150, 10);
+        patch.drawBounds(ctx, 150, 10);
+
+        patch.setSize(200, 200)
+        patch.draw(ctx, 10, 150);
+        patch.drawBounds(ctx, 10, 150);
+
+        patch.setSize(5, 5)
+        patch.draw(ctx, 350, 150);
+        patch.drawBounds(ctx, 350, 150);
+    }
+
+</script>
+
+</body>
+</html>

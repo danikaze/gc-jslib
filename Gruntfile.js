@@ -33,8 +33,25 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     'build/<%= pkg.name %>.min.js': [
-                        'src/*.js',
-                        '!src/_template_.js'
+                        'src/polyfill.js',
+                        'src/exception.js',
+                        'src/util.js',
+                        'src/Validator.js',
+                        'src/validatorDefinitions.js',
+                        'src/RNG.js',
+                        'src/Deferred.js',
+                        'src/XHR.js',
+                        'src/FPS.js',
+                        'src/ResourceManager.js',
+                        'src/Drawable.js',
+                        'src/Canvas2D.js',
+                        'src/Point2.js',
+                        'src/Size2.js',
+                        'src/Easing.js',
+                        'src/TextureRegion.js',
+                        'src/Animation.js',
+                        'src/Text.js',
+                        'src/NinePatch.js'
                     ]
                 }
             }
