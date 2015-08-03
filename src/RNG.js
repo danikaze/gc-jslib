@@ -84,7 +84,7 @@
          *
          * @public
          */
-        this.nextInt = function() {
+        this.nextInt = function(min, max) {
             _state = (_a * _state + _c) % _m;
             _generated++;
 
@@ -94,11 +94,11 @@
                     break;
 
                 case 1:
-                    return Math.floor(_state / _m * arguments[0]);
+                    return Math.floor(_state / _m * min);
                     break;
 
                 case 2:
-                    return Math.floor(_state / _m * arguments[1]) + arguments[0];
+                    return Math.floor(_state / _m * (max - min) + min);
                     break;
 
                 default:
