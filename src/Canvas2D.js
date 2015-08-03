@@ -196,7 +196,7 @@
          * @since  0.2.0
          */
         this.getCanvas = function getCanvas() {
-            return _fbo.canvas;
+            return _ctx.canvas;
         };
 
         /**
@@ -237,7 +237,7 @@
          * @public
          */
         this.getSize = function getSize() {
-            return new gc.Size2(_fbo.canvas.width, _fbo.canvas.height);
+            return new gc.Size2(_ctx.canvas.width, _ctx.canvas.height);
         };
 
         // call the constructor after setting all the methods

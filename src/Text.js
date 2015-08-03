@@ -21,8 +21,8 @@
             limit       : null,
             delay       : 0,
             speed       : 0,
-            pauseOn     : ",、.。"
-            pauseLength : 1000
+            pauseOn     : ",、.。",
+            pauseLength : 1000,
             style       : {
                 font        : "10px sans-serif",
                 fill        : true,
@@ -282,7 +282,7 @@
                       .int("marginBottom", _options.marginBottom)
                       .int("marginLeft", _options.marginLeft)
                       .intPositive("width", _options.width)
-                      .intPositive("height", _options.height);
+                      .intPositive("height", _options.height)
                       .intPositive("options.limit", _options.limit)
                       .intPositive("options.delay", _options.delay)
                       .floatPositive("options.speed", _options.speed)
