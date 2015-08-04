@@ -6,6 +6,16 @@
     "use strict";
 
     /**
+     * Current version of this object
+     *
+     * @type {String}
+     * @readOnly
+     * @memberOf gc.Util
+     * @public
+     */
+    var VERSION = "0.2.0";
+
+    /**
      * Enum: Alignment values
      *
      * @enum {Number}
@@ -30,7 +40,7 @@
      * @memberOf gc
      * @namespace
      * @alias gc.util
-     * @version 1.0.0
+     * @version 0.2.0
      */
     var Util = {};
 
@@ -378,6 +388,7 @@
         gc = window.gc;
     }
     gc.util = Util;
+    gc.util.defineConstant(gc.util, "VERSION", VERSION);
     gc.util.defineConstant(gc, "Align", Align);
 
 } (window, window.gc));

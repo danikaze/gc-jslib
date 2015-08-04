@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.browser examples</title>
+<!--
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/browser.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+</head>
+
+<body>
+
+<style type="text/css">
+    table {
+        border: 1px solid black;
+        padding: 0;
+    }
+    td {
+        border: 1px solid gray;
+        padding: 2px 5px;
+    }
+    th {
+        background: #333;
+        color: #fff;
+        border: 1px solid gray;
+        padding: 2px 5px;
+    }
+</style>
+
+<table>
+    <tr><th>Browser.xxx</th> <th>Value</th></tr>
+
+<script type="text/javascript">
+    "use strict";
+
+    for(var i in gc.browser) {
+        document.writeln("<tr><th>" + i + "</th> <td>" + gc.browser[i] + "</td></tr>");
+    }
+</script>
+
+</table>
+
+</body>
+</html>
