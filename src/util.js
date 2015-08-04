@@ -299,6 +299,19 @@
     };
 
     /**
+     * Synchronous sleep for the specified milliseconds
+     *
+     * @param {Number} time milliseconds to sleep
+     *
+     * @public
+     */
+    Util.sleep = function sleep(time) {
+        var start = performance.now();
+
+        while(performance.now() - start <= time) {};
+    };
+
+    /**
      * Take a box of size {@link w} x {@link h} and align its center to a position based on the {@link align} parameter
      *
      * @param {Align}              align {@link Align} enum with the desired alignment value
