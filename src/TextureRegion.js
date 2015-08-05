@@ -108,8 +108,7 @@
                     break;
 
                 default:
-                    throw "Incorrect number of parameters"
-                    break;
+                    throw "Incorrect number of parameters";
             }
         };
 

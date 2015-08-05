@@ -4,13 +4,13 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-        clean : {
+        clean: {
             docs: ['docs'],
             build: ['build']
         },
 
-        jsdoc : {
-            build : {
+        jsdoc: {
+            build: {
                 src: [
                     'src/*.js',
                     'README.md',
@@ -20,6 +20,22 @@ module.exports = function(grunt) {
                 options: {
                     destination: 'docs',
                     configure: 'jsdoc-config.json'
+                }
+            }
+        },
+
+        jshint: {
+            build: {
+                src: [
+                    'src/*js',
+                    '!src/_template_.js'
+                ],
+                options: {
+                    eqnull: true, // Use '===' to compare with 'null'.
+                    curly: true,
+                    browser: true,
+                    futurehostile: true,
+                    undef: true
                 }
             }
         },
@@ -61,8 +77,8 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-
     // Default task(s).
-    grunt.registerTask('default', ['clean:docs', 'jsdoc', 'uglify']);
+    grunt.registerTask('default', ['clean:docs', 'jsdoc', 'jshint', 'uglify']);
 };

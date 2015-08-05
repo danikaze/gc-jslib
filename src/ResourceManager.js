@@ -83,7 +83,7 @@
          *
          * @private
          */
-        function _construct() {
+        var _construct = function _construct() {
             _images = {};
             _fonts  = {};
             _audios = {};
@@ -216,7 +216,7 @@
                 if(!container[key].rsc && !container[key].tmp) {
                     loader(key, container[key]);
                 }
-            };
+            }
         }
 
         function _validateResourceDefinition(data) {
@@ -323,7 +323,7 @@
                 _loadResources(_images, _loadImage);
             }
             if(data[ResourceType.FONT]) {
-                _loadResources(_fonts, _loadFont);
+                _loadResources(_fonts, _loadFile);
             }
             if(data[ResourceType.AUDIO]) {
                 _loadResources(_audios, _loadAudio);
@@ -357,11 +357,11 @@
          * @public
          */
         this.getAudio = function getAudio(key) {
-            if(!_audio[key] || !_audio[key].rsc) {
+            if(!_audios[key] || !_audios[key].rsc) {
                 return undefined;
             }
 
-            return _audio[key].rsc;
+            return _audios[key].rsc;
         };
 
         // call the constructor after setting all the methods

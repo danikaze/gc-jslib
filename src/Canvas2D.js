@@ -108,22 +108,19 @@
                             arguments[7],
                             arguments[8]
                         );
-                        ctx.drawImage(frame.src, frame.offsetX, frame.offsetY, frame.width/2, frame.height,
-                            charX-frame.centerX*2, charY-frame.centerY*2, frame.width, frame.height*2);
                         break;
 
                     default:
                         throw new gc.exception.WrongSignatureException("Incorrect number of parameters");
-                        break;
                 }
 
             } else {
-                ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+                ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
             }
-        }
+        };
 
         return ctx;
-    };
+    }
 
 
     /**
@@ -169,7 +166,7 @@
             }
 
             _ctx = canvas.getContext("2d");
-        };
+        }
 
 
         ////////////////////
@@ -245,7 +242,7 @@
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);
-    }
+    };
 
 
     ///////////////////////////////

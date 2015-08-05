@@ -2,10 +2,10 @@
     "use strict";
 
     /**
-     * performance.now
+     * window.performance.now
      * https://gist.github.com/paulirish/5438650
      */
-    if ("performance" in window == false) {
+    if ("performance" in window === false) {
           window.performance = {};
     }
 
@@ -13,28 +13,28 @@
         return new Date().getTime();
     });
 
-    if ("now" in window.performance == false){
+    if ("now" in window.performance === false) {
 
         var nowOffset = Date.now();
 
-        if (performance.timing && performance.timing.navigationStart){
-            nowOffset = performance.timing.navigationStart
+        if (window.performance.timing && window.performance.timing.navigationStart) {
+            nowOffset = window.performance.timing.navigationStart;
         }
 
-        window.performance.now = function now(){
+        window.performance.now = function now() {
             return Date.now() - nowOffset;
-        }
+        };
     }
 
     /**
      * requestAnimationFrame
      */
     if(!window.requestAnimationFrame) {
-        window.requestAnimationFrame = window.webkitRequestAnimationFrame
-            || window.mozRequestAnimationFrame
-            || window.oRequestAnimationFrame
-            || window.msRequestAnimationFrame
-            || function(callback){
+        window.requestAnimationFrame = window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function(callback){
                 window.setTimeout(function() {
                     callback(window.performance.now());
                 }, 1000 / 60);
@@ -51,7 +51,7 @@
      * https://github.com/neovov/Fullscreen-API-Polyfill/blob/master/fullscreen-api-polyfill.js
      */
 
-    function noop() {};
+    function noop() {}
 
     var pollute = true,
         api,

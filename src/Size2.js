@@ -49,7 +49,7 @@
          *
          * @private
          */
-        function _construct(width, height) {
+        var _construct = function _construct(width, height) {
             if(arguments.length === 0) {
                 this.width = arguments[0].width || 0;
                 this.height = arguments[0].height || 0;
@@ -58,7 +58,7 @@
                 this.width = width || 0;
                 this.height = height || 0;
             }
-        }
+        };
 
         ////////////////////
         // PUBLIC METHODS //

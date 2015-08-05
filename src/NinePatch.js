@@ -83,7 +83,7 @@
          *
          * @private
          */
-        function _construct(data, width, height, centerX, centerY, scaleX, scaleY, canvas) {
+        var _construct = function _construct(data, width, height, centerX, centerY, scaleX, scaleY, canvas) {
             var valid,
                 partialDrawable = {};
 
@@ -135,7 +135,7 @@
          *
          * @private
          */
-        function _loadParts(data) {
+        var _loadParts = function _loadParts(data) {
             var centerX = data.topLeftX + data.topLeftW,
                 centerY = data.topLeftY + data.topLeftH,
                 centerW = data.bottomRightX - data.topLeftX - data.topLeftW,
@@ -152,14 +152,14 @@
                 bottom     : new gc.TextureRegion(data.texture, centerX,           data.bottomRightY, centerW,           data.bottomRightH),
                 bottomRight: new gc.TextureRegion(data.texture, data.bottomRightX, data.bottomRightY, data.bottomRightW, data.bottomRightH)
             };
-        }
+        };
 
         /**
          * Render the 9-patch in the FBO
          *
          * @private
          */
-        function _render() {
+        var _render = function _render() {
             var right = _fbo.canvas.width - _parts.bottomRight.width,
                 bottom = _fbo.canvas.height - _parts.bottomRight.height,
                 centerW = _fbo.canvas.width - _parts.topLeft.width - _parts.bottomRight.width,
@@ -174,7 +174,7 @@
             _parts.bottomLeft.draw(_fbo,  0,                    bottom,                _parts.topLeft.width,     _parts.bottomRight.height);
             _parts.bottom.draw(_fbo,      _parts.topLeft.width, bottom,                centerW,                  _parts.bottomRight.height);
             _parts.bottomRight.draw(_fbo, right,                bottom,                _parts.bottomRight.width, _parts.bottomRight.height);
-        }
+        };
 
         ////////////////////
         // PUBLIC METHODS //

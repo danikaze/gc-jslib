@@ -68,7 +68,7 @@
          *
          * @private
          */
-        function _construct(func) {
+        var _construct = function _construct(func) {
             _state = State.PENDING;
             _done = [];
             _fail = [];
@@ -240,7 +240,7 @@
          * @public
          */
         this.promise = function promise(obj) {
-            var promise = {
+            var p = {
                     state   : this.state,
                     done    : this.done,
                     fail    : this.fail,
@@ -250,8 +250,8 @@
                     promise : this.promise
                 };
 
-            return obj != null ? gc.util.extend(obj, promise)
-                               : promise;
+            return obj != null ? gc.util.extend(obj, p)
+                               : p;
         };
 
         /**

@@ -50,7 +50,7 @@
          *
          * @private
          */
-        function _construct(width, height, x, y) {
+        var _construct = function _construct(width, height, x, y) {
             if(arguments.length === 1) {
                 this.width = arguments[0].width || 0;
                 this.height = arguments[0].height || 0;
@@ -63,7 +63,7 @@
                 this.x = x || 0;
                 this.y = y || 0;
             }
-        }
+        };
 
         ////////////////////
         // PUBLIC METHODS //
@@ -181,10 +181,10 @@
          * @public
          */
         this.overlaps = function(rect) {
-            return this.x <= rect.x + rect.width
-                && this.x + this.width >= rect.x
-                && this.y <= rect.y + rect.height
-                && this.y + this.height >= rect.y;
+            return this.x <= rect.x + rect.width &&
+                   this.x + this.width >= rect.x &&
+                   this.y <= rect.y + rect.height &&
+                   this.y + this.height >= rect.y;
         };
 
         /**
@@ -197,8 +197,8 @@
          * @public
          */
         this.contains = function(x, y) {
-            return x > this.x && x <= this.x + this.width
-                && y > this.y && y <= this.y + this.height;
+            return x > this.x && x <= this.x + this.width &&
+                   y > this.y && y <= this.y + this.height;
         };
 
         // call the constructor after setting all the methods

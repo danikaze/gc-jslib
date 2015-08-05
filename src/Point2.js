@@ -49,7 +49,7 @@
          *
          * @private
          */
-        function _construct(x, y) {
+        var _construct = function _construct(x, y) {
             if(arguments.length === 0) {
                 this.x = arguments[0].x || 0;
                 this.y = arguments[0].y || 0;
@@ -58,7 +58,7 @@
                 this.x = x || 0;
                 this.y = y || 0;
             }
-        }
+        };
 
         ////////////////////
         // PUBLIC METHODS //
@@ -160,13 +160,12 @@
          * @public
          */
          this.angleRad = function angleRad(x, y) {
-            var xx = this.x - x,
-                yy = this.y - y,
-                angle;
+            var a;
 
-            angle = Math.atan2(yy, xx);
-            return angle < 0 ? 2 * Math.PI + angle
-                             : angle;
+            a = Math.atan2(this.y - y, this.x - x);
+
+            return a < 0 ? 2 * Math.PI + a
+                         : a;
          };
 
          /**
@@ -184,17 +183,15 @@
          * @public
          */
          this.angle = function angle(x, y) {
-            var xx = this.x - x,
-                yy = this.y - y,
-                angle;
+            var a;
 
-            angle = Math.atan2(yy, xx);
-            if(angle < 0) {
-                angle = 2 * Math.PI + angle;
+            a = Math.atan2(this.y - y, this.x - x);
+            if(a < 0) {
+                a = 2 * Math.PI + a;
             }
 
-            return angle * 180 / Math.PI;
-         }
+            return a * 180 / Math.PI;
+         };
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);

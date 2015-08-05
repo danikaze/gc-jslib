@@ -111,16 +111,13 @@
             switch(arguments.length) {
                 case 1:
                     return _options[key];
-                    break;
 
                 case 2:
                     _options[key] = value;
                     return this;
-                    break;
 
                 default:
                     throw "Wrong Parameters";
-                    break;
             }
         };
 
@@ -187,7 +184,7 @@
             ctx.fillStyle = oldFillStyle;
 
             return this;
-        }
+        };
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);

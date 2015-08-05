@@ -148,7 +148,7 @@
      */
     function validatorEnumerated(data, options) {
         if(!options || !gc.util.isPlainObject(options.enumerated)) {
-            throw new P.exceptions.WrongParametersException('options.enumerated is not an Object');
+            throw new gc.exception.WrongParametersException('options.enumerated is not an Object');
         }
 
         var val = null,

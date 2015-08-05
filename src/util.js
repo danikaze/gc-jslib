@@ -54,7 +54,7 @@
     Util.defineConstant = function defineConstant(container, name, value) {
         if(typeof value === "object") {
             Object.freeze(value);
-        };
+        }
 
         Object.defineProperty(container, name, {
             configurable: false,
@@ -137,7 +137,7 @@
      * @public
      */
     Util.isNumber = function isNumber(obj) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
+        return !isNaN(parseFloat(obj)) && isFinite(obj);
     };
 
     /**
@@ -161,7 +161,7 @@
      * @public
      */
     Util.isArray = Array.isArray ? Array.isArray
-                                 : function isArray(obj) { return Object.prototype.toString.call( someVar ) === "[object Array]"; };
+                                 : function isArray(obj) { return Object.prototype.toString.call(obj) === "[object Array]"; };
 
     /**
      * Check if an object is a plain Object
@@ -258,39 +258,44 @@
      * @public
      */
     Util.extend = function extend() {
-        var out;
+        var out,
+            i,
+            key,
+            obj;
 
         if(arguments[0] === true) {
             out = arguments[1] || {};
 
-            for (var i = 2; i < arguments.length; i++) {
-                var obj = arguments[i];
+            for(i = 2; i < arguments.length; i++) {
+                obj = arguments[i];
 
                 if (!obj) {
                     continue;
                 }
 
-                for (var key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        if (typeof obj[key] === 'object')
+                for(key in obj) {
+                    if(obj.hasOwnProperty(key)) {
+                        if(typeof obj[key] === 'object') {
                             extend(true, out[key], obj[key]);
-                        else
+                        } else {
                             out[key] = obj[key];
+                        }
                     }
                 }
             }
 
         } else {
-          out = arguments[0] || {};
+            out = arguments[0] || {};
 
-          for (var i = 1; i < arguments.length; i++) {
-            if (!arguments[i]) {
-                continue;
-            }
+            for(i = 1; i < arguments.length; i++) {
+                if(!arguments[i]) {
+                    continue;
+                }
 
-            for (var key in arguments[i]) {
-                if (arguments[i].hasOwnProperty(key))
-                    out[key] = arguments[i][key];
+                for(key in arguments[i]) {
+                    if(arguments[i].hasOwnProperty(key)) {
+                        out[key] = arguments[i][key];
+                    }
                 }
             }
         }
@@ -306,9 +311,9 @@
      * @public
      */
     Util.sleep = function sleep(time) {
-        var start = performance.now();
+        var start = window.performance.now();
 
-        while(performance.now() - start <= time) {};
+        while(window.performance.now() - start <= time) { }
     };
 
     /**

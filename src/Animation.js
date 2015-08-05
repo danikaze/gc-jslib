@@ -125,7 +125,7 @@
          *
          * @private
          */
-        function _construct(image, options) {
+        var _construct = function _construct(image, options) {
             var defaultOptions = {
                     // global animation options
                     playMode: PlayMode.LOOP,
@@ -194,8 +194,7 @@
             } else {
                 _onChangeDirection = [];
             }
-
-        }
+        };
 
         /**
          * Load the frames of the Animation from an image source
@@ -205,14 +204,14 @@
          *
          * @private
          */
-        function _loadFrames(image, options) {
+        var _loadFrames = function _loadFrames(image, options) {
             var i,
                 x = options.offsetX,
                 y = options.offsetY,
                 frame,
                 opt;
 
-            _texture = image
+            _texture = image;
             _totalTime = 0;
             _frames = [];
 
@@ -252,8 +251,8 @@
                                                   options.frames[i].height ? options.frames[i].height : options.framesHeight),
                         time: options.frames[i].time ? options.frames[i].time : options.frameTime
                     };
-                    frame.src.centerX = options.frames[i].centerX ? options.frames[i].centerX : options.frameCenterX,
-                    frame.src.centerY = options.frames[i].centerY ? options.frames[i].centerY : options.frameCenterY
+                    frame.src.centerX = options.frames[i].centerX ? options.frames[i].centerX : options.frameCenterX;
+                    frame.src.centerY = options.frames[i].centerY ? options.frames[i].centerY : options.frameCenterY;
 
                     _frames.push(frame);
                     _totalTime += frame.time;
@@ -267,7 +266,7 @@
                     }
                 }
             }
-        }
+        };
 
         /**
          * Call the registered triggers when needed
@@ -276,13 +275,13 @@
          *
          * @private
          */
-        function _triggerCallback(callbacks) {
+        var _triggerCallback = function _triggerCallback(callbacks) {
             var i, n;
 
             for(i=0, n=callbacks.length; i<n; i++) {
                 callbacks[i]();
             }
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -290,7 +289,7 @@
          *
          * @private
          */
-        function _updateNormal() {
+        var _updateNormal = function _updateNormal() {
             if(_currentFrameIndex === _nFrames - 1) {
                 _finished = true;
                 _playing = false;
@@ -299,7 +298,7 @@
             } else {
                 _currentFrameIndex++;
             }
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -307,7 +306,7 @@
          *
          * @private
          */
-        function _updateReversed() {
+        var _updateReversed = function _updateReversed() {
             if(_currentFrameIndex === 0) {
                 _finished = true;
                 _playing = false;
@@ -316,7 +315,7 @@
             } else {
                 _currentFrameIndex--;
             }
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -324,7 +323,7 @@
          *
          * @private
          */
-        function _updatePingpong() {
+        var _updatePingpong = function _updatePingpong() {
             if(_playDirection === PlayDirection.FORWARDS) {
                 if(_currentFrameIndex === _nFrames - 1 && _nFrames > 0) {
                     _playDirection = PlayDirection.BACKWARDS;
@@ -341,7 +340,7 @@
             } else {
                 _currentFrameIndex--;
             }
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -349,9 +348,9 @@
          *
          * @private
          */
-        function _updateLoop() {
+        var _updateLoop = function _updateLoop() {
             _currentFrameIndex = (_currentFrameIndex + 1) % _nFrames;
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -359,7 +358,7 @@
          *
          * @private
          */
-        function _updateLoopPingpong() {
+        var _updateLoopPingpong = function _updateLoopPingpong() {
             if(_playDirection === PlayDirection.FORWARDS) {
                 if(_currentFrameIndex === _nFrames - 1 && _nFrames > 0) {
                     _playDirection = PlayDirection.BACKWARDS;
@@ -375,7 +374,7 @@
             } else {
                 _currentFrameIndex--;
             }
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -383,13 +382,13 @@
          *
          * @private
          */
-        function _updateLoopReversed() {
+        var _updateLoopReversed = function _updateLoopReversed() {
             if(_currentFrameIndex === 0) {
                 _currentFrameIndex = _nFrames - 1;
             } else {
                 _currentFrameIndex--;
             }
-        }
+        };
 
         /**
          * Update the _currentFrameIndex with the next frame and set the internal control variables
@@ -397,9 +396,9 @@
          *
          * @private
          */
-        function _updateLoopRandom() {
+        var _updateLoopRandom = function _updateLoopRandom() {
             _currentFrameIndex = _rng.nextInt(_nFrames);
-        }
+        };
 
 
         ////////////////////

@@ -268,7 +268,7 @@
          *
          * @private
          */
-        function _construct(text, options, canvas) {
+        var _construct = function _construct(text, options, canvas) {
             var textSize,
                 newCanvas = !canvas;
 
@@ -410,12 +410,14 @@
                     i = 0;
 
                 if(_escapeRegEx) {
-                    while(m = _escapeRegEx.exec(txt)) {
+                    m = _escapeRegEx.exec(txt);
+                    while(m) {
                         res.push({
                             txt   : txt.substring(i, m.index),
                             action: m[0].substring(_escapeChar.length)
                         });
                         i = m.index + m[0].length;
+                        m = _escapeRegEx.exec(txt);
                     }
                 }
                 if(i < txt.length) {
@@ -483,8 +485,10 @@
                     xx = x,
                     i;
 
-                while(i = re.exec(txt)) {
-                    separators.push(i[0])
+                i = re.exec(txt);
+                while(i) {
+                    separators.push(i[0]);
+                    i = re.exec(txt);
                 }
 
                 for(i=0; i<words.length; i++) {
@@ -543,7 +547,7 @@
                 e, escaped, nEscaped,
                 token,
                 x,
-                maxX = _options.width != 0 ? _options.width - _options.marginRight : Infinity,
+                maxX = _options.width !== 0 ? _options.width - _options.marginRight : Infinity,
                 availableWidth = maxX - _options.marginLeft,
                 y = _options.marginTop,
                 lineHeight;
@@ -561,7 +565,6 @@
             for(line=0; line<text.length; line++) {
                 res[line] = [];
                 x = _options.marginLeft;
-                lineHeight;
 
                 escaped = getEscapeStrings(text[line]);
 
@@ -642,7 +645,7 @@
                 width : Math.ceil(width),
                 height: Math.ceil(height)
             };
-        }
+        };
 
         /**
          * Get an option.
@@ -659,7 +662,7 @@
             }
 
             return _options[key];
-        }
+        };
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);

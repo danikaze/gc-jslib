@@ -132,7 +132,7 @@
                         _offset.x + arguments[1],
                         _offset.y + arguments[2],
                         Math.min(arguments[3], _size.width  - arguments[1]),
-                        Math.min(arguments[4], _size/height - arguments[2]),
+                        Math.min(arguments[4], _size.height - arguments[2]),
                         arguments[5] - _center.x * (arguments[7]/_size.width),
                         arguments[6] - _center.y * (arguments[8]/_size.height),
                         arguments[7],
@@ -141,8 +141,7 @@
                     break;
 
                 default:
-                    throw "Incorrect number of parameters"
-                    break;
+                    throw "Incorrect number of parameters";
             }
 
             return this;
@@ -189,8 +188,7 @@
                     break;
 
                 default:
-                    throw "Incorrect number of parameters"
-                    break;
+                    throw "Incorrect number of parameters";
             }
 
             return this;
@@ -218,12 +216,11 @@
                     break;
 
                 default:
-                    throw "Incorrect number of parameters"
-                    break;
+                    throw "Incorrect number of parameters";
             }
 
             return this;
-        }
+        };
 
         /**
          * Set a new size for the Drawable element.
@@ -372,7 +369,7 @@
          * @public
          */
         this.drawable = function drawable(obj) {
-            var drawable = {
+            var d = {
                 draw      : this.draw,
                 drawBounds: this.drawBounds,
                 drawCenter: this.drawCenter,
@@ -385,8 +382,8 @@
                 drawable  : this.drawable
             };
 
-            return obj != null ? gc.util.extend(obj, drawable)
-                               : drawable;
+            return obj != null ? gc.util.extend(obj, d)
+                               : d;
         };
 
         // call the constructor after setting all the methods

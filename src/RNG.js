@@ -66,7 +66,7 @@
 
             _state = _seed;
             _generated = 0;
-        };
+        }
 
 
         ////////////////////
@@ -91,19 +91,15 @@
             switch(arguments.length) {
                 case 0:
                     return _state;
-                    break;
 
                 case 1:
                     return Math.floor(_state / _m * min);
-                    break;
 
                 case 2:
                     return Math.floor(_state / _m * (max - min) + min);
-                    break;
 
                 default:
                     throw "Wrong number of arguments";
-                    break;
             }
         };
 
@@ -125,19 +121,15 @@
             switch(arguments.length) {
                 case 0:
                     return _state / (_m - 1);
-                    break;
 
                 case 1:
                     return _state * max;
-                    break;
 
                 case 2:
                     return _state * (max - min) + min;
-                    break;
 
                 default:
                     throw "Wrong number of arguments";
-                    break;
             }
         };
 
@@ -151,7 +143,7 @@
         this.reset = function() {
             _construct(_seed);
             return this;
-        }
+        };
 
         /**
          * Get the initial seed of the generator
@@ -162,7 +154,7 @@
          */
         this.getSeed = function() {
             return _seed;
-        }
+        };
 
         /**
          * Set the seed (initial state) of the generator, and resets it
@@ -174,7 +166,7 @@
         this.setSeed = function(seed) {
             _construct(seed);
             return this;
-        }
+        };
 
         /**
          * Get the state (number of numbers generated) of the generator.
@@ -186,7 +178,7 @@
          */
         this.getState = function() {
             return _generated;
-        }
+        };
 
         /**
          * Set the state of the generator to N generations
@@ -209,7 +201,7 @@
             }
 
             return this;
-        }
+        };
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);

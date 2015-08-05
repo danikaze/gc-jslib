@@ -97,7 +97,7 @@
          *
          * @private
          */
-        function _construct(url, options) {
+        var _construct = function _construct(url, options) {
             var defaultOptions = {
                     data   : {},
                     method : Method.GET,
@@ -106,7 +106,7 @@
                 };
 
             _options = gc.util.extend(defaultOptions, options);
-
+            delete(defaultOptions.data);
             // data validation :start
             if(!_options.url) {
                 throw new gc.exception.WrongDataException("URL is not specified");
@@ -136,7 +136,7 @@
          *
          * @private
          */
-        function _makeRequest() {
+        var _makeRequest = function _makeRequest() {
             _xhr = new XMLHttpRequest();
 
             _xhr.open(_options.method, _options.url, _options.async);

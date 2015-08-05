@@ -61,7 +61,7 @@
          *
          * @private
          */
-        function _construct(options) {
+        var _construct = function _construct(options) {
             var defaultOptions = {
                     strict                  : false,    // strict validation
                     canonize                : true,     // convert data to its canonical form
@@ -93,14 +93,14 @@
          *
          * @private
          */
-        function　_store(key, originalData, canonizedData, validates) {
+        var _store = function　_store(key, originalData, canonizedData, validates) {
             if(validates) {
                 _good[key] = canonizedData;
 
             } else {
                 _bad[key] = originalData;
             }
-        }
+        };
 
         /**
          * Validates a simple data via a specified validator
@@ -112,7 +112,7 @@
          *
          * @private
          */
-        function _validateData(validator, key, data, options) {
+        var _validateData = function _validateData(validator, key, data, options) {
             var res,
                 extendedOptions = gc.util.extend({}, _options, options);
 
@@ -120,7 +120,7 @@
                                                                    : validator(data, extendedOptions);
 
             _store(key, data, extendedOptions.canonize ? res.data : data, res.valid);
-        }
+        };
 
         /**
          * Validates each element of an array via a specified validator
@@ -133,7 +133,7 @@
          *                             The validator needs to check for options.strict
          * @private
          */
-        function _validateArray(validator, key, data, options) {
+        var _validateArray = function _validateArray(validator, key, data, options) {
             var ok = true,
                 extendedOptions = gc.util.extend({}, _options, options),
                 val,
@@ -168,7 +168,7 @@
             }
 
             _store(key, data, val, ok);
-        }
+        };
 
         /**
          * Validates each element of an object via a specified validator
@@ -181,7 +181,7 @@
          *
          * @private
          */
-        function _validateObject(validator, key, data, options) {
+        var _validateObject = function _validateObject(validator, key, data, options) {
             var ok = true,
                 extendedOptions = gc.util.extend({}, _options, options),
                 val,
@@ -216,7 +216,7 @@
             }
 
             _store(key, data, val, ok);
-        }
+        };
 
         ////////////////////
         // PUBLIC METHODS //
@@ -246,7 +246,7 @@
          * @public
          */
         this.valid = function valid(base) {
-            var valid = null,
+            var v = null,
                 i;
 
             if(typeof(base) !== 'undefined' && !gc.util.isPlainObject(base)) {
@@ -258,13 +258,13 @@
                     for(i in _good) {
                         base[i] = _good[i];
                     }
-                    valid = base;
+                    v = base;
                 } else {
-                    valid = _good;
+                    v = _good;
                 }
             }
 
-            return valid;
+            return v;
         };
 
         /**
