@@ -18,7 +18,7 @@
             marginLeft  : 0,
             width       : 0,
             height      : 0,
-            limit       : null,
+            limit       : -1,
             delay       : 0,
             speed       : 0,
             pauseOn     : ",、.。",
@@ -220,7 +220,7 @@
      * @param {Integer} [options.marginLeft=0]       Margin between the text and the left of the limits
      * @param {Integer} [options.width=0]            If specified, the text will break lines to this width
      * @param {Integer} [options.height=0]           If specified, the text will be limited to this height
-     * @param {Integer} [options.limit=null]         Number of printable characters to draw
+     * @param {Integer} [options.limit=-1]           Number of printable characters to draw (<0 means no limit)
      * @param {Integer} [options.delay=0]            Delay before start drawing
      * @param {Integer} [options.speed=0]            Speed to draw the text or 0 to draw it all at once.
      * @param {String}  [options.pauseOn=",.、。"]     Make a pause when find one of this characters
@@ -283,12 +283,12 @@
                       .int("marginLeft", _options.marginLeft)
                       .intPositive("width", _options.width)
                       .intPositive("height", _options.height)
-                      .intPositive("options.limit", _options.limit)
-                      .intPositive("options.delay", _options.delay)
-                      .floatPositive("options.speed", _options.speed)
-                      .str("options.pauseOn", _options.pauseOn)
-                      .floatPositive("options.pauseLength", _options.pauseLength)
-                      .textStyle(options.style);
+                      .int("limit", _options.limit)
+                      .intPositive("delay", _options.delay)
+                      .fltPositive("speed", _options.speed)
+                      .str("pauseOn", _options.pauseOn)
+                      .fltPositive("pauseLength", _options.pauseLength)
+                      .textStyle("style", _options.style);
 
             if(_validator.errors()) {
                 throw new gc.exception.WrongDataException(_validator.errors());

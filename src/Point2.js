@@ -50,7 +50,7 @@
          * @private
          */
         var _construct = function _construct(x, y) {
-            if(arguments.length === 0) {
+            if(arguments.length === 1) {
                 this.x = arguments[0].x || 0;
                 this.y = arguments[0].y || 0;
 

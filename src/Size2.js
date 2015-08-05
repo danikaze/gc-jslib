@@ -50,7 +50,7 @@
          * @private
          */
         var _construct = function _construct(width, height) {
-            if(arguments.length === 0) {
+            if(arguments.length === 1) {
                 this.width = arguments[0].width || 0;
                 this.height = arguments[0].height || 0;
 
@@ -95,11 +95,43 @@
         };
 
         /**
+         * Add width, height to the Size
+         *
+         * @param  {Number}   w Width to add
+         * @param  {Number}   h Height to add
+         * @return {gc.Size2}   Self reference for allowing chaining
+         *
+         * @public
+         */
+        this.add = function(w, h) {
+            this.width += w;
+            this.height += h;
+
+            return this;
+        };
+
+        /**
+         * Subtract width, height to the Size
+         *
+         * @param  {Number}   w Width to subtract
+         * @param  {Number}   h Height to subtract
+         * @return {gc.Size2}   Self reference for allowing chaining
+         *
+         * @public
+         */
+        this.sub = function(w, h) {
+            this.width -= w;
+            this.height -= h;
+
+            return this;
+        };
+
+        /**
          * Scale the Size by two scalars as A*width, B*height
          *
-         * @param  {Number}       w Width-factor
-         * @param  {Number}       h Height-factor
-         * @return {gc.Rectangle}   Self reference for allowing chaining
+         * @param  {Number}   w Width-factor
+         * @param  {Number}   h Height-factor
+         * @return {gc.Size2}   Self reference for allowing chaining
          *
          * @public
          */

@@ -10,8 +10,8 @@
             'bool'          : validatorBool,
             'int'           : validatorInt,
             'intPositive'   : validatorIntPositive,
-            'float'         : validatorFloat,
-            'floatPositive' : validatorFloatPositive,
+            'flt'           : validatorFlt,
+            'fltPositive'   : validatorFltPositive,
             'str'           : validatorStr,
             'strNotEmpty'   : validatorStrNotEmpty,
             'callback'      : validatorCallback,
@@ -83,7 +83,7 @@
     /*
      * Generic Float validator
      */
-    function validatorFloat(data, options) {
+    function validatorFlt(data, options) {
         var val = parseFloat(data),
             ok = !isNaN(val) && (!options.strict || gc.util.isNumber(data));
 
@@ -96,7 +96,7 @@
     /*
      * Positive (>=0) Float validator
      */
-    function validatorFloatPositive(data, options) {
+    function validatorFltPositive(data, options) {
         var val = parseFloat(data),
             ok = !isNaN(val) && (!options.strict || gc.util.isNumber(data)) && data >= 0;
 
@@ -256,7 +256,7 @@
                       .strNotEmpty("fillStyle", data.fillStyle, { optional: true })
                       .bool("stroke", data.stroke, { optional: true })
                       .strNotEmpty("strokeStyle", data.strokeStyle, { optional: true })
-                      .intPositive("lineMargin", data.lineMargin, { optional: true })
+                      .flt("lineMargin", data.lineMargin, { optional: true })
                       .intPositive("pause", data.pause, { optional: true });
 
             ok = !_validator.errors();
