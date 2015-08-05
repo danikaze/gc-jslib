@@ -4,7 +4,7 @@
     /////////////////////////
     // STATIC PRIVATE VARS //
     /////////////////////////
-        
+
     ////////////////////////
     // STATIC PUBLIC VARS //
     ////////////////////////
@@ -17,22 +17,20 @@
      * @memberOf gc.Size2
      * @public
      */
-    var VERSION = "1.0.0";
-    
+    var VERSION = "0.3.0";
+
     /**
      * Class representing {width, height} properties
      *
-     * The constructor accept three signatures:
-     *  0 parameters: reset the object to width=0, width=0
-     *  1 parameter : make a copy of the values of another object with { width, height } properties
-     *  2 parameters: explicit values as (w, h)
+     * @param {Number} [width=0]  width
+     * @param {Number} [height=0] height
      *
      * @requires gc.Util
      * @uses     gc.exception
      *
      * @constructor
      * @memberOf gc
-     * @version 1.0.0
+     * @version 0.3.0
      * @author @danikaze
      */
     var Size2 = function() {
@@ -41,19 +39,25 @@
         // PRIVATE INSTANCE VARS //
         ///////////////////////////
 
-        
+
         /////////////////////
         // PRIVATE METHODS //
         /////////////////////
-        
+
         /**
          * Constructor called when creating a new object instance.
          *
-         * @see {@link gc.Size2.setSize}
          * @private
          */
-        function _construct() {
-            this.set.apply(this, arguments);
+        function _construct(width, height) {
+            if(arguments.length === 0) {
+                this.width = arguments[0].width || 0;
+                this.height = arguments[0].height || 0;
+
+            } else {
+                this.width = width || 0;
+                this.height = height || 0;
+            }
         }
 
         ////////////////////
@@ -62,41 +66,22 @@
 
         /**
          * Set the values of the Size2.
-         * This method accept three signatures:
-         *  0 parameters: reset the object to width=0, width=0
-         *  1 parameter : make a copy of the values of another object with { width, height } properties
-         *  2 parameters: explicit values as (w, h)
-         *
-         * @return {gc.Size2} Self reference for allowing chaining
+
+         * @param  {Number}   [width=0]  New value for the width
+         * @param  {Number}   [height=0] New value for the height
+         * @return {gc.Size2}            Self reference for allowing chaining
          *
          * @public
          */
-        this.set = function set() {
-            switch(arguments.length) {
-                case 0:
-                    this.width  = 0;
-                    this.height = 0;
-                    break;
-                    
-                case 1: 
-                    this.width = arguments[0].width;
-                    this.height = arguments[0].height;
-                    break;
-                
-                case 2:
-                    this.width = arguments[0];
-                    this.height = arguments[1];
-                    break;
-                
-                default:
-                    throw new gc.exception.WrongSignatureException("Incorrect number of parameters");
-            }
-            
+        this.set = function set(width, height) {
+            this.width = width || 0;
+            this.height = height || 0;
+
             return this;
         };
-        
+
         /**
-         * Get the values of the Size2
+         * Get the values of the Size2 as an object
          *
          * @return {Object} values as {width, height}
          *
@@ -108,63 +93,32 @@
                 height: this.height
             };
         };
-        
+
         /**
-         * Add the values of each coordinate of a point to this one.
-         * This method accept two signatures:
-         *  1 parameter : make a copy of the values of another object with { width, height } properties
-         *  2 parameters: explicit values as (w, h)
-         * 
-         * @return {gc.Size2} Self reference for allowing chaining
+         * Scale the Size by two scalars as A*width, B*height
+         *
+         * @param  {Number}       w Width-factor
+         * @param  {Number}       h Height-factor
+         * @return {gc.Rectangle}   Self reference for allowing chaining
          *
          * @public
          */
-        this.add = function() {
-            switch(arguments.length) {
-                case 1: 
-                    this.width += arguments[0].width;
-                    this.height += arguments[0].height;
-                    break;
-                
-                case 2:
-                    this.width += arguments[0];
-                    this.height += arguments[1];
-                    break;
-                
-                default:
-                    throw new gc.exception.WrongSignatureException("Number of parameters incorrect");
-            }
-            
+        this.scale = function(w, h) {
+            this.width *= w;
+            this.height *= h;
+
             return this;
         };
-        
+
         /**
-         * Subtract the values of each coordinate of a point to this one.
-         * This method accept two signatures:
-         *  1 parameter : make a copy of the values of another object with { width, height } properties
-         *  2 parameters: explicit values as (w, h)
-         * 
-         * @return {gc.Size2} Self reference for allowing chaining
+         * Get the area of the rectangle
+         *
+         * @return {Number} Area of the rectangle (width*height)
          *
          * @public
          */
-        this.sub = function(x, y) {
-            switch(arguments.length) {
-                case 1: 
-                    this.width -= arguments[0].width;
-                    this.height -= arguments[0].height;
-                    break;
-                
-                case 2:
-                    this.width -= arguments[0];
-                    this.height -= arguments[1];
-                    break;
-                
-                default:
-                    throw new gc.exception.WrongSignatureException("Number of parameters incorrect");
-            }
-            
-            return this;
+        this.getArea = function() {
+            return this.width * this.height;
         };
 
         // call the constructor after setting all the methods

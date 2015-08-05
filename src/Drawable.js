@@ -36,6 +36,8 @@
      * @param {Integer} [cx=0]          x-position of the center of the region
      * @param {Integer} [cy=0]          y-position of the center of the region
      *
+     * @required gc.Point2
+     * @required gc.Size2
      * @requires gc.Util
      *
      * @constructor

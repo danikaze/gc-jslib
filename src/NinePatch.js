@@ -57,6 +57,7 @@
      * @requires gc.TextureRegion
      * @uses     gc.exception
      *
+     * @todo Use _scale to render the elements by this factor (the draw method works though)
      * @constructor
      * @memberOf gc
      * @version 1.0.0
@@ -217,7 +218,10 @@
          * @public
          */
         this.getSize = function getSize() {
-            return new gc.Size2(_fbo.canvas.width, _fbo.canvas.height);
+            return {
+                width : _fbo.canvas.width,
+                height: _fbo.canvas.height
+            };
         };
 
         // call the constructor after setting all the methods

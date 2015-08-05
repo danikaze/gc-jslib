@@ -232,12 +232,15 @@
         /**
          * Get the size of the Canvas
          *
-         * @return {gc.Size2} Current size of the canvas element
+         * @return {Object} Current size of the canvas element as {width, height}
          *
          * @public
          */
         this.getSize = function getSize() {
-            return new gc.Size2(_ctx.canvas.width, _ctx.canvas.height);
+            return {
+                width : _ctx.canvas.width,
+                height: _ctx.canvas.height
+            };
         };
 
         // call the constructor after setting all the methods
