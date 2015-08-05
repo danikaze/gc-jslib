@@ -31,11 +31,11 @@ module.exports = function(grunt) {
                     '!src/_template_.js'
                 ],
                 options: {
-                    eqnull: true, // Use '===' to compare with 'null'.
-                    curly: true,
-                    browser: true,
-                    futurehostile: true,
-                    undef: true
+                    eqnull: true,           // Use '===' to compare with 'null'.
+                    curly: true,            // force {}
+                    browser: true,          // declare browser global variables
+                    futurehostile: true,    // don't allow future reserved words
+                    undef: true             // don't allow using undefined vars
                 }
             }
         },
@@ -64,6 +64,7 @@ module.exports = function(grunt) {
                         'src/Canvas2D.js',
                         'src/Point2.js',
                         'src/Size2.js',
+                        'src/Rectangle.js',
                         'src/Easing.js',
                         'src/TextureRegion.js',
                         'src/Animation.js',
