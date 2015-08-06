@@ -103,7 +103,7 @@
          *
          * @public
          */
-        this.move = function(x, y) {
+        this.move = function move(x, y) {
             this.x += x;
             this.y += y;
 
@@ -169,19 +169,19 @@
          };
 
          /**
-         * Calculate the angle between the vectors formed a reference point passed as a parameter and
-         * this point (reference->this) and the X-axis.
-         * This method returns a value between [0..360), being 0 at right, and 90 at top
-         *   /
-         *  /) angle (45º)
-         * /__)___
-         *
-         * @param  {Number} x X-position of the other point
-         * @param  {Number} y Y-position of the other point
-         * @return {Number}   Angle in degrees between this point and the specified one
-         *
-         * @public
-         */
+          * Calculate the angle between the vectors formed a reference point passed as a parameter and
+          * this point (reference->this) and the X-axis.
+          * This method returns a value between [0..360), being 0 at right, and 90 at top
+          *   /
+          *  /) angle (45º)
+          * /__)___
+          *
+          * @param  {Number} x X-position of the other point
+          * @param  {Number} y Y-position of the other point
+          * @return {Number}   Angle in degrees between this point and the specified one
+          *
+          * @public
+          */
          this.angle = function angle(x, y) {
             var a;
 
@@ -192,6 +192,29 @@
 
             return a * 180 / Math.PI;
          };
+
+         /**
+          * Get a list of the public methods for the point
+          *
+          * @param  {Object}    [obj] If an object is specified, it will be extended with the returned methods
+          * @return {gc.Point2}       Public methods for the current Point2
+          *
+          * @public
+          */
+        this.point2 = function point2(obj) {
+            var p = {
+                    set      : this.set,
+                    get      : this.get,
+                    move     : this.move,
+                    distance : this.distance,
+                    distance2: this.distance2,
+                    angleRad : this.angleRad,
+                    angle    : this.angle
+                };
+
+            return obj != null ? gc.util.extend(obj, p)
+                               : p;
+        };
 
         // call the constructor after setting all the methods
         _construct.apply(this, arguments);

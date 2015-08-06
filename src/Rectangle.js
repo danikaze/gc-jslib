@@ -138,7 +138,7 @@
          *
          * @public
          */
-        this.scale = function(w, h) {
+        this.scale = function scale(w, h) {
             this.width *= w;
             this.height *= h;
 
@@ -152,7 +152,7 @@
          *
          * @public
          */
-        this.getArea = function() {
+        this.getArea = function getArea() {
             return this.width * this.height;
         };
 
@@ -165,7 +165,7 @@
          *
          * @public
          */
-        this.move = function(x, y) {
+        this.move = function move(x, y) {
             this.x += x;
             this.y += y;
 
@@ -180,7 +180,7 @@
          *
          * @public
          */
-        this.overlaps = function(rect) {
+        this.overlaps = function overlaps(rect) {
             return this.x <= rect.x + rect.width &&
                    this.x + this.width >= rect.x &&
                    this.y <= rect.y + rect.height &&
@@ -196,9 +196,34 @@
          *
          * @public
          */
-        this.contains = function(x, y) {
+        this.contains = function contains(x, y) {
             return x > this.x && x <= this.x + this.width &&
                    y > this.y && y <= this.y + this.height;
+        };
+
+        /**
+         * Get a list of the public methods for the Rectangle
+         *
+         * @param  {Object}       [obj] If an object is specified, it will be extended with the returned methods
+         * @return {gc.Rectangle}       Public methods for the current Rectangle
+         *
+         * @public
+         */
+        this.rectangle = function rectangle(obj) {
+            var r = {
+                setSize    : this.setSize,
+                getSize    : this.getSize,
+                setPosition: this.setPosition,
+                getPosition: this.getPosition,
+                scale      : this.scale,
+                getArea    : this.getArea,
+                move       : this.move,
+                overlaps   : this.overlaps,
+                contains   : this.contains
+            };
+
+            return obj != null ? gc.util.extend(obj, r)
+                               : r;
         };
 
         // call the constructor after setting all the methods

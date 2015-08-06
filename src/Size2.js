@@ -103,7 +103,7 @@
          *
          * @public
          */
-        this.add = function(w, h) {
+        this.add = function add(w, h) {
             this.width += w;
             this.height += h;
 
@@ -119,7 +119,7 @@
          *
          * @public
          */
-        this.sub = function(w, h) {
+        this.sub = function sub(w, h) {
             this.width -= w;
             this.height -= h;
 
@@ -135,7 +135,7 @@
          *
          * @public
          */
-        this.scale = function(w, h) {
+        this.scale = function scale(w, h) {
             this.width *= w;
             this.height *= h;
 
@@ -149,8 +149,30 @@
          *
          * @public
          */
-        this.getArea = function() {
+        this.getArea = function getArea() {
             return this.width * this.height;
+        };
+
+        /**
+          * Get a list of the public methods for this size
+          *
+          * @param  {Object}   [obj] If an object is specified, it will be extended with the returned methods
+          * @return {gc.Size2}       Public methods for the current Size2
+          *
+          * @public
+          */
+        this.size2 = function size2(obj) {
+            var s = {
+                    set    : this.set,
+                    get    : this.get,
+                    add    : this.add,
+                    sub    : this.sub,
+                    scale  : this.scale,
+                    getArea: this.getArea
+                };
+
+            return obj != null ? gc.util.extend(obj, s)
+                               : s;
         };
 
         // call the constructor after setting all the methods
