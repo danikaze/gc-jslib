@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.NinePatch examples</title>
+<!--
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/LocaleManager.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+</head>
+
+<body>
+
+<div id="res"></div>
+
+<script type="text/javascript">
+    "use strict";
+
+    var locale = new gc.LocaleManager();
+
+    locale.register('ns1', {
+        text1: "Text one",
+        text2: "Text two",
+        text3: "Text three with {params}",
+        text4: "Text with a: {a} and b: {b}"
+    });
+
+    locale.register('ns2', {
+        text3: "NS2 Text three with {params}",
+        text4: "NS2 Text with a: {a} and b: {b}",
+        text5: "NS2 Text five don't accept parameters but they are provided (and ignored!)"
+    });
+
+    var params = { a: "123", b: "456", params: 789};
+
+    var html = "";
+    html += "<p>" + locale.get("ns1", "text1") + "</p>";
+    html += "<p>" + locale.get("ns1", "text2") + "</p>";
+    html += "<p>" + locale.get("ns1", "text3", params) + "</p>";
+    html += "<p>" + locale.get("ns1", "text4", params) + "</p>";
+    html += "<p>" + locale.get("ns1", "text5") + "</p>";
+    html += "<p>" + locale.get("ns2", "text1") + "</p>";
+    html += "<p>" + locale.get("ns2", "text2") + "</p>";
+    html += "<p>" + locale.get("ns2", "text3", params) + "</p>";
+    html += "<p>" + locale.get("ns2", "text4", params) + "</p>";
+    html += "<p>" + locale.get("ns2", "text5", params) + "</p>";
+
+    document.getElementById("res").innerHTML = html;
+
+</script>
+
+</body>
+</html>

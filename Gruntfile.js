@@ -55,6 +55,7 @@ module.exports = function(grunt) {
                         'src/Validator.js',
                         'src/validatorDefinitions.js',
                         'src/browser.js',
+                        'src/LocaleManager.js',
                         'src/RNG.js',
                         'src/Deferred.js',
                         'src/XHR.js',
