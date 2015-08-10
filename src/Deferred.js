@@ -234,8 +234,8 @@
          * A Promise is nothing else than a read-only Deferred. Since the only that should modify the status of
          * the Deferred is its creator, this is a way to encapsulate the read-only methods.
          *
-         * @param  {Object}  [obj] If an object is specified, it will be extended with Promise methods
-         * @return {Promise}       Promise for the current Deferred
+         * @param  {Object}     [obj] If an object is specified, it will be extended with Promise methods
+         * @return {gc.Promise}       Promise for the current Deferred
          *
          * @public
          */
