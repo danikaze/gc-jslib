@@ -62,6 +62,7 @@ module.exports = function(grunt) {
                         'src/FPS.js',
                         'src/ResourceManager.js',
                         'src/Drawable.js',
+                        'src/Camera2.js',
                         'src/Canvas2D.js',
                         'src/Point2.js',
                         'src/Size2.js',
