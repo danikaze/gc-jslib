@@ -129,7 +129,7 @@
      * @params {DOM} [canvas] DOM element of the canvas object. Since 0.2.0, if not specified, a new one will be created.
      *
      * @requires gc.Util
-     * @uses     gc.Size2
+     * @requires gc.Camera2
      * @uses     gc.TextureRegion
      *
      * @constructor
@@ -144,7 +144,8 @@
         // PRIVATE INSTANCE VARS //
         ///////////////////////////
 
-        var _ctx;
+        var _ctx,
+            _camera;
 
 
         /////////////////////
@@ -156,7 +157,7 @@
          *
          * @private
          */
-        function _construct(canvas) {
+        var _construct = function _construct(canvas) {
             if(!canvas) {
                 canvas = document.createElement("canvas");
             }
@@ -165,8 +166,11 @@
                 throw new gc.exception.NotImplementedException("canvas.getContext is not supported");
             }
 
-            _ctx = canvas.getContext("2d");
-        }
+            this.viewport = new gc.Rectangle({ x: 0, y: 0, width: canvas.width, height: canvas.height });
+            _ctx = _decoratedContext(canvas.getContext("2d"));
+            _camera = new gc.Camera2(this);
+            this.updateView();
+        };
 
 
         ////////////////////
@@ -181,7 +185,7 @@
          * @public
          */
         this.getContext = function getContext() {
-            return _decoratedContext(_ctx);
+            return _ctx;
         };
 
         /**
@@ -238,6 +242,76 @@
                 width : _ctx.canvas.width,
                 height: _ctx.canvas.height
             };
+        };
+
+        /**
+         * Set the viewport (where to draw) of the canvas
+         *
+         * @param {gc.Rectangle} viewport Rectangle specifying the canvas region to draw in
+         * @param {Number}       [viewport.x=0]                  x-position of the region's offset
+         * @param {Number}       [viewport.y=0]                  y-position of the region's offset
+         * @param {Number}       [viewport.width=canvas.width]   width of the region
+         * @param {Number}       [viewport.height=canvas.height] height of the region
+         * @return {gc.Canvas2D}                                 self reference to allow chaining
+         *
+         * @public
+         */
+        this.setViewport = function setCamera(viewport) {
+            this.viewport.setPosition(viewport.x || 0, viewport.y || 0);
+            this.viewport.setSize(viewport.width || _ctx.canvas.width, viewport.height || _ctx.canvas.height);
+
+            return this;
+        };
+
+        /**
+         * Set the camera to control the canvas.
+         * Usually is not needed because can be edited through {@link gc.Canvas2D#getCamera}
+         *
+         * @param  {gc.Camera2}  camera New camera to set
+         * @return {gc.Canvas2D}        Self reference to allow chaining
+         *
+         * @public
+         */
+        this.setCamera = function setCamera(camera) {
+            _camera = camera;
+
+            return this;
+        };
+
+        /**
+         * Get the {@link gc.Camera2} associated to the canvas
+         *
+         * @return {gc.Camera2} Camera of the canvas, which control which part of the world to show
+         *
+         * @public
+         */
+        this.getCamera = function getCamera() {
+            return _camera;
+        };
+
+        /**
+         * Update the parameters of the context with the current values of the viewport and the camera.
+         * This method is not usually needed to be called manually because it's done when the viewport and the camera
+         * are updated via their setters, but it's available in case their values are updated directly
+         * (and to povide consistency to the {@link gc.Camera2} methods)
+         *
+         * @return {gc.Canvas2D} self reference to allow chaining
+         *
+         * @public
+         */
+        this.updateView = function updateView() {
+            var scaleX = _camera.scale.x,
+                scaleY = _camera.scale.y,
+                offsetX = -_camera.viewport.x + _camera.center.x,
+                offsetY = -_camera.viewport.y + _camera.center.y;
+
+            _ctx.setTransform(1, 0, 0, 1, _camera.center.x, _camera.center.y);
+            _ctx.scale(scaleX, scaleY);
+            _ctx.translate(-_camera.center.x + offsetX, -_camera.center.y + offsetY);
+
+            //_ctx.setTransform(scaleX, skewX, skewY, scaleY, offsetX, offsetY);
+
+            return this;
         };
 
         // call the constructor after setting all the methods

@@ -342,42 +342,42 @@
 
         switch(align) {
             case Align.BOTTOM:
-                x += w/2;
-                y += h - centerY;
+                x += -w/2 + centerX;
+                y += -h + centerY;
                 break;
 
             case Align.BOTTOM_LEFT:
-                x += w + centerX;
-                y += h - centerY;
+                x += centerX;
+                y += -h + centerY;
                 break;
 
             case Align.BOTTOM_RIGHT:
                 x += -w + centerX;
-                y += h - centerY;
+                y += -h + centerY;
                 break;
 
             case Align.CENTER:
-                x += w/2 + centerX;
-                y += h/2 - centerX;
+                x += -w/2 + centerX;
+                y += -h/2 + centerY;
                 break;
 
             case Align.LEFT:
-                x += w + centerX;
-                y += h/2 - centerX;
+                x += centerX;
+                y += -h/2 + centerY;
                 break;
 
             case Align.RIGHT:
                 x += -w + centerX;
-                y += h/2 - centerX;
+                y += -h/2 + centerY;
                 break;
 
             case Align.TOP:
-                x += w/2 + centerX;
+                x += -w/2 + centerX;
                 y += centerY;
                 break;
 
             case Align.TOP_LEFT:
-                x += w + centerX;
+                x += centerX;
                 y += centerY;
                 break;
 

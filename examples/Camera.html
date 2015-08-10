@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.Canvas2 examples</title>
+
+    <script type="text/javascript" src="../src/polyfill.js"></script>
+    <script type="text/javascript" src="../src/exception.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/Validator.js"></script>
+    <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/Rectangle.js"></script>
+    <script type="text/javascript" src="../src/Camera2.js"></script>
+    <script type="text/javascript" src="../src/Canvas2D.js"></script>
+<!--
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+-->
+</head>
+
+<body>
+
+<canvas id="canvas" width="640" height="360" moz-opaque>
+    Your browser doesn't support canvas.
+    WHAT YEAR IS IT!???
+</canvas>
+
+<style type="text/css">
+    canvas {
+        border: 2px solid black;
+    }
+</style>
+
+<script type="text/javascript">
+    "use strict";
+
+    var canvas,
+        ctx,
+        img,
+        lastFrame,
+        camera;
+
+    /*
+     * Initialize the canvas and set some style for a metrics text
+     */
+    canvas = new gc.Canvas2D(document.getElementById("canvas"));
+    ctx = canvas.getContext();
+    camera = canvas.getCamera();
+
+    img = new Image();
+    img.src = "img/map.png";
+
+    img.onload = function() {
+        redraw();
+    };
+
+    function redraw() {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.getSize().width, canvas.getSize().height);
+        ctx.restore();
+        ctx.drawImage(img, 0, 0);
+    }
+
+    document.addEventListener("keydown", function(event) {
+        var KEY_UP = 38,
+            KEY_DOWN = 40,
+            KEY_LEFT = 37,
+            KEY_RIGHT = 39,
+            KEY_SPLIT = 83, // S
+            KEY_ZOOM_IN = 107,
+            KEY_ZOOM_OUT = 109,
+            KEY_ZOOM_RESET = 96,
+            KEY_CENTER = 67;  // C
+
+        switch(event.keyCode) {
+            case KEY_UP:
+                camera.viewport.y -= 10;
+                canvas.updateView();
+                break;
+
+            case KEY_DOWN:
+                camera.viewport.y += 10;
+                canvas.updateView();
+                break;
+
+            case KEY_LEFT:
+                camera.viewport.x -= 10;
+                canvas.updateView();
+                break;
+
+            case KEY_RIGHT:
+                camera.viewport.x += 10;
+                canvas.updateView();
+                break;
+
+            case KEY_ZOOM_IN:
+                camera.scale.x += 0.1;
+                camera.scale.y += 0.1;
+                canvas.updateView();
+                break;
+
+            case KEY_ZOOM_OUT:
+                camera.scale.x -= 0.1;
+                camera.scale.y -= 0.1;
+                canvas.updateView();
+                break;
+
+            case KEY_ZOOM_RESET:
+                camera.setScale(1, 1);
+                break;
+
+            case KEY_SPLIT:
+                if(canvas.getSize().width === canvasViewport.width) {
+                    canvas.viewport.x /= 2;
+                } else {
+                    canvas.viewport.x *= 2;
+                }
+                canvas.updateView();
+                break;
+
+            case KEY_CENTER:
+                if(camera.center.x === 0) {
+                    camera.setCenter(gc.Align.CENTER);
+                } else {
+                    camera.setCenter(gc.Align.TOP_LEFT);
+                }
+        }
+
+        redraw();
+    });
+
+</script>
+
+</body>
+</html>
