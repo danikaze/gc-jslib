@@ -214,13 +214,13 @@
         this.setSize = function setSize() {
             switch(arguments.length) {
                 case 1:
-                    this.width = arguments[0].width;
-                    this.height = arguments[0].height;
+                    _ctx.canvas.width = arguments[0].width;
+                    _ctx.canvas.height = arguments[0].height;
                     break;
 
                 case 2:
-                    this.width = arguments[0];
-                    this.height = arguments[1];
+                    _ctx.canvas.width = arguments[0];
+                    _ctx.canvas.height = arguments[1];
                     break;
 
                 default:
@@ -313,12 +313,12 @@
             //_ctx.beginPath();
             //_ctx.rect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height);
             //_ctx.clip();
-                
+
             _ctx.setTransform(1, 0, 0, 1, _camera.center.x, _camera.center.y);
             _ctx.scale(scaleX, scaleY);
             _ctx.rotate(-_camera.angle);
             _ctx.translate(-_camera.center.x + offsetX, -_camera.center.y + offsetY);
-            
+
             return this;
         };
 
