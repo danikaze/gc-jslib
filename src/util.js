@@ -396,6 +396,21 @@
         };
     };
 
+    /**
+     * Get a unique ID
+     *
+     * @param  {String} [prefix=""] Prefix to add to the returned result
+     * @return {String}             Unique ID
+     *
+     * @public
+     */
+    Util.getUniqueId = function getUniqueId(prefix) {
+        if(prefix === undefined) {
+            prefix = "";
+        }
+
+        return prefix + String(window.performance.now()).replace(".", "");
+    };
 
     ///////////////////////////////
     // Export the public objects //
