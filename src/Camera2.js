@@ -65,9 +65,14 @@
 
             _canvas = canvas;
             canvasSize = canvas.getSize();
+            /** zoom of the camera */
             this.scale = new gc.Point2(1, 1);
+            /** point to handle the camera position */
             this.center = new gc.Point2(Math.floor(canvasSize.width/2), Math.floor(canvasSize.height/2));
+            /** viewport of the camera (position in the world + size to show) */
             this.viewport = new gc.Rectangle(canvasSize.width, canvasSize.height, this.center.x, this.center.y);
+            /** camera's angle of rotation in radians */
+            this.angle = 0;
         };
 
         ////////////////////
@@ -102,15 +107,52 @@
         };
 
         /**
-         * Set the zoom of the camera and update the canvas context
+         * Move the camera the specified amount
+         * It edits the current position instead of resetting it
          *
-         * @param  {gc.Point2}   scale Zoom/scale of the camera
-         * @return {gc.Camera2}        Self reference to allow chaining
+         * @param  {Number}     x Amount to move the camera in the x-axis
+         * @param  {Number}     y Amount to move the camera in the y-axis
+         * @return {gc.Camera2}   Self reference to allow chaining
          *
          * @public
          */
-        this.setScale = function setScale(scale) {
-            this.scale.set(scale.x || 1, scale.y || 1);
+        this.move = function move(x, y) {
+            this.viewport.x += x;
+            this.viewport.y += y;
+            _canvas.updateView();
+
+            return this;
+        };
+
+        /**
+         * Set the zoom of the camera and update the canvas context
+         *
+         * @param  {Number}     x Zoom/scale of the camera x-factor
+         * @param  {Number}     y Zoom/scale of the camera y-factor
+         * @return {gc.Camera2}   Self reference to allow chaining
+         *
+         * @public
+         */
+        this.setScale = function setScale(x, y) {
+            this.scale.set(x || 1, y || 1);
+            _canvas.updateView();
+
+            return this;
+        };
+
+        /**
+         * Multiply the zoom of the camera and update the canvas context.
+         * It edits the current value instead of resetting it
+         *
+         * @param  {Number}     x Zoom/scale of the camera x-factor
+         * @param  {Number}     y Zoom/scale of the camera y-factor
+         * @return {gc.Camera2}   Self reference to allow chaining
+         *
+         * @public
+         */
+        this.zoom = function zoom(x, y) {
+            this.scale.x *= x;
+            this.scale.y *= y;
             _canvas.updateView();
 
             return this;
@@ -148,6 +190,38 @@
 
             }
 
+            _canvas.updateView();
+
+            return this;
+        };
+
+        /**
+         * Set the angle of the camera (in degrees) and update the canvas view.
+         * It can be set directly in radians with {@link gc.Camera2#angle} but the canvas would need to be updated manually
+         *
+         * @param  {Number}     angle Angle of the camera in degrees [0-365)
+         * @return {gc.Camera2}       Self reference to allow chaining
+         *
+         * @public
+         */
+        this.setAngle = function setAngle(angle) {
+            this.angle = angle * Math.PI / 180;
+            _canvas.updateView();
+
+            return this;
+        };
+
+        /**
+         * Add a value (in degrees) to the current angle of the camera and update the canvas view
+         * It can be set directly in radians with {@link gc.Camera2#angle} but the canvas would need to be updated manually
+         *
+         * @param  {Number}     angle Value to add to the current angle
+         * @return {gc.Camera2}       Self reference to allow chaining
+         *
+         * @public
+         */
+        this.rotate = function zoom(angle) {
+            this.angle += angle * Math.PI / 180;
             _canvas.updateView();
 
             return this;

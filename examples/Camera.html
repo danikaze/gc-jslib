@@ -25,6 +25,9 @@
     Your browser doesn't support canvas.
     WHAT YEAR IS IT!???
 </canvas>
+<div id="info">
+    ARROWS | <span style="text-decoration: line-through">S</span> | C | + | - | 0 | Page Up | Page Down
+</div>
 
 <style type="text/css">
     canvas {
@@ -47,6 +50,7 @@
     canvas = new gc.Canvas2D(document.getElementById("canvas"));
     ctx = canvas.getContext();
     camera = canvas.getCamera();
+    ctx.setImageSmoothing(false);
 
     img = new Image();
     img.src = "img/map.png";
@@ -72,52 +76,44 @@
             KEY_ZOOM_IN = 107,
             KEY_ZOOM_OUT = 109,
             KEY_ZOOM_RESET = 96,
+            KEY_ROTATE_CW = 34, // page down
+            KEY_ROTATE_CCW = 33, // page up
             KEY_CENTER = 67;  // C
 
         switch(event.keyCode) {
+            // if editing the variables directly, need to update the canvas view
             case KEY_UP:
                 camera.viewport.y -= 10;
                 canvas.updateView();
                 break;
 
+            // if editing the variables directly, need to update the canvas view
             case KEY_DOWN:
                 camera.viewport.y += 10;
                 canvas.updateView();
                 break;
 
             case KEY_LEFT:
-                camera.viewport.x -= 10;
-                canvas.updateView();
+                camera.move(-10, 0)
                 break;
 
             case KEY_RIGHT:
-                camera.viewport.x += 10;
-                canvas.updateView();
+                camera.move(10, 0);
                 break;
 
+            // if editing the variables directly, need to update the canvas view
             case KEY_ZOOM_IN:
-                camera.scale.x += 0.1;
-                camera.scale.y += 0.1;
+                camera.scale.x *= 2;
+                camera.scale.y *= 2;
                 canvas.updateView();
                 break;
 
             case KEY_ZOOM_OUT:
-                camera.scale.x -= 0.1;
-                camera.scale.y -= 0.1;
-                canvas.updateView();
+                camera.zoom(0.5, 0.5);
                 break;
 
             case KEY_ZOOM_RESET:
                 camera.setScale(1, 1);
-                break;
-
-            case KEY_SPLIT:
-                if(canvas.getSize().width === canvasViewport.width) {
-                    canvas.viewport.x /= 2;
-                } else {
-                    canvas.viewport.x *= 2;
-                }
-                canvas.updateView();
                 break;
 
             case KEY_CENTER:
@@ -126,6 +122,32 @@
                 } else {
                     camera.setCenter(gc.Align.TOP_LEFT);
                 }
+                break;
+
+            // rotate in degrees
+            case KEY_ROTATE_CCW:
+                camera.rotate(45);
+                break;
+
+            // rotate in radians editing directly the angle variable (need to update the canvas view)
+            case KEY_ROTATE_CW:
+                camera.angle -= 45 * Math.PI / 180;
+                canvas.updateView();
+                break;
+
+            // canvas viewport is not supported due to a lack of ctx.resetClip()
+            case KEY_SPLIT:
+            /*
+                if(canvas.getSize().width === canvas.viewport.width) {
+                    canvas.viewport.x = canvas.getSize().width/2;
+                    canvas.viewport.width /= 2;
+                } else {
+                    canvas.viewport.x = 0;
+                    canvas.viewport.width *= 2;
+                }
+                canvas.updateView();
+            */
+                break;
         }
 
         redraw();

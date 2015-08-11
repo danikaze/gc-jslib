@@ -166,7 +166,7 @@
                 throw new gc.exception.NotImplementedException("canvas.getContext is not supported");
             }
 
-            this.viewport = new gc.Rectangle({ x: 0, y: 0, width: canvas.width, height: canvas.height });
+            //this.viewport = new gc.Rectangle({ x: 0, y: 0, width: canvas.width, height: canvas.height });
             _ctx = _decoratedContext(canvas.getContext("2d"));
             _camera = new gc.Camera2(this);
             this.updateView();
@@ -256,12 +256,14 @@
          *
          * @public
          */
+        /*
         this.setViewport = function setCamera(viewport) {
             this.viewport.setPosition(viewport.x || 0, viewport.y || 0);
             this.viewport.setSize(viewport.width || _ctx.canvas.width, viewport.height || _ctx.canvas.height);
 
             return this;
         };
+        */
 
         /**
          * Set the camera to control the canvas.
@@ -300,17 +302,23 @@
          * @public
          */
         this.updateView = function updateView() {
-            var scaleX = _camera.scale.x,
-                scaleY = _camera.scale.y,
-                offsetX = -_camera.viewport.x + _camera.center.x,
-                offsetY = -_camera.viewport.y + _camera.center.y;
+            var scaleX = _camera.scale.x,// * (this.viewport.width/_camera.viewport.width),
+                scaleY = _camera.scale.y,// * (this.viewport.height/_camera.viewport.height),
+                offsetX = -_camera.viewport.x + _camera.center.x,// + this.viewport.x,
+                offsetY = -_camera.viewport.y + _camera.center.y;// + this.viewport.y;
 
+            _ctx.setTransform(1, 0, 0, 1, 0, 0);
+            // clipping is not supported, so viewport is ignored for now
+            //_ctx.canvas.width = _ctx.canvas.width;  // reset all the canvas
+            //_ctx.beginPath();
+            //_ctx.rect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height);
+            //_ctx.clip();
+                
             _ctx.setTransform(1, 0, 0, 1, _camera.center.x, _camera.center.y);
             _ctx.scale(scaleX, scaleY);
+            _ctx.rotate(-_camera.angle);
             _ctx.translate(-_camera.center.x + offsetX, -_camera.center.y + offsetY);
-
-            //_ctx.setTransform(scaleX, skewX, skewY, scaleY, offsetX, offsetY);
-
+            
             return this;
         };
 
