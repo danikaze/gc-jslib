@@ -15,6 +15,7 @@ module.exports = function(grunt) {
                     'src/*.js',
                     'README.md',
                     '!src/_template_.js',
+                    '!src/_Stage_.js',
                     '!src/polyfill.js'
                 ],
                 options: {
@@ -28,7 +29,8 @@ module.exports = function(grunt) {
             build: {
                 src: [
                     'src/*js',
-                    '!src/_template_.js'
+                    '!src/_template_.js',
+                    '!src/_Stage_.js'
                 ],
                 options: {
                     eqnull: true,           // Use '===' to compare with 'null'.
@@ -55,6 +57,7 @@ module.exports = function(grunt) {
                         'src/Validator.js',
                         'src/validatorDefinitions.js',
                         'src/browser.js',
+                        'src/InputManager.js',
                         'src/LocaleManager.js',
                         'src/RNG.js',
                         'src/Deferred.js',

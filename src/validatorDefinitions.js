@@ -35,6 +35,9 @@
         Drawable: basicValidators,
         NinePatch: gc.util.extend({
             'ninePatchData': validatorNinePatchData
+        }, basicValidators),
+        InputManager: gc.util.extend({
+            'implementsInputManagerListener': validatorImplementsInputManagerListener
         }, basicValidators)
     };
 
@@ -319,5 +322,56 @@
         };
     }
 
+
+    //////////////////////////
+    // Interface Validators //
+    //////////////////////////
+
+    /*
+     *
+     */
+    function validatorImplementsStage(data, options) {
+        var ok = data &&
+                 gc.util.isFunction(data.key) &&
+                 gc.util.isFunction(data.touch) &&
+                 gc.util.isFunction(data.mouse) &&
+                 gc.util.isFunction(data.update) &&
+                 gc.util.isFunction(data.draw) &&
+                 data.camera instanceof gc.Camera2;
+
+        return {
+            data : data,
+            valid: ok
+        };
+    }
+
+    /*
+     *
+     */
+    function validatorImplementsInputManagerListener(data, options) {
+        var ok = data &&
+                 gc.util.isFunction(data.key) &&
+                 gc.util.isFunction(data.touch) &&
+                 gc.util.isFunction(data.mouse);
+
+        return {
+            data : data,
+            valid: ok
+        };
+    }
+
+    /*
+     *
+     */
+    function validatorImplementsActor(data, options) {
+        var ok = data &&
+                 gc.util.isFunction(data.update) &&
+                 gc.util.isFunction(data.draw);
+
+        return {
+            data : data,
+            valid: ok
+        };
+    }
 
 } (window.gc));

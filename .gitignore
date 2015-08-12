@@ -56,4 +56,5 @@ docs
 *.SUBLIME-PROJECT
 *.SUBLIME-WORKSPACE
 src/_template_.js
+src/_Stage_.js
 node_modules

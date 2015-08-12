@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.InputManager examples</title>
+<!--
+    <script type="text/javascript" src="../src/polyfill.js"></script>
+    <script type="text/javascript" src="../src/exception.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/Validator.js"></script>
+    <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/Rectangle.js"></script>
+    <script type="text/javascript" src="../src/Camera2.js"></script>
+    <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/InputManager.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+</head>
+
+<body>
+
+<div id="canvasContainer">
+    <canvas id="canvas" width="601" height="301"></canvas>
+</div>
+<div id="res">
+    <p id="resTouch"><strong>Touch</strong></p>
+    <p id="resMouse"><strong>Mouse</strong></p>
+    <p id="resKey"><strong>Key</strong></p>
+    <p id="resMisc"></p>
+</div>
+
+<style>
+    #canvasContainer {
+        position: absolute;
+        top     : 20px;
+        left    : 20px;
+        border  : 10px solid black;
+        margin  : 10px;
+        padding : 10px;
+    }
+
+    #res {
+        position: absolute;
+        top     : 380px;
+        left    : 40px;
+    }
+
+    canvas {
+        padding: 0;
+        margin : 0;
+        border : 0;
+    }
+</style>
+
+<script type="text/javascript">
+    "use strict";
+
+    function drawCanvas(canvas) {
+        function drawLine(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        var ctx = canvas.getContext("2d");
+
+        ctx.strokeStyle = "#00f";
+        ctx.lineWidth = 1;
+        for(var x=0; x<=canvas.width; x+=20) {
+            drawLine(ctx, x+0.5, 0, x+0.5, canvas.height);
+        }
+        ctx.lineWidth = 3;
+        for(var x=0; x<=canvas.width; x+=100) {
+            drawLine(ctx, x, 0, x, canvas.height);
+        }
+        ctx.lineWidth = 1;
+        for(var y=0; y<=canvas.width; y+=20) {
+            drawLine(ctx, 0, y+0.5, canvas.width, y+0.5);
+        }
+        ctx.lineWidth = 3;
+        for(var y=0; y<=canvas.width; y+=100) {
+            drawLine(ctx, 0, y, canvas.width, y);
+        }
+    }
+
+    var stateName = {};
+    stateName[gc.InputManager.State.NORMAL]  = "NORMAL";
+    stateName[gc.InputManager.State.CLICK]   = "CLICK";
+    stateName[gc.InputManager.State.PRESS]   = "PRESS";
+    stateName[gc.InputManager.State.RELEASE] = "RELEASE";
+
+    var listener = {};
+    listener.key = function(keyCode, keyData) {
+        document.getElementById("resKey").innerHTML = "<strong>Key:</strong> keyCode " + keyCode + ": " + stateName[keyData.state];
+    };
+    listener.touch = function(button, touchData) {
+        document.getElementById("resTouch").innerHTML = "<strong>Touch:</strong> Button " + button + ": " + stateName[touchData.state] + " | x: " + touchData.x + ", y: " + touchData.y;
+    };
+    listener.mouse = function(mouseData) {
+        document.getElementById("resMouse").innerHTML = "<strong>Mouse:</strong> x: " + mouseData.x + ", y: " + mouseData.y;
+    };
+
+    var input = new gc.InputManager(document.getElementById("canvasContainer"));
+
+    drawCanvas(document.getElementById("canvas"));
+    input.addListener(listener);
+
+    document.getElementById("resMisc").innerHTML = "mousedown: " + ((gc.util.isEventSupported("mousedown")) ? "true" : "false") +
+                                                    " | touchstart: " + ((gc.util.isEventSupported("touchstart")) ? "true" : "false");
+
+</script>
+
+</body>
+</html>

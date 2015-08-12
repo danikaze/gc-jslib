@@ -34,6 +34,14 @@
         TOP_RIGHT    : 8
     };
 
+    var _eventTagnames = {
+          'select':'input','change':'input',
+          'submit':'form','reset':'form',
+          'error':'img','load':'img','abort':'img'
+        };
+
+    var _uniqueId = 1;
+
     /**
      * Utility functions
      *
@@ -409,8 +417,26 @@
             prefix = "";
         }
 
-        return prefix + String(window.performance.now()).replace(".", "");
+        return prefix + _uniqueId++;
     };
+
+    Util.isEventSupported = function isEventSupported(eventName) {
+        var el = document.createElement(_eventTagnames[eventName] || "div"),
+            isSupported;
+
+        eventName = "on" + eventName;
+        isSupported = (eventName in el);
+
+        if (!isSupported) {
+            el.setAttribute(eventName, "return;");
+            isSupported = typeof el[eventName] === "function";
+        }
+
+        el = null;
+
+        return isSupported;
+    };
+
 
     ///////////////////////////////
     // Export the public objects //
