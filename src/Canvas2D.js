@@ -276,6 +276,7 @@
          */
         this.setCamera = function setCamera(camera) {
             _camera = camera;
+            this.updateView();
 
             return this;
         };
