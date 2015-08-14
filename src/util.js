@@ -13,7 +13,7 @@
      * @memberOf gc.Util
      * @public
      */
-    var VERSION = "0.2.0";
+    var VERSION = "0.3.0";
 
     /**
      * Enum: Alignment values
@@ -420,6 +420,13 @@
         return prefix + _uniqueId++;
     };
 
+    /**
+     * Check if an event is supported in the current JavaScript engine
+     *
+     * @param  {String}  eventName Name of the event to check
+     * @return {Boolean}           true if supported, false otherwise
+     * @public
+     */
     Util.isEventSupported = function isEventSupported(eventName) {
         var el = document.createElement(_eventTagnames[eventName] || "div"),
             isSupported;
@@ -435,6 +442,20 @@
         el = null;
 
         return isSupported;
+    };
+
+    /**
+     * Limit a numeric value between a minimun and a maximum
+     *
+     * @param  {Number} value Value to limit
+     * @param  {Number} min   Minimum value allowed
+     * @param  {Number} max   Maximum value allowd
+     * @return {Number}       Limited value
+     *
+     * @public
+     */
+    Util.clamp = function clamp(value, min, max) {
+        return Math.max(min, Math.min(value, max));
     };
 
 

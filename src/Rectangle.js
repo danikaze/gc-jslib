@@ -17,7 +17,7 @@
      * @memberOf gc.Rectangle
      * @public
      */
-    var VERSION = "0.1.0";
+    var VERSION = "0.2.0";
 
     /**
      * Class representing Rectangles paralels to the x-axis and the y-axis
@@ -32,7 +32,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 1.0.0
+     * @version 0.2.0
      * @author @danikaze
      */
     var Rectangle = function(width, height, x, y) {
@@ -180,11 +180,11 @@
          *
          * @public
          */
-        this.overlaps = function overlaps(rect) {
-            return this.x <= rect.x + rect.width &&
-                   this.x + this.width >= rect.x &&
-                   this.y <= rect.y + rect.height &&
-                   this.y + this.height >= rect.y;
+        this.intersects = function intersects(rect) {
+            return !(this.x > rect.x + rect.width  ||
+                     this.x + this.width < rect.x  ||
+                     this.y > rect.y + rect.height ||
+                     this.y + this.height < rect.y);
         };
 
         /**
@@ -202,6 +202,60 @@
         };
 
         /**
+         * Get a new rectangle resulting of the intersection between two rectangles
+         *
+         * @param  {gc.Rectangle} rect Rectangle intersecting with this one
+         * @return {gc.Rectangle}      Rectangle definining the common area both of them, or null if doesn't intersect
+         *
+         * @public
+         */
+        this.getIntersection = function getIntersection(rect) {
+            var x1 = Math.max(this.x, rect.x),
+                x2 = Math.min(this.x + this.width, rect.x + rect.width),
+                y1 = Math.max(this.y, rect.y),
+                y2 = Math.min(this.y + this.height, rect.y + rect.height),
+                w = x2-x1,
+                h = y2-y1;
+
+            return w > 0 && h > 0 ? new Rectangle(w, h, x1, y1)
+                                  : null;
+        };
+
+        /**
+         * Get a new rectangle resulting of the intersection between two rectangles,
+         * but with the relative positions to the intersected part of this.
+         *
+         * @param  {gc.Rectangle} rect Rectangle intersecting with this one
+         * @return {gc.Rectangle}      Rectangle definining the common area both of them, or null if doesn't intersect
+         * @public
+         */
+        this.getRelativeIntersection = function getRelativeIntersection(rect) {
+            var x, y, w, h;
+
+            if(this.x < rect.x) {
+                x = rect.x - this.x;
+                w = this.width - x;
+            } else {
+                x = 0;
+                w = rect.x + rect.width - this.x;
+            }
+            if(w < 0) {
+                return null;
+            }
+
+            if(this.y < rect.y) {
+                y = rect.y - this.y;
+                h = this.height - x;
+            } else {
+                y = 0;
+                h = rect.y + rect.height - this.y;
+            }
+
+            return h > 0 ? new Rectangle(w, h, x, y)
+                         : null;
+        };
+
+        /**
          * Get a list of the public methods for the Rectangle
          *
          * @param  {Object}       [obj] If an object is specified, it will be extended with the returned methods
@@ -211,15 +265,16 @@
          */
         this.rectangle = function rectangle(obj) {
             var r = {
-                setSize    : this.setSize,
-                getSize    : this.getSize,
-                setPosition: this.setPosition,
-                getPosition: this.getPosition,
-                scale      : this.scale,
-                getArea    : this.getArea,
-                move       : this.move,
-                overlaps   : this.overlaps,
-                contains   : this.contains
+                setSize        : this.setSize,
+                getSize        : this.getSize,
+                setPosition    : this.setPosition,
+                getPosition    : this.getPosition,
+                scale          : this.scale,
+                getArea        : this.getArea,
+                move           : this.move,
+                overlaps       : this.overlaps,
+                contains       : this.contains,
+                getIntersection: this.getIntersection
             };
 
             return obj != null ? gc.util.extend(obj, r)
