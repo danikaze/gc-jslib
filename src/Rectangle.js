@@ -212,13 +212,21 @@
         this.getIntersection = function getIntersection(rect) {
             var x1 = Math.max(this.x, rect.x),
                 x2 = Math.min(this.x + this.width, rect.x + rect.width),
-                y1 = Math.max(this.y, rect.y),
-                y2 = Math.min(this.y + this.height, rect.y + rect.height),
-                w = x2-x1,
+                w = x2 - x1,
+                y1,
+                y2,
+                h;
+
+                if(w < 0) {
+                    return null;
+                }
+
+                y1 = Math.max(this.y, rect.y);
+                y2 = Math.min(this.y + this.height, rect.y + rect.height);
                 h = y2-y1;
 
-            return w > 0 && h > 0 ? new Rectangle(w, h, x1, y1)
-                                  : null;
+            return h > 0 ? new Rectangle(w, h, x1, y1)
+                         : null;
         };
 
         /**
@@ -234,10 +242,10 @@
 
             if(this.x < rect.x) {
                 x = rect.x - this.x;
-                w = this.width - x;
+                w = Math.min(this.width - x, rect.width);
             } else {
                 x = 0;
-                w = rect.x + rect.width - this.x;
+                w = Math.min(this.width, rect.x + rect.width - this.x);
             }
             if(w < 0) {
                 return null;
@@ -245,10 +253,10 @@
 
             if(this.y < rect.y) {
                 y = rect.y - this.y;
-                h = this.height - x;
+                h = Math.min(this.height - y, rect.height);
             } else {
                 y = 0;
-                h = rect.y + rect.height - this.y;
+                h = Math.min(this.height, rect.y + rect.height - this.y);
             }
 
             return h > 0 ? new Rectangle(w, h, x, y)
