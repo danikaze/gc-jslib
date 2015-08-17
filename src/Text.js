@@ -5,7 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.Text }),
+    var _validator = new gc.Validator({ validators: gc.Validator.definitions.Text }),
         _escapeChar = "\\",
         _wordSplitRegEx = "[ \t]",
         _escapedActions = {},

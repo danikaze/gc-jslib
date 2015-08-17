@@ -390,5 +390,6 @@
     }
     gc.Validator = Validator;
     gc.util.defineConstant(gc.Validator, "VERSION", VERSION);
+    gc.Validator.definitions = {};
 
 } (window, window.gc));

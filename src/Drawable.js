@@ -5,7 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.Drawable });
+    var _validator = new gc.Validator({ validators: gc.Validator.definitions.Drawable });
     var BOUNDS_STROKESTYLE = "#0f0";
     var BOUNDS_LINE_WIDTH = 1;
     var CENTER_FILLSTYLE = "#f00";

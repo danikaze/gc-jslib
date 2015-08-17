@@ -20,26 +20,39 @@
         };
 
     // declare the different validators object used by each class
-    gc.validatorDefinitions = {
-        Animation: gc.util.extend({
-                'animationFrame': validatorAnimationFrame
-            }, basicValidators),
-        FPS: basicValidators,
-        ResourceManager: gc.util.extend({
-                'resourceDefinition': validatorResourceDefinition
-            }),
-        XHR: basicValidators,
-        Text: gc.util.extend({
+    gc.Validator.definitions.Animation = gc.util.extend({
+            'animationFrame': validatorAnimationFrame
+        }, basicValidators);
+
+    gc.Validator.definitions.FPS = basicValidators;
+
+    gc.Validator.definitions.ResourceManager = gc.util.extend({
+            'resourceDefinition': validatorResourceDefinition
+        });
+
+    gc.Validator.definitions.XHR = basicValidators;
+
+    gc.Validator.definitions.Text = gc.util.extend({
             'textStyle': validatorTextStyle
-        }, basicValidators),
-        Drawable: basicValidators,
-        NinePatch: gc.util.extend({
+        }, basicValidators);
+
+    gc.Validator.definitions.Drawable = basicValidators;
+
+    gc.Validator.definitions.NinePatch = gc.util.extend({
             'ninePatchData': validatorNinePatchData
-        }, basicValidators),
-        InputManager: gc.util.extend({
+        }, basicValidators);
+
+    gc.Validator.definitions.InputManager = gc.util.extend({
             'implementsInputManagerListener': validatorImplementsInputManagerListener
-        }, basicValidators)
-    };
+        }, basicValidators);
+
+    gc.Validator.definitions.Parallax = gc.util.extend({
+            'parallaxLayer': validatorParallaxLayer
+        }, basicValidators);
+
+    gc.Validator.definitions.Button = gc.util.extend({
+            'buttonStyle': validatorButtonStyle
+        }, basicValidators);
 
     // validator object used to validate other objects
     var _validator = new gc.Validator({ validators: basicValidators });
@@ -322,6 +335,76 @@
         };
     }
 
+    /////////////////////////
+    // Parallax Validators //
+    /////////////////////////
+
+    /*
+     * @require gc.TextureRegion
+     */
+    function validatorParallaxLayer(data, options) {
+        var val = null,
+            ok = false;
+
+        if(gc.util.isPlainObject(data)) {
+            _validator.reset()
+                      .int("startX", data.startX)
+                      .int("startY", data.startY)
+                      .int("endX", data.endX)
+                      .int("endY", data.endY);
+
+            ok = !_validator.errors() && data.texture != null;
+            val = _validator.valid();
+
+            if(ok) {
+                val.texture = data.texture instanceof Image ? new gc.TextureRegion(data.texture)
+                                                            : data.texture;
+            }
+        }
+
+        return {
+            data: val,
+            valid: ok
+        };
+    }
+
+    ///////////////////////
+    // Button Validators //
+    ///////////////////////
+
+    /*
+     * @require gc.NinePatch
+     */
+    function validatorButtonStyle(data, options) {
+        var val = null,
+            ok = false;
+
+        if(gc.util.isPlainObject(data)) {
+            if(gc.util.isPlainObject(data.nine)) {
+                _validator.reset()
+                          .ninePatchData("normal", data.normal)
+                          .ninePatchData("hover", data.hover)
+                          .ninePatchData("selected", data.selected)
+                          .ninePatchData("clicked", data.clicked);
+
+                ok = !_validator.errors();
+                val = { nine: _validator.valid() };
+
+            } else if(gc.util.isPlainObject(data.img)) {
+                ok = data.normal instanceof Image &&
+                     data.hover instanceof Image &&
+                     data.selected instanceof Image &&
+                     data.clicked instanceof Image;
+
+                val = data;
+            }
+        }
+
+        return {
+            data: val,
+            valid: ok
+        };
+    }
 
     //////////////////////////
     // Interface Validators //

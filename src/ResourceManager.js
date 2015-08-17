@@ -5,7 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.validatorDefinitions.ResourceManager });
+    var _validator = new gc.Validator({ validators: gc.Validator.definitions.ResourceManager });
 
     ////////////////////////
     // STATIC PUBLIC VARS //
