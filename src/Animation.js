@@ -328,6 +328,7 @@
                 if(_currentFrameIndex === _nFrames - 1 && _nFrames > 0) {
                     _playDirection = PlayDirection.BACKWARDS;
                     _currentFrameIndex--;
+                    _triggerCallback(_onChangeDirection);
                 } else {
                     _currentFrameIndex++;
                 }
@@ -363,6 +364,7 @@
                 if(_currentFrameIndex === _nFrames - 1 && _nFrames > 0) {
                     _playDirection = PlayDirection.BACKWARDS;
                     _currentFrameIndex--;
+                    _triggerCallback(_onChangeDirection);
                 } else {
                     _currentFrameIndex++;
                 }
@@ -370,6 +372,7 @@
             } else if(_currentFrameIndex === 0 && _nFrames > 0) {
                     _playDirection = PlayDirection.FORWARDS;
                     _currentFrameIndex++;
+                    _triggerCallback(_onChangeDirection);
 
             } else {
                 _currentFrameIndex--;
@@ -629,6 +632,8 @@
             }
 
             _onChangeDirection.push(callback);
+
+            return this;
         };
 
         // call the constructor
