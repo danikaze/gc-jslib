@@ -13,7 +13,7 @@
      * @memberOf gc.Util
      * @public
      */
-    var VERSION = "0.3.0";
+    var VERSION = "0.4.0";
 
     /**
      * Enum: Alignment values
@@ -48,9 +48,16 @@
      * @memberOf gc
      * @namespace
      * @alias gc.util
-     * @version 0.2.0
+     * @version 0.4.0
      */
     var Util = {};
+
+    /**
+     * Empty function
+     */
+    Util.noop = function noop() {
+
+    };
 
     /**
      * Define a constant property inside an Object

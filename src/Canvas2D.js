@@ -13,7 +13,7 @@
      * @memberOf gc.Canvas2D
      * @public
      */
-    var VERSION = "0.2.0";
+    var VERSION = "0.3.0";
 
     ///////////////////////////
     // STATIC PUBLIC METHODS //
@@ -134,7 +134,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 0.2.0
+     * @version 0.3.0
      * @author @danikaze
      */
     var Canvas2D = function(canvas) {
@@ -170,6 +170,9 @@
             _ctx = _decoratedContext(canvas.getContext("2d"));
             _camera = new gc.Camera2(this);
             this.updateView();
+
+            // by default, disable the text selection when doing double click on the canvas
+            this.setTextSelection(false);
         };
 
 
@@ -319,6 +322,27 @@
             _ctx.scale(scaleX, scaleY);
             _ctx.rotate(-_camera.angle);
             _ctx.translate(-_camera.center.x + offsetX, -_camera.center.y + offsetY);
+
+            return this;
+        };
+
+        /**
+         * Enable or disable selecting text outside the canvas when double clicking it
+         *
+         * @param  {boolean} enabled If false (by default), the text outside the canvas won't be selectd when doing double click on the canvas element
+         * @return {gc.Canvas2D} self reference to allow chaining
+         *
+         * @public
+         */
+        this.setTextSelection = function disableTextSelection(enabled) {
+            if(enabled) {
+                _ctx.canvas.onselectstart = null;
+
+            } else {
+                _ctx.canvas.onselectstart = function () {
+                    return false;
+                }
+            }
 
             return this;
         };

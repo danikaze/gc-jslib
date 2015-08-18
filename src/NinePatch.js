@@ -5,7 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.Validator.definitions.NinePatch });
+    var _validator = new gc.Validator();
 
     ////////////////////////////
     // STATIC PRIVATE METHODS //
@@ -27,7 +27,7 @@
      * @memberOf gc.NinePatch
      * @public
      */
-    var VERSION = "0.1.0";
+    var VERSION = "0.2.0";
 
     /**
      * Image with stretchable borders.
@@ -60,7 +60,7 @@
      * @todo Use _scale to render the elements by this factor (the draw method works though)
      * @constructor
      * @memberOf gc
-     * @version 1.0.0
+     * @version 0.2.0
      * @author @danikaze
      */
     var NinePatch = function(data, width, height, centerX, centerY, scaleX, scaleY, canvas) {
@@ -222,6 +222,15 @@
                 width : _fbo.canvas.width,
                 height: _fbo.canvas.height
             };
+        };
+
+        /**
+         * @return {CanvasRenderingContext2D} Context of the FBO
+         *
+         * @public
+         */
+        this.getContext = function getContext() {
+            return _fbo;
         };
 
         // call the constructor after setting all the methods
