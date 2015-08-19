@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.Button examples</title>
+
+<!--
+    <script type="text/javascript" src="../src/polyfill.js"></script>
+    <script type="text/javascript" src="../src/exception.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/Validator.js"></script>
+    <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/Size2.js"></script>
+    <script type="text/javascript" src="../src/Rectangle.js"></script>
+    <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/Camera2.js"></script>
+    <script type="text/javascript" src="../src/Drawable.js"></script>
+    <script type="text/javascript" src="../src/TextureRegion.js"></script>
+    <script type="text/javascript" src="../src/NinePatch.js"></script>
+    <script type="text/javascript" src="../src/Easing.js"></script>
+    <script type="text/javascript" src="../src/Button.js"></script>
+    <script type="text/javascript" src="../src/Text.js"></script>
+    <script type="text/javascript" src="../src/InputManager.js"></script>
+    <script type="text/javascript" src="../src/browser.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+
+    <style type="text/css">
+        canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas" width="500" height="300" moz-opaque>
+    Your browser doesn't support canvas.
+    WHAT YEAR IS IT!???
+</canvas>
+<p><strong>Button 1 last callback:</strong> <span id="res1"></span></p>
+<p><strong>Button 2 last callback:</strong> <span id="res2"></span></p>
+
+<script type="text/javascript">
+    "use strict";
+
+    var canvas,
+        ctx,
+        img,
+        patchNormal,
+        patchHover,
+        patchSelect,
+        patchClick,
+        trNormal,
+        trHover,
+        trSelect,
+        trClick,
+        button1,
+        button2,
+        res1,
+        res2,
+        input;
+
+    canvas = new gc.Canvas2D(document.getElementById("canvas"));
+    ctx = canvas.getContext();
+
+    gc.Text.registerAction("sb1", { font: "bold 18px Arial", fillStyle: "#FFFFFF", strokeStyle: "#000000", fill: true,  stroke: true });
+    gc.Text.registerAction("sb2", { font: "bold 12px Arial", fillStyle: "#000000", strokeStyle: "#FFFF00", fill: true,  stroke: false });
+    gc.Text.registerAction("sb3", { font: "bold 18px Arial", fillStyle: "#000000", strokeStyle: "#000000", fill: true,  stroke: false });
+    gc.Text.registerAction("sb4", { font: "bold 12px Arial", fillStyle: "#FFFF00", strokeStyle: "#FF0000", fill: true,  stroke: false });
+
+    res1 = document.getElementById("res1");
+    res2 = document.getElementById("res2");
+
+    img = new Image();
+    img.src = "img/button9.png";
+    img.onload = start;
+
+    input = new gc.InputManager(canvas.getCanvas());
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.getSize().width, canvas.getSize().height);
+        button1.draw(ctx);
+        button2.draw(ctx);
+    }
+
+    function start() {
+        patchNormal = new gc.NinePatch([img, 0,   0, 20, 20,  44, 44, 20, 20], 64, 64);
+        patchHover  = new gc.NinePatch([img, 64,  0, 20, 20, 108, 44, 20, 20], 64, 64);
+        patchClick  = new gc.NinePatch([img, 128, 0, 20, 20, 172, 44, 20, 20], 64, 64);
+        patchSelect = new gc.NinePatch([img, 192, 0, 20, 20, 236, 44, 20, 20], 64, 64);
+
+        button1 = new gc.Button(30, 30, {
+            normal: patchNormal,
+            hover : patchHover,
+            click : patchClick,
+            select: patchSelect
+        }, {
+            text       : "\\sb1Button 1\n\\sb2for mobile",
+            textClick  : "\\sb3Button 1\n\\sb4for mobile",
+            behavior   : gc.Button.Behavior.SELECT_FIRST
+        });
+
+        button1.onHover(function()   { draw(); res1.innerHTML = "HOVER"; })
+               .onClick(function()   { draw(); res1.innerHTML = "CLICK"; })
+               .onBlur(function()    { draw(); res1.innerHTML = "BLUR"; })
+               .onRelease(function() { draw(); res1.innerHTML = "RELEASE"; });
+
+        trNormal = new gc.TextureRegion(img,   0, 0, 64, 64);
+        trHover  = new gc.TextureRegion(img,  64, 0, 64, 64);
+        trClick  = new gc.TextureRegion(img, 128, 0, 64, 64);
+        trSelect = new gc.TextureRegion(img, 192, 0, 64, 64);
+
+        button2 = new gc.Button(button1.getPosition().x + button1.getSize().width + 20, 30, {
+            normal: trNormal,
+            hover : trHover,
+            select: trSelect,
+            click : trClick
+        }, {
+            behavior: gc.browser.isMobile ? gc.Button.Behavior.MOBILE : gc.Button.Behavior.DESKTOP,
+            text: "\\sb1Button 2",
+            textClick: "\\sb3Button 2",
+            ctx : ctx,
+            width: 128,
+            height: 64
+        });
+
+        button2.onHover(function()   { res2.innerHTML = "HOVER"; })
+               .onClick(function()   { res2.innerHTML = "CLICK"; })
+               .onBlur(function()    { res2.innerHTML = "BLUR"; })
+               .onRelease(function() { res2.innerHTML = "RELEASE"; });
+
+        draw();
+
+        input.addListener(button1)
+             .addListener(button2);
+    }
+
+</script>
+
+</body>
+</html>

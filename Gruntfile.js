@@ -74,7 +74,8 @@ module.exports = function(grunt) {
                         'src/TextureRegion.js',
                         'src/Animation.js',
                         'src/Text.js',
-                        'src/NinePatch.js'
+                        'src/NinePatch.js',
+                        'src/Button.js',
                     ]
                 }
             }

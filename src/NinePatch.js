@@ -27,7 +27,7 @@
      * @memberOf gc.NinePatch
      * @public
      */
-    var VERSION = "0.2.0";
+    var VERSION = "0.2.1";
 
     /**
      * Image with stretchable borders.
@@ -60,7 +60,7 @@
      * @todo Use _scale to render the elements by this factor (the draw method works though)
      * @constructor
      * @memberOf gc
-     * @version 0.2.0
+     * @version 0.2.1
      * @author @danikaze
      */
     var NinePatch = function(data, width, height, centerX, centerY, scaleX, scaleY, canvas) {
@@ -183,26 +183,23 @@
         /**
          * Set the size of the NinePatch. The center parts will strech while the borders will preserve the right aspect.
          * If the size is too small, the NinePatch will stay at its minimum size.
-         * This method accepts two signatures:
-         *     1 argument : a {@link gc.Size2} object
-         *     2 arguments: width and height
          *
-         * @return {gc.NinePatch} self reference for allowing chaining
+         * @param  {Number}       width           New width for the image
+         * @param  {Number}       height          New height for the image
+         * @param  {boolean}      [content=false] If true, the specified size is for the content without the extensible borders.
+         * @return {gc.NinePatch}                 self reference for allowing chaining
          *
          * @public
          */
-        this.setSize = function setSize(width, height) {
-            if(typeof width === "undefined") {
-                throw new gc.exception.WrongSignatureException("width is undefined");
-            }
+        this.setSize = function setSize(width, height, content) {
+            if(content) {
+                width  += _parts.topLeft.width  + _parts.bottomRight.width;
+                height += _parts.topLeft.height + _parts.bottomRight.height;
 
-            if(typeof height === "undefined") {
-                height = width.height;
-                width = width.width;
+            } else {
+                width  = Math.max(width,  _parts.topLeft.width  + _parts.bottomRight.width);
+                height = Math.max(height, _parts.topLeft.height + _parts.bottomRight.height);
             }
-
-            width  = Math.max(width,  _parts.topLeft.width  + _parts.bottomRight.width);
-            height = Math.max(height, _parts.topLeft.height + _parts.bottomRight.height);
 
             _fbo.canvas.width = width;
             _fbo.canvas.height = height;
