@@ -341,7 +341,7 @@
             } else {
                 _ctx.canvas.onselectstart = function () {
                     return false;
-                }
+                };
             }
 
             return this;

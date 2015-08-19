@@ -5,13 +5,14 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.Validator.definitions.Text }),
+    var _validator = new gc.Validator(),
         _escapeChar = "\\",
         _wordSplitRegEx = "[ \t]",
         _escapedActions = {},
         _escapeRegEx,
         _textMetricsCache = {},
         _defaultOptions = {
+            align       : gc.Align.TOP_LEFT,
             marginTop   : 0,
             marginRight : 0,
             marginBottom: 0,
@@ -29,8 +30,10 @@
                 fillStyle   : "#000000",
                 stroke      : false,
                 strokeStyle : "#000000",
+                lineWidth   : 1,
                 lineMargin  : 0
-            }
+            },
+            _getFullTextSize: false
         };
 
 
@@ -46,7 +49,7 @@
      * @public
      * @memberOf gc.Text
      */
-    var VERSION = "0.2.1";
+    var VERSION = "0.3.0";
 
     ///////////////////////////
     // STATIC PUBLIC METHODS //
@@ -210,29 +213,50 @@
     }
 
     /**
+     * Get the full size of a formatted text without having to render it
+     *
+     * @param  {String}  text                   Formatted text to measure
+     * @param  {Object}  [options]              {@see gc.Text}
+     * @param  {boolean} [includeMargins=false] If true, the returned size will include the margins specified in the options
+     * @return {Object}                         Object as {width, height}
+     *
+     * @public
+     * @memberOf gc.Text
+     * @todo Make this function actually static, without having to create a new text instance
+     */
+    function getFullTextSize(text, options, includeMargins) {
+        var txt = new gc.Text(text, gc.util.extend({}, options, { width:0, height: 0, _getFullTextSize: true }));
+
+        return txt.measureText(includeMargins);
+    }
+
+    /**
      * Class to write formatted text and cache it in Images
      *
-     * @param {String}  text                         Formatted text to draw
-     * @param {Object}  options                      Options to define the Text behavior
-     * @param {Integer} [options.marginTop=0]        Margin between the text and the top of the limits
-     * @param {Integer} [options.marginRight=0]      Margin between the text and the right of the limits
-     * @param {Integer} [options.marginBottom=0]     Margin between the text and the bottom of the limits
-     * @param {Integer} [options.marginLeft=0]       Margin between the text and the left of the limits
-     * @param {Integer} [options.width=0]            If specified, the text will break lines to this width
-     * @param {Integer} [options.height=0]           If specified, the text will be limited to this height
-     * @param {Integer} [options.limit=-1]           Number of printable characters to draw (<0 means no limit)
-     * @param {Integer} [options.delay=0]            Delay before start drawing
-     * @param {Integer} [options.speed=0]            Speed to draw the text or 0 to draw it all at once.
-     * @param {String}  [options.pauseOn=",.、。"]     Make a pause when find one of this characters
-     * @param {Integer} [options.pauseLength=1000]   Length of the pause (in ms.) done after drawing a character in {@link options.pauseOn}
-     * @param {Object}  [options.style]              Style options
-     * @param {String}  [options.style.font]         Style to use for the font
-     * @param {boolean} [options.style.fill=true]    true to fill the text
-     * @param {String}  [options.style.fillStyle]    Style to apply to the text when filled
-     * @param {boolean} [options.style.stroke=false] true to stroke the text
-     * @param {String}  [options.style.strokeStyle]  Style to apply to the text when stroked
-     * @param {Integer} [options.style.lineMargin]   Extra margin to add between lines in px.
-     * @param {Canvas}  [canvas]                     Canvas to use as a buffer background
+     * @param {String}  text                          Formatted text to draw
+     * @param {Object}   [options]                    Options to define the Text behavior
+     * @param {gc.Align} [align=gc.Align.TOP_LEFT]    Position of the text inside the canvas
+     * @param {Integer}  [options.marginTop=0]        Margin between the text and the top of the limits
+     * @param {Integer}  [options.marginRight=0]      Margin between the text and the right of the limits
+     * @param {Integer}  [options.marginBottom=0]     Margin between the text and the bottom of the limits
+     * @param {Integer}  [options.marginLeft=0]       Margin between the text and the left of the limits
+     * @param {Integer}  [options.width=0]            If specified, the text will break lines to this width. This width does NOT includes margins.
+     * @param {Integer}  [options.height=0]           If specified, the text will be limited to this height. This height does NOT includes margins.
+     * @param {Integer}  [options.limit=-1]           Number of printable characters to draw (<0 means no limit)
+     * @param {Integer}  [options.delay=0]            Delay before start drawing
+     * @param {Integer}  [options.speed=0]            Speed to draw the text or 0 to draw it all at once.
+     * @param {String}   [options.pauseOn=",.、。"]     Make a pause when find one of this characters
+     * @param {Integer}  [options.pauseLength=1000]   Length of the pause (in ms.) done after drawing a character in {@link options.pauseOn}
+     * @param {Object}   [options.style]              Style options
+     * @param {String}   [options.style.font]         Style to use for the font
+     * @param {boolean}  [options.style.fill=true]    true to fill the text
+     * @param {String}   [options.style.fillStyle]    Style to apply to the text when filled
+     * @param {boolean}  [options.style.stroke=false] true to stroke the text
+     * @param {String}   [options.style.strokeStyle]  Style to apply to the text when stroked
+     * @param {Integer}  [options.style.lineWidth]    Width in px for the stroke line
+     * @param {Integer}  [options.style.lineMargin]   Extra margin to add between lines in px.
+     * @param {boolean}  [_getFullTextSize]           If true, only the size will be calculated and nothing will be rendered (internal option used by {@link gc.Text.getFullTextSize})
+     * @param {Canvas}   [canvas]                     Canvas to use as a buffer background. This will limit {@link options.width} and {@link options.height}
      *
      * @requires gc.Util
      * @requires gc.Validator
@@ -242,7 +266,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 0.2.1
+     * @version 0.3.0
      * @author @danikaze
      */
     var Text = function(text, options, canvas) {
@@ -277,6 +301,7 @@
             // data validation :start
             _validator.reset()
                       .str("text", text)
+                      .enumerated("align", _options.align, { enumerated: gc.Align })
                       .int("marginTop", _options.marginTop)
                       .int("marginRight", _options.marginRight)
                       .int("marginBottom", _options.marginBottom)
@@ -297,32 +322,48 @@
             _options = _validator.valid(_options);
             // data validation :end
 
-            if(newCanvas) {
-                canvas = document.createElement("canvas");
+            if(!_options._getFullTextSize) {
+                if(newCanvas) {
+                    canvas = document.createElement("canvas");
+                    if(_options.width) {
+                        canvas.width = _options.width + _options.marginLeft + _options.marginRight;
+                    }
+                    if(_options.height) {
+                        canvas.height = _options.height + _options.marginTop + _options.marginBottom;
+                    }
+
+                } else {
+                    if(_options.marginLeft + _options.width + _options.marginRight > canvas.width) {
+                        _options.width = canvas.width - _options.marginLeft - _options.marginRight;
+                    }
+                    if(_options.marginTop + _options.height + _options.marginBottom > canvas.height) {
+                        _options.height = canvas.height - _options.marginTop - _options.marginBottom;
+                    }
+
+                    if(_options.width < 0 || _options.height < 0) {
+                        return;
+                    }
+                }
             }
 
             _fbo = new gc.Canvas2D(canvas).getContext();
-
             _originalText = text;
             _text = _processText(text);
 
-            textSize = this.getFullTextSize(true);
-
-            if(newCanvas) {
-                canvas.width = _options.width || textSize.width;
-                _options.width = canvas.width;
-                canvas.height = _options.height || textSize.height;
-                _options.height = canvas.height;
+            if(_options._getFullTextSize) {
+                return;
             }
 
-            if(_options.marginLeft + _options.width + _options.marginRight > canvas.width) {
-                _options.width = canvas.width - _options.marginLeft;
+            textSize = this.measureText(true);
+            if(_options.width === 0) {
+                canvas.width = textSize.width;
+                _options.width = textSize.width;
             }
-            if(_options.marginTop + _options.height + _options.marginBottom > canvas.height) {
-                _options.height = canvas.height - _options.marginTop;
+            if(_options.height === 0) {
+                canvas.height = textSize.height;
+                _options.height = textSize.height;
             }
 
-            _resetState();
             _renderText();
             _drawable = new gc.Drawable(canvas);
             _drawable.drawable(this);
@@ -370,6 +411,9 @@
             }
             if(action.strokeStyle) {
                 _fbo.strokeStyle = action.strokeStyle;
+            }
+            if(action.lineWidth) {
+                _fbo.lineWidth = action.lineWidth;
             }
             if(action.lineMargin) {
                 _state.lineMargin = action.lineMargin;
@@ -503,7 +547,7 @@
                     }
 
                     // if the word still fits the line, keep pushing
-                    if(xx + wordWidth < maxX) {
+                    if(xx + wordWidth < availableWidth) {
                         tokenText += word + separator;
                         xx += wordWidth + _fbo.measureText(separator).width;
 
@@ -520,12 +564,13 @@
                         // and set the variables as starting to the next line
                         y += lineHeight;
                         res[line].y = y;
+                        res[line].width = xx;
+                        _fullTextSize.width = Math.max(_fullTextSize.width, res[line].width);
                         res.push([]);
                         line++;
                         y += _state.lineMargin;
-                        _fullTextSize.width = Math.max(_fullTextSize.width, xx - _options.marginLeft);
                         tokenText = word + separator;
-                        x = _options.marginLeft;
+                        x = 0;
                         xx = x + wordWidth + _fbo.measureText(separator).width;
                     }
                 }
@@ -547,9 +592,8 @@
                 e, escaped, nEscaped,
                 token,
                 x,
-                maxX = _options.width !== 0 ? _options.width - _options.marginRight : Infinity,
-                availableWidth = maxX - _options.marginLeft,
-                y = _options.marginTop,
+                y = 0,
+                availableWidth = _options.width === 0 ? Infinity : _options.width - _options.marginRight - _options.marginLeft,
                 lineHeight;
 
             // first, split it in lines by new-lines characters
@@ -564,7 +608,7 @@
             // then, split each line into an array of parts that can be drawn all at once
             for(line=0; line<text.length; line++) {
                 res[line] = [];
-                x = _options.marginLeft;
+                x = 0;
 
                 escaped = getEscapeStrings(text[line]);
 
@@ -579,11 +623,12 @@
 
                 y += lineHeight;
                 res[line].y = y;
+                res[line].width = x;
 
-                _fullTextSize.width = Math.max(_fullTextSize.width, x - _options.marginLeft);
+                _fullTextSize.width = Math.max(_fullTextSize.width, res[line].width);
             }
 
-            _fullTextSize.height = y - _options.marginTop;
+            _fullTextSize.height = y;
 
             return res;
         }
@@ -595,22 +640,78 @@
          * @private
          */
         function _renderText() {
+            function getOffsetX(line) {
+                var offset;
+
+                switch(_options.align) {
+                    case gc.Align.TOP_LEFT:
+                    case gc.Align.LEFT:
+                    case gc.Align.BOTTOM_LEFT:
+                        offset = _options.marginLeft;
+                        break;
+
+                    case gc.Align.TOP:
+                    case gc.Align.CENTER:
+                    case gc.Align.BOTTOM:
+                        offset = (_options.width - line.width)/2;
+                        break;
+
+                    case gc.Align.TOP_RIGHT:
+                    case gc.Align.RIGHT:
+                    case gc.Align.BOTTOM_RIGHT:
+                        offset = _options.width - _options.marginRight - line.width;
+                        break;
+                }
+
+                return Math.floor(offset);
+            }
+
+            function getOffsetY() {
+                var offset;
+
+                switch(_options.align) {
+                    case gc.Align.TOP_LEFT:
+                    case gc.Align.TOP:
+                    case gc.Align.TOP_RIGHT:
+                        offset = _options.marginTop;
+                        break;
+
+                    case gc.Align.LEFT:
+                    case gc.Align.CENTER:
+                    case gc.Align.RIGHT:
+                        offset = (_options.height - _fullTextSize.height)/2;
+                        break;
+
+                    case gc.Align.BOTTOM_LEFT:
+                    case gc.Align.BOTTOM:
+                    case gc.Align.BOTTOM_RIGHT:
+                        offset = _options.height - _options.marginBottom - _fullTextSize.height;
+                        break;
+                }
+
+                return Math.floor(offset);
+            }
+
             var nLines,
                 nTokens,
-                token;
+                token,
+                offsetX,
+                offsetY = getOffsetY();
 
             _resetState();
 
             // for each line apply the actions to see how to draw the last token
             for(_state.line=0, nLines=_text.length; _state.line<nLines; _state.line++) {
+                offsetX = getOffsetX(_text[_state.line]);
+
                 for(_state.token=0, nTokens=_text[_state.line].length; _state.token<nTokens; _state.token++) {
                     token = _text[_state.line][_state.token];
 
                     if(_state.fill) {
-                        _fbo.fillText(token.txt, token.x, _text[_state.line].y);
+                        _fbo.fillText(token.txt, offsetX + token.x, offsetY + _text[_state.line].y);
                     }
                     if(_state.stroke) {
-                        _fbo.strokeText(token.txt, token.x, _text[_state.line].y);
+                        _fbo.strokeText(token.txt, offsetX + token.x, offsetY + _text[_state.line].y);
                     }
 
                     if(token.action) {
@@ -625,14 +726,14 @@
         ////////////////////
 
         /**
-         * Get the size that the text would have without limits, but with format
+         * Get the size of the formatted text
          *
          * @param  {boolean} includeMargins if true, the margins will be included in the result
          * @return {Object}                 Object as {width, height}
          *
          * @public
          */
-        this.getFullTextSize = function getFullTextSize(includeMargins) {
+        this.measureText = function measureText(includeMargins) {
             var width  = _fullTextSize.width,
                 height = _fullTextSize.height;
 
@@ -686,5 +787,6 @@
     gc.Text.registerAction      = registerAction;
     gc.Text.getTextMetrics      = getTextMetrics;
     gc.Text.setDefaultOptions   = setDefaultOptions;
+    gc.Text.getFullTextSize     = getFullTextSize;
 
 } (window, window.gc));

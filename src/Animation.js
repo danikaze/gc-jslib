@@ -17,7 +17,7 @@
             RANDOM: 2
         };
 
-    var _validator = new gc.Validator({ validators: gc.Validator.definitions.Animation });
+    var _validator = new gc.Validator();
 
     ////////////////////////
     // STATIC PUBLIC VARS //

@@ -5,57 +5,29 @@
 {
     'use strict';
 
-        // basic data validators
-    var basicValidators = {
-            'bool'          : validatorBool,
-            'int'           : validatorInt,
-            'intPositive'   : validatorIntPositive,
-            'flt'           : validatorFlt,
-            'fltPositive'   : validatorFltPositive,
-            'str'           : validatorStr,
-            'strNotEmpty'   : validatorStrNotEmpty,
-            'callback'      : validatorCallback,
-            'enumerated'    : validatorEnumerated,
-            'defined'       : validatorDefined
-        };
-
-    // declare the different validators object used by each class
-    gc.Validator.definitions.Animation = gc.util.extend({
-            'animationFrame': validatorAnimationFrame
-        }, basicValidators);
-
-    gc.Validator.definitions.FPS = basicValidators;
-
-    gc.Validator.definitions.ResourceManager = gc.util.extend({
-            'resourceDefinition': validatorResourceDefinition
-        });
-
-    gc.Validator.definitions.XHR = basicValidators;
-
-    gc.Validator.definitions.Text = gc.util.extend({
-            'textStyle': validatorTextStyle
-        }, basicValidators);
-
-    gc.Validator.definitions.Drawable = basicValidators;
-
-    gc.Validator.definitions.NinePatch = gc.util.extend({
-            'ninePatchData': validatorNinePatchData
-        }, basicValidators);
-
-    gc.Validator.definitions.InputManager = gc.util.extend({
-            'implementsInputManagerListener': validatorImplementsInputManagerListener
-        }, basicValidators);
-
-    gc.Validator.definitions.Parallax = gc.util.extend({
-            'parallaxLayer': validatorParallaxLayer
-        }, basicValidators);
-
-    gc.Validator.definitions.Button = gc.util.extend({
-            'buttonStyle': validatorButtonStyle
-        }, basicValidators);
+    // basic data validators
+    gc.Validator.definitions = {
+        'bool'                          : validatorBool,
+        'int'                           : validatorInt,
+        'intPositive'                   : validatorIntPositive,
+        'flt'                           : validatorFlt,
+        'fltPositive'                   : validatorFltPositive,
+        'str'                           : validatorStr,
+        'strNotEmpty'                   : validatorStrNotEmpty,
+        'callback'                      : validatorCallback,
+        'enumerated'                    : validatorEnumerated,
+        'defined'                       : validatorDefined,
+        'animationFrame'                : validatorAnimationFrame,
+        'resourceDefinition'            : validatorResourceDefinition,
+        'textStyle'                     : validatorTextStyle,
+        'ninePatchData'                 : validatorNinePatchData,
+        'implementsInputManagerListener': validatorImplementsInputManagerListener,
+        'parallaxLayer'                 : validatorParallaxLayer,
+        'buttonStyle'                   : validatorButtonStyle
+    };
 
     // validator object used to validate other objects
-    var _validator = new gc.Validator({ validators: basicValidators });
+    var _validator = new gc.Validator();
 
     /*
      * Generic Boolean data validator
@@ -380,23 +352,54 @@
             ok = false;
 
         if(gc.util.isPlainObject(data)) {
-            if(gc.util.isPlainObject(data.nine)) {
-                _validator.reset()
-                          .ninePatchData("normal", data.normal)
-                          .ninePatchData("hover", data.hover)
-                          .ninePatchData("selected", data.selected)
-                          .ninePatchData("clicked", data.clicked);
+            if(data.normal instanceof gc.NinePatch &&
+               data.normal instanceof gc.NinePatch &&
+               data.normal instanceof gc.NinePatch &&
+               data.normal instanceof gc.NinePatch) {
 
-                ok = !_validator.errors();
-                val = { nine: _validator.valid() };
+                ok = true;
+                val = {
+                    normal: data.normal,
+                    hover : data.hover,
+                    select: data.select,
+                    click : data.click
+                };
 
-            } else if(gc.util.isPlainObject(data.img)) {
-                ok = data.normal instanceof Image &&
-                     data.hover instanceof Image &&
-                     data.selected instanceof Image &&
-                     data.clicked instanceof Image;
+            } else {
+                val = {};
 
-                val = data;
+                if(data.normal instanceof Image) {
+                    val.normal = new gc.TextureRegion(data.normal);
+
+                } else if(data.normal instanceof gc.TextureRegion) {
+                    val.normal = data.normal;
+                }
+
+                if(data.hover instanceof Image) {
+                    val.hover = new gc.TextureRegion(data.hover);
+
+                } else if(data.hover instanceof gc.TextureRegion) {
+                    val.hover = data.hover;
+                }
+
+                if(data.select instanceof Image) {
+                    val.select = new gc.TextureRegion(data.select);
+
+                } else if(data.select instanceof gc.TextureRegion) {
+                    val.select = data.select;
+                }
+
+                if(data.click instanceof Image) {
+                    val.click = new gc.TextureRegion(data.click);
+
+                } else if(data.click instanceof gc.TextureRegion) {
+                    val.click = data.click;
+                }
+
+                ok = val.normal instanceof gc.TextureRegion &&
+                     val.hover instanceof gc.TextureRegion &&
+                     val.select instanceof gc.TextureRegion &&
+                     val.click instanceof gc.TextureRegion;
             }
         }
 
@@ -405,6 +408,7 @@
             valid: ok
         };
     }
+
 
     //////////////////////////
     // Interface Validators //

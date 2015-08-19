@@ -13,7 +13,7 @@
      * @memberOf gc.Validator
      * @public
      */
-    var VERSION = "1.1.0";
+    var VERSION = "1.1.1";
 
     /**
      * Object for validate several types of data
@@ -388,7 +388,9 @@
         window.gc = {};
         gc = window.gc;
     }
-    gc.Validator = Validator;
+    gc.Validator = function(options) {
+        return new Validator(gc.util.extend({}, options, { validators: gc.Validator.definitions }));
+    };
     gc.util.defineConstant(gc.Validator, "VERSION", VERSION);
     gc.Validator.definitions = {};
 

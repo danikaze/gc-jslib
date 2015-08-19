@@ -5,7 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.Validator.definitions.XHR });
+    var _validator = new gc.Validator();
 
     ////////////////////////
     // STATIC PUBLIC VARS //

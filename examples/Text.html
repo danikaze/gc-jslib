@@ -12,6 +12,8 @@
     <script type="text/javascript" src="../src/Validator.js"></script>
     <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
     <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/Camera2.js"></script>
+    <script type="text/javascript" src="../src/Rectangle.js"></script>
     <script type="text/javascript" src="../src/Point2.js"></script>
     <script type="text/javascript" src="../src/Size2.js"></script>
     <script type="text/javascript" src="../src/Drawable.js"></script>
@@ -111,19 +113,19 @@
     // define some texts and the color of their bound box to see them
     texts = [{ text: "Text 1: Small and simple text" },
              { text: "\\s1Text \\s52\\s1: with\nnew lines" },
-             { text: "Text 3: with \\s2change \\s3of \\s4format\\s0\nAND newlines" }];
+             { text: "Text 3: with \\s2change \\s3of \\s4format\\s0\nAND newlines", options: { width: 360, height: 140 } }];
 
     x = 10;     // we are going to draw the texts starting at
     y = 70;     // position (10, 70)
     m = 20;     // with a margin of 20px between them
     for(var i=0; i<texts.length; i++) {
-        // create the text (at this point everything is precalculated
-        text = new gc.Text(texts[i].text);
+        // create the text (at this point everything is precalculated)
+        text = new gc.Text(texts[i].text, texts[i].options);
         // draw information about the Drawable
         text.drawBounds(ctx, x, y);
         text.drawCenter(ctx, x, y);
         // draw a bound box of the text
-        textSize = text.getFullTextSize();
+        textSize = text.measureText();
         ctx.strokeStyle = "#ccf";
         ctx.strokeRect(text.getOption("marginLeft") + x, text.getOption("marginTop") + y, textSize.width, textSize.height);
         // draw the text

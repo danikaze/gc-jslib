@@ -5,7 +5,7 @@
     // STATIC PRIVATE VARS //
     /////////////////////////
 
-    var _validator = new gc.Validator({ validators: gc.Validator.definitions.InputManager });
+    var _validator = new gc.Validator();
 
     ////////////////////////////
     // STATIC PRIVATE METHODS //
@@ -76,7 +76,7 @@
      * @memberOf gc.InputManager
      * @public
      */
-    var VERSION = "0.1.0";
+    var VERSION = "0.1.1";
 
     /**
      * Manage mouse, key and touch input.
@@ -95,7 +95,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 0.1.0
+     * @version 0.1.1
      * @author @danikaze
      */
     var InputManager = function(element, options) {
@@ -131,8 +131,8 @@
                 trackTouch: 1
             }, options);
 
-            if(!element) {
-                element = document;
+            if(!(element instanceof Element)) {
+                throw new gc.exception.WrongSignatureException("element is not a valid Element");
             }
 
             _listeners = [];
