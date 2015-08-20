@@ -76,6 +76,7 @@ module.exports = function(grunt) {
                         'src/Text.js',
                         'src/NinePatch.js',
                         'src/Button.js',
+                        'src/ProgressBar.js'
                     ]
                 }
             }

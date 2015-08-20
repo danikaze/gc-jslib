@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>gc.ProgressBar examples</title>
+
+<!--
+    <script type="text/javascript" src="../src/polyfill.js"></script>
+    <script type="text/javascript" src="../src/exception.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/Validator.js"></script>
+    <script type="text/javascript" src="../src/validatorDefinitions.js"></script>
+    <script type="text/javascript" src="../src/Deferred.js"></script>
+    <script type="text/javascript" src="../src/Point2.js"></script>
+    <script type="text/javascript" src="../src/Size2.js"></script>
+    <script type="text/javascript" src="../src/Rectangle.js"></script>
+    <script type="text/javascript" src="../src/Canvas2D.js"></script>
+    <script type="text/javascript" src="../src/Camera2.js"></script>
+    <script type="text/javascript" src="../src/Drawable.js"></script>
+    <script type="text/javascript" src="../src/TextureRegion.js"></script>
+    <script type="text/javascript" src="../src/Easing.js"></script>
+    <script type="text/javascript" src="../src/ProgressBar.js"></script>
+    <script type="text/javascript" src="../src/Text.js"></script>
+-->
+    <script type="text/javascript" src="../build/gc-jslib.min.js"></script>
+
+    <style type="text/css">
+        canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas" width="500" height="300" moz-opaque>
+    Your browser doesn't support canvas.
+    WHAT YEAR IS IT!???
+</canvas>
+<p><button id="a1">A: +1%</button> <button id="a10">A: +10%</button> <button id="a50">A: +50%</button> <span id="progressA">0 %</span></p>
+<p><button id="b1">B: +1%</button> <button id="b10">B: +10%</button> <button id="b50">B: +50%</button> <span id="progressB">0 %</span></p>
+
+<script type="text/javascript">
+    "use strict";
+
+    var canvas,
+        ctx,
+        img,
+        barA,
+        barB,
+        progressA = 0,
+        progressB = 0,
+        lastFrameTime;
+
+    canvas = new gc.Canvas2D(document.getElementById("canvas"));
+    ctx = canvas.getContext();
+
+    gc.Text.registerAction("spg1", { font: "bold 18px Arial", fillStyle: "#80ca54", strokeStyle: "#000000", fill: true,  stroke: false });
+
+    img = new Image();
+    img.src = "img/progressBar.png";
+    img.onload = start;
+
+    function start() {
+        barA = new gc.ProgressBar((canvas.getSize().width - img.width)/2, 20, {
+            pending: new gc.TextureRegion(img, 0, 0, 471, 44),
+            done: new gc.TextureRegion(img, 13, 44, 394, 18),
+            barPosition: { x: 13, y: 13 }
+        });
+        barB = new gc.ProgressBar((canvas.getSize().width - img.width)/2, barA.getPosition().y + barA.getSize().height + 20, {
+            pending: new gc.TextureRegion(img, 0, 167, 471, 70),
+            done: new gc.TextureRegion(img, 0, 96, 471, 70),
+            barPosition: { x: 0, y: 0 }
+        });
+
+        barA.progress(function(progress) {
+            updateElement("progressA", progress);
+        });
+        barA.done(function(progress) {
+            updateElement("progressA", progress);
+        });
+        barB.progress(function(progress) {
+            updateElement("progressB", progress);
+        });
+        barB.done(function(progress) {
+            updateElement("progressB", progress);
+        });
+
+        document.getElementById("a1").onclick = function() {
+            progressA += 0.01;
+            barA.setProgress(progressA);
+        };
+
+        document.getElementById("a10").onclick = function() {
+            progressA += 0.10;
+            barA.setProgress(progressA);
+        };
+
+        document.getElementById("a50").onclick = function() {
+            progressA += 0.50;
+            barA.setProgress(progressA);
+        };
+
+        document.getElementById("b1").onclick = function() {
+            progressB += 0.01;
+            barB.setProgress(progressB);
+        };
+
+        document.getElementById("b10").onclick = function() {
+            progressB += 0.10;
+            barB.setProgress(progressB);
+        };
+
+        document.getElementById("b50").onclick = function() {
+            progressB += 0.50;
+            barB.setProgress(progressB);
+        };
+
+        lastFrameTime = performance.now();
+        mainLoop(lastFrameTime);
+    }
+
+    function mainLoop(now) {
+        var delta = now - lastFrameTime;
+        lastFrameTime = now;
+
+        barA.update(delta);
+        barB.update(delta);
+
+        barA.draw(ctx);
+        barB.draw(ctx);
+
+        requestAnimationFrame(mainLoop);
+    }
+
+    function updateElement(id, progress) {
+        document.getElementById(id).innerHTML = (progress*100).toFixed(0) + "%" + (progress === 1 ? "!" : "");
+    }
+
+</script>
+
+</body>
+</html>
