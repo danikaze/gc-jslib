@@ -452,6 +452,61 @@
     };
 
     /**
+     * A mix of Array.indexOf and Array.filter, to find the index of the first ocurrence of an element on an
+     * array or an object using a callback for comparison.
+     * Note that if not found, the returned value will be -1, which can be a valid object index
+     *
+     * @param  {Array|Object} container  Array or Plain Object where the element is con
+     * @param  {Function}     callback   function(element) returning true if the element is found or false if not
+     * @param  {Number}       [offset=0] Index of the first element to compare
+     * @return {mixed}                   Index of the found element, or -1 if not found
+     *
+     * @public
+     */
+    Util.find = function(container, callback, offset) {
+        var i,
+            n;
+
+        // array
+        if(Util.isArray(container)) {
+            if(offset === undefined) {
+                offset = 0;
+            }
+
+            for(i=offset, n = container.length; i<n; i++) {
+                if(callback(container[i])) {
+                    return i;
+                }
+            }
+
+        // object without offset
+        } else if(offset === undefined) {
+            for(i in container) {
+                if(callback(container[i])) {
+                    return i;
+                }
+            }
+
+        // object with an offset specified
+        } else {
+            n = false;
+            for(i in container) {
+                if(n) {
+                    if(callback(container[i])) {
+                        return i;
+                    }
+                } else {
+                    if(i === offset) {
+                        n = true;
+                    }
+                }
+            }
+        }
+
+        return -1;
+    };
+
+    /**
      * Limit a numeric value between a minimun and a maximum
      *
      * @param  {Number} value Value to limit
