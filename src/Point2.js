@@ -17,7 +17,7 @@
      * @memberOf gc.Point2
      * @public
      */
-    var VERSION = "0.3.0";
+    var VERSION = "0.4.0";
 
     /**
      * Class representing 2D Points {x, y}
@@ -30,7 +30,7 @@
      *
      * @constructor
      * @memberOf gc
-     * @version 0.3.0
+     * @version 0.4.0
      * @author @danikaze
      */
     var Point2 = function() {
@@ -140,6 +140,19 @@
                 yy = this.y - y;
 
             return xx*xx + yy*yy;
+        };
+
+        /**
+         * Calculate the Manhattan distance between this point and other point
+         *
+         * @param  {Number} x X-position of the other point
+         * @param  {Number} y Y-position of the other point
+         * @return {Number}   Manhattan distance between two points
+         *
+         * @public
+         */
+        this.manhattan = function manhattan(x, y) {
+            return Math.abs(this.x - x) + Math.abs(this.y - y);
         };
 
         /**
