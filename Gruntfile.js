@@ -1,5 +1,34 @@
 module.exports = function(grunt) {
 
+    var buildFileList = [
+            'src/polyfill.js',
+            'src/exception.js',
+            'src/util.js',
+            'src/Validator.js',
+            'src/validatorDefinitions.js',
+            'src/browser.js',
+            'src/InputManager.js',
+            'src/LocaleManager.js',
+            'src/RNG.js',
+            'src/Deferred.js',
+            'src/XHR.js',
+            'src/FPS.js',
+            'src/ResourceManager.js',
+            'src/Drawable.js',
+            'src/Camera2.js',
+            'src/Canvas2D.js',
+            'src/Point2.js',
+            'src/Size2.js',
+            'src/Rectangle.js',
+            'src/Easing.js',
+            'src/TextureRegion.js',
+            'src/Animation.js',
+            'src/Text.js',
+            'src/NinePatch.js',
+            'src/Button.js',
+            'src/ProgressBar.js'
+        ];
+
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -7,6 +36,13 @@ module.exports = function(grunt) {
         clean: {
             docs: ['docs'],
             build: ['build']
+        },
+
+        concat: {
+            dist: {
+                src: buildFileList,
+                dest: 'build/<%= pkg.name %>.js'
+            }
         },
 
         jsdoc: {
@@ -50,43 +86,18 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {
-                    'build/<%= pkg.name %>.min.js': [
-                        'src/polyfill.js',
-                        'src/exception.js',
-                        'src/util.js',
-                        'src/Validator.js',
-                        'src/validatorDefinitions.js',
-                        'src/browser.js',
-                        'src/InputManager.js',
-                        'src/LocaleManager.js',
-                        'src/RNG.js',
-                        'src/Deferred.js',
-                        'src/XHR.js',
-                        'src/FPS.js',
-                        'src/ResourceManager.js',
-                        'src/Drawable.js',
-                        'src/Camera2.js',
-                        'src/Canvas2D.js',
-                        'src/Point2.js',
-                        'src/Size2.js',
-                        'src/Rectangle.js',
-                        'src/Easing.js',
-                        'src/TextureRegion.js',
-                        'src/Animation.js',
-                        'src/Text.js',
-                        'src/NinePatch.js',
-                        'src/Button.js',
-                        'src/ProgressBar.js'
-                    ]
+                    'build/<%= pkg.name %>.min.js': buildFileList
                 }
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+
     // Default task(s).
-    grunt.registerTask('default', ['clean:docs', 'jsdoc', 'jshint', 'uglify']);
+    grunt.registerTask('default', ['clean:docs', 'jsdoc', 'jshint', 'uglify', 'concat']);
 };
