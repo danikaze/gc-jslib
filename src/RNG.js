@@ -43,31 +43,7 @@
         ///////////////////////////
 
         var _seed,
-            _state,
-            _generated;
-
-
-        /////////////////////
-        // PRIVATE METHODS //
-        /////////////////////
-
-        /**
-         * Constructor called when creating a new object instance
-         *
-         * @private
-         */
-        function _construct(seed) {
-            if(typeof seed === "undefined") {
-                _seed = parseInt(Math.random() * (_m - 1));
-
-            } else {
-                _seed = parseInt(seed);
-            }
-
-            _state = _seed;
-            _generated = 0;
-        }
-
+            _state;
 
         ////////////////////
         // PUBLIC METHODS //
@@ -86,7 +62,6 @@
          */
         this.nextInt = function(min, max) {
             _state = (_a * _state + _c) % _m;
-            _generated++;
 
             switch(arguments.length) {
                 case 0:
@@ -115,34 +90,23 @@
          * @public
          */
         this.nextFloat = function(min, max) {
+            var val;
             _state = (_a * _state + _c) % _m;
-            _generated++;
+            val = _state / (_m - 1);
 
             switch(arguments.length) {
                 case 0:
-                    return _state / (_m - 1);
+                    return val;
 
                 case 1:
-                    return _state * max;
+                    return val * min;
 
                 case 2:
-                    return _state * (max - min) + min;
+                    return val * (max - min) + min;
 
                 default:
                     throw "Wrong number of arguments";
             }
-        };
-
-        /**
-         * Reset the state of the generator to the first number of the seed
-         *
-         * @return {gc.RNG} Self object to allow chaining
-         *
-         * @public
-         */
-        this.reset = function() {
-            _construct(_seed);
-            return this;
         };
 
         /**
@@ -163,9 +127,28 @@
          *
          * @public
          */
-        this.setSeed = function(seed) {
-            _construct(seed);
-            return this;
+        this.setSeed = function(seed, state) {
+            switch(arguments.length) {
+            case 0:
+                _seed = parseInt(Math.random() * (_m - 1));
+                _state = _seed;
+                break;
+
+            case 1:
+                _seed = parseInt(seed);
+                _state = _seed;
+                break;
+
+            case 2:
+                _seed = parseInt(seed);
+                _state = state;
+                break;
+
+            default:
+                throw "Wrong number of arguments";
+        }
+
+        return this;
         };
 
         /**
@@ -177,7 +160,7 @@
          * @public
          */
         this.getState = function() {
-            return _generated;
+            return _state;
         };
 
         /**
@@ -188,23 +171,24 @@
          * @public
          */
         this.setState = function(state) {
-            var i;
-
-            if (state < _generated) {
-                this.reset();
-            } else {
-                state -= _generated;
-            }
-
-            for (i=0; i<state; i++) {
-                this.nextInt();
-            }
+            _state = state;
 
             return this;
         };
 
+        /**
+         * Reset the state of the generator to the first number of the seed
+         *
+         * @return {gc.RNG} Self object to allow chaining
+         *
+         * @public
+         */
+        this.reset = function() {
+            return this.setSeed(_seed);
+        };
+
         // call the constructor after setting all the methods
-        _construct.apply(this, arguments);
+        this.setSeed.apply(this, arguments);
     };
 
 
